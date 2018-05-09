@@ -6,6 +6,6 @@ Statistical Programming Languages SS2018.
 * Felix Germaine 
 * Manuel Pfeuffer
 
-#### Info: Nächstes Treffen ist am Mittwoch 18 Uhr an der WiWi.
+#### Info: Nächstes Treffen ist am Montag 18 Uhr an der WiWi.
 
 #### Report: [Link](https://v2.overleaf.com/1144799275gytdtyhvyxkw) zum LaTeX Dokument.
