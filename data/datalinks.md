@@ -8,6 +8,11 @@ Hier könnt Ihr Links und Infos zu unseren Datenquellen reinstellen.
 
 ## Wind + Solar Erzeugung AT (Day Ahead Prognose):
 #### https://www.apg.at/de/markt/Markttransparenz/erzeugung/erzeugungsprognose
+
+## Strom - Day-Ahead Preis 
+### Daten aus Dänemark, sehen aber sehr gut aus und gehen bis 2010
+#### https://www.energidataservice.dk/en/dataset/elspotprices/resource_extract/c86859d2-942e-4029-aec1-32d56f1a2e5d
+
 **Data description:** Aus Gründen der Konsistenz mit den nach der Verordnung (EU) Nr. 543/2013 veröffentlichten Daten wird seit 01.01.2015 in der folgenden Darstellung die prognostizierte Leistung aller in die Regelzone APG einspeisenden Windkraftanlagen berücksichtigt. Die historischen Werte bis einschließlich 31.12.2014 errechnen sich weiterhin aus allen in die Ökobilanzgruppe der Regelzone APG einspeisenden Windkraftanlagen.
 Die Wind- und Solarerzeugungsprognose wird in der Regel bis ca. 11:00 Uhr für den Folgetag bereitgestellt. Ab diesem Zeitpunkt stehen im Normalfall auch indikative Werte für den übernächsten Tag zur Verfügung.
 Eine Aktualisierung der Wind- und Solarerzeugungsprognose wird täglich um ca. 08:00 Uhr für den laufenden Tag durchgeführt.
