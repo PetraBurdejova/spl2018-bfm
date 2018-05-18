@@ -3,6 +3,12 @@ Hier könnt Ihr Links und Infos zu unseren Datenquellen reinstellen.
 ## Windkraft DE (Day Ahead Prognose):
 #### https://www.netztransparenz.de/Weitere-Veroeffentlichungen/Windenergie-Prognose
 
+## Windkraft DE (Day Ahead Gehandelt):
+#### https://www.netztransparenz.de/Erneuerbare-Energien-Gesetz/Transparenzanforderungen/Vermarktung-1h-Auktion-Windenergie
+
+
+
+
 ## Solarkraft Erzeugung DE (Day Ahead Prognose):
 #### https://www.netztransparenz.de/Weitere-Veroeffentlichungen/Solarenergie-Prognose
 
