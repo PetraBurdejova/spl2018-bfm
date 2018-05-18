@@ -1,4 +1,12 @@
-Hier könnt Ihr Links und Infos zu unseren Datenquellen reinstellen.
+## Daten Überblick
+
+| Variable | vorhanden? | von | bis | day ahead? | Kurzkommentar | Variablendimension |
+| -------- | ---------- | ---- | ---- | ---- | -------------------- | ---- |
+| PUN | DE ja AT vill  | 2011 | 2018 | ja | Noch überprüfen ob DE/AT | €/MWh |
+| DMD | DE ja AT ja  | 2015 | 2018 | ja/nein | inkl. Luxemburg | MW(?) |
+| SOLAR | DE ja AT ja  | 2015 | 2018 | ja | - | MW |
+| WIND  | DE ja AT ja  | 2015 | 2018 | ja | <2015 inkomp. mit AT | MW |
+| GAS_Price | DE nein AT nein  | 201X | 2018 | ja/nein | 3 Preise? | |
 
 ## Demand DE/AT/LU (Day Ahead)
 ####https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=BZN&atch=false&dateTime.dateTime=18.05.2018+00:00|CET|DAY&biddingZone.values=CTY|10Y1001A1001A83F!BZN|10Y1001A1001A63L&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2)
