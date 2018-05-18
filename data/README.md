@@ -9,11 +9,11 @@
 | GAS_Price | DE nein AT nein  | - | 2018 | - | 3 Preise? | - |
 
 
-#### PUN (Strom - Day-Ahead Preis )
+#### PUN (Day-Ahead Preis, seit 2011)
 [Link zu den Daten](https://www.energidataservice.dk/en/dataset/elspotprices/resource_extract/c86859d2-942e-4029-aec1-32d56f1a2e5d). **Data description:** Daten aus Dänemark, sehen aber sehr gut aus und gehen bis 2010.
 
 
-#### DMD (DE/AT/LU Day Ahead)
+#### DMD (DE/AT/LU Day Ahead Demand, seit 2015)
 [Link zu den Daten](https://transparency.entsoe.eu/load-domain/r2/totalLoadR2/show?name=&defaultValue=false&viewType=TABLE&areaType=BZN&atch=false&dateTime.dateTime=18.05.2018+00:00|CET|DAY&biddingZone.values=CTY|10Y1001A1001A83F!BZN|10Y1001A1001A63L&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2))
 
 #### WIND+SOLAR DE (Day Ahead Prognose, seit 2015):
