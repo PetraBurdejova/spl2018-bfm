@@ -6,7 +6,7 @@
 | DMD | DE ja AT ja  | 2015 | 2018 | ja | inkl. Luxemburg | MW(?) |
 | SOLAR | DE ja AT ja  | 2015 | 2018 | ja | - | MW |
 | WIND  | DE ja AT ja  | 2015 | 2018 | ja | <2015 inkomp. mit AT | MW |
-| GAS_Price | DE nein AT nein  | - | 2018 | - | 3 Preise? | - |
+| GAS_PRICE | DE nein AT nein  | - | 2018 | - | 3 Preise? | - |
 
 
 #### PUN (Day-Ahead Preis, seit 2011)
