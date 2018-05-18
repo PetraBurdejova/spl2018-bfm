@@ -15,15 +15,15 @@ Hier könnt Ihr Links und Infos zu unseren Datenquellen reinstellen.
 
 -Links:
 
-Windkraft DE:
+Windkraft DE (Day Ahead Prognose):
 https://www.netztransparenz.de/Weitere-Veroeffentlichungen/Windenergie-Prognose
 
-=================================================================
-Solarkraft Erzeugung DE:
+=====
+Solarkraft Erzeugung DE (Day Ahead Prognose):
 https://www.netztransparenz.de/Weitere-Veroeffentlichungen/Solarenergie-Prognose
 
-=================================================================
-Wind + Solar Erzeugung AT:
+=====
+Wind + Solar Erzeugung AT (Day Ahead Prognose):
 https://www.apg.at/de/markt/Markttransparenz/erzeugung/erzeugungsprognose
 
 Data description:
