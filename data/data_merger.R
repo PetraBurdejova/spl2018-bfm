@@ -16,6 +16,12 @@
 # ------------------------------
 
 
+# Problem with working directory: Where?
+# setwd(??)
 
-print("This is my test")
+getwd()
+
+Df_PUN = read.csv("Elspot_Prices_Data.5375228caa4c48ad9b969f250d70fe2e", 
+               header = TRUE)
+
 
