@@ -21,7 +21,7 @@
 
 getwd()
 
-Df_PUN = read.csv("Elspot_Prices_Data.5375228caa4c48ad9b969f250d70fe2e", 
+df.pun = read.csv("Elspot_Prices_Data.5375228caa4c48ad9b969f250d70fe2e", 
                header = TRUE)
 
 
