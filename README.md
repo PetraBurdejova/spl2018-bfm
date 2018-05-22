@@ -7,3 +7,8 @@ Statistical Programming Languages SS2018. Thema: _The Merit Order Effect in the 
 * Manuel Pfeuffer
 
 #### Report: [Link](https://v2.overleaf.com/1144799275gytdtyhvyxkw) zum LaTeX Dokument.
+
+#### Interessantes:
+
+[Hier](https://chris.beams.io/posts/git-commit/) findet Ihr einen Blogpost zur
+Erstellung von `git commit`'s.
