@@ -21,9 +21,9 @@
 #
 # ------------------------------
 
-
+rm(list = ls())
 library(readr)
-
+library(lubridate)
 
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
 
@@ -38,6 +38,7 @@ df.dem.2018 = read_csv("source/Total Load - Day Ahead _ Actual_201801010000-2019
 
 
 # 2. PREPARE DATA FOR MERGE
+
 
 # 2a. PUN
 df.pun <- subset( df.pun, select = c(HourUTC, SpotPriceEUR ) )
