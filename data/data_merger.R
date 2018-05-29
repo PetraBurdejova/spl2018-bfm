@@ -60,7 +60,7 @@ df.pun$TIME <- ymd_hm(df.pun$TIME)
 
 str(df.pun)
 head(df.pun)
-### 2b. SOLAR DE ----
+### 2b. *SOLAR DE ----
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
                         "Amprion..MW.", "TenneT.TSO..MW.", "Transnet.BW..MW.") )
 df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
@@ -77,7 +77,7 @@ ind.stop <- which(df.solar$TIME == stop.d)
 df.solar <- df.solar[ind.start: ind.stop, ]
 
 
-### 2b. SOLAR AT ----
+### 2b. *SOLAR AT ----
 
 bruno.atsolar <- function(x){
     y <- subset(x, select = c("V1", "V7"))
@@ -104,7 +104,7 @@ df.solar.AT7 <- bruno.atsolar(df.ren.AT7)
 # same for wind
 ## --------------------------- ## 
 
-### 2c. WIND DE----
+### 2c. *WIND DE----
 
 df.wind <- subset(df.wind.D, select = c("Datum","von","X50Hertz..MW.", 
                                         "Amprion..MW.", "TenneT.TSO..MW.", "TransnetBW") )
@@ -121,12 +121,25 @@ ind.stop <- which(df.wind$TIME == stop.d)
 df.wind <- df.wind[ind.start: ind.stop, ]
 
 
-### 2c. WIND AT -----
+### 2c. *WIND AT -----
 
+head(df.ren.AT1)
 
+bruno.atwind <- function(x){
+  y <- subset(x, select = c("V1", "V5"))
+  names(y) <- c("TIME", "WIND MW AT")
+  y$`WIND MW AT` <- as.numeric(y$`WIND MW AT`)
+  y$TIME <- dmy_hms(y$TIME)
+  return(y)
+}
 
-
-
+df.wind.AT1 <- bruno.atwind(df.ren.AT1)
+df.wind.AT2 <- bruno.atwind(df.ren.AT2)
+df.wind.AT3 <- bruno.atwind(df.ren.AT3)
+df.wind.AT4 <- bruno.atwind(df.ren.AT4)
+df.wind.AT5 <- bruno.atwind(df.ren.AT5)
+df.wind.AT6 <- bruno.atwind(df.ren.AT6)
+df.wind.AT7 <- bruno.atwind(df.ren.AT7)
 
 
 
@@ -155,6 +168,12 @@ str(df.dem.2015)
 head(df.dem.2018)
 
 ### 2e. (GAS) ----
+
+
+
+
+
+
 
 
 
