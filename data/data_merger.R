@@ -115,7 +115,6 @@ names(df.ren.AT)
 
 
 ### 2d. *DEMAND ----
-#das in eine funktion schre4iben wär nice
 
 df.dem.2015 <- subset(df.dem.2015.0, select = c("Time..CET.", 
                       "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
@@ -126,6 +125,21 @@ df.dem.2015$TIME <- dmy_hm(df.dem.2015$TIME)
 df.dem.2015$`DAY-AHEAD MW` <- as.numeric(df.dem.2015$`DAY-AHEAD MW`)
 
 
+bruno.verarbeitung = function(x) {
+  y <- subset(x, select = c("Time..CET.", 
+                       "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
+  names(y) <- c("TIME", "DAY-AHEAD MW")
+  y <- separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
+  y <- subset(y, select = c("TIME","DAY-AHEAD MW"))
+  y$TIME <- dmy_hm(y$TIME)
+  y$`DAY-AHEAD MW` <- as.numeric(y$`DAY-AHEAD MW`)
+  return(y)
+}
+
+vapply(dem.vec,bruno.verarbeitung )
+
+
+identical(a, df.dem.2015)
 str(df.dem.2015)
 head(df.dem.2015)
 
