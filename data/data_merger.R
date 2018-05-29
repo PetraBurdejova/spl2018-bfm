@@ -54,15 +54,11 @@ df.pun$TIME <- ymd_hm(df.pun$TIME)
 
 ### 2b. SOLAR ----
 ## SOLAR DE --
-# subset + add AT
-
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
                         "Amprion..MW.", "TenneT.TSO..MW.", "Transnet.BW..MW.") )
 df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
 names(df.solar) <- c("TIME", "50Hertz (MW)", 
                      "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
-
-#time
 df.solar$TIME <- dmy_hm(df.solar$TIME)
 
 
@@ -73,6 +69,7 @@ summary(df.solar)
 ind <- which(is.na(df.solar))
 df.solar[ind, ]
 class(df.solar$TIME)
+head(ind, n=100)
 
 ind <- which(is.na(df.solar[df.solar$TIME > ymd("2015-01-01"), ]))
 df.solar[ind, ]
@@ -88,7 +85,8 @@ neuerv[ind, ]
 na.omit(neuerv)
 
 ## SOLAR AT --
-
+df.solar.AT <- subset(df.ren.AT, select = (""))
+names(df.ren.AT)
 
 ## UNITE --
 
@@ -104,5 +102,15 @@ na.omit(neuerv)
 
 
 ### 2d. DEMAND ----
+head(df.dem.2015.0)
+names(df.dem.2015.0)
+
+df.dem.2015 <- subset(df.dem.2015.0, select = c("Time..CET.", 
+                      "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
+
+names(df.dem.2015) <- c("TIME", "DAY-AHEAD MW")
+df.dem.2015$TIME <- split()
+df.dem.2015$TIME <- dmy_hm(df.dem.2015$TIME)
+
 ### 2e. (GAS) ----
 
