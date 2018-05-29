@@ -1,6 +1,6 @@
 # ------------------------------
-# ------- dataMerger.R ---------
-# ------------------------------
+# -       dataMerger.R         -
+# -                            -
 # 
 # Authors:  Bruno Puri, 
 #           Felix Germaine,
@@ -36,13 +36,14 @@ df.pun.0   <-  read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70f
 df.solar.D <-  read.csv2("source/Solarenergie_DE.csv")
 df.wind.D  <-  read.csv2("source/Windenergie_DE.csv")
 
-df.ren.AT1  <-  read.csv2("source/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-07-01T23_45_00Z_60M_de.csv")
-df.ren.AT2  <-  read.csv2("source/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2016-01-01T23_45_00Z_60M_de.csv")
-df.ren.AT3  <-  read.csv2("source/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-07-01T23_45_00Z_60M_de.csv")
-df.ren.AT4  <-  read.csv2("source/AT - renewables/export_daftg_2016-07-01T00_00_00Z_2017-01-01T23_45_00Z_60M_de.csv")
-df.ren.AT5  <-  read.csv2("source/AT - renewables/export_daftg_2017-01-01T00_00_00Z_2017-07-01T23_45_00Z_60M_de.csv")
-df.ren.AT6  <-  read.csv2("source/AT - renewables/export_daftg_2017-07-01T00_00_00Z_2018-01-01T23_45_00Z_60M_de.csv")
-df.ren.AT7  <-  read.csv2("source/AT - renewables/export_daftg_2018-01-01T00_00_00Z_2018-05-25T23_45_00Z_60M_de.csv")
+df.ren.AT1  <-  read.csv2("source/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-07-01T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT2  <-  read.csv2("source/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2016-01-01T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT3  <-  read.csv2("source/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-07-01T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT4  <-  read.csv2("source/AT - renewables/export_daftg_2016-07-01T00_00_00Z_2017-01-01T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT5  <-  read.csv2("source/AT - renewables/export_daftg_2017-01-01T00_00_00Z_2017-07-01T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT6  <-  read.csv2("source/AT - renewables/export_daftg_2017-07-01T00_00_00Z_2018-01-01T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT7  <-  read.csv2("source/AT - renewables/export_daftg_2018-01-01T00_00_00Z_2018-05-25T23_45_00Z_60M_de.csv", header = F)
+
 
 df.dem.2015.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201501010000-201601010000.csv")
 df.dem.2016.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201601010000-201701010000.csv")
@@ -63,7 +64,7 @@ df.pun$TIME <- ymd_hm(df.pun$TIME)
 str(df.pun)
 head(df.pun)
 ### 2b. SOLAR ----
-## SOLAR DE --
+## SOLAR DE ----
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
                         "Amprion..MW.", "TenneT.TSO..MW.", "Transnet.BW..MW.") )
 df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
@@ -97,10 +98,17 @@ summary(df.wind.D)
 
 
 
-## SOLAR AT --
-df.solar.AT <- subset(df.ren.AT, select = (""))
-names(df.ren.AT)
+## SOLAR AT ----
+df.solar.AT1 <- subset(df.ren.AT1, select = c("V1", "V7"))
+names(df.solar.AT1) <- c("TIME", "SOLAR MW AT")
+df.solar.AT1$`SOLAR MW AT` <- as.numeric(df.solar.AT1$`SOLAR MW AT`)
+df.solar.AT1$TIME <- dmy_hms(df.solar.AT1$TIME)
 
+
+head(df.ren.AT1)
+head(df.solar.AT1)
+str(row1)
+?rbind
 ## UNITE --
 
 # same for wind
@@ -132,9 +140,9 @@ df.dem.2016 <- bruno.verarbei(df.dem.2016.0)
 df.dem.2017 <- bruno.verarbei(df.dem.2017.0)
 df.dem.2018 <- bruno.verarbei(df.dem.2018.0)
 
+df.dem.2017 <- na.omit(df.dem.2017)
 
-
-## TEST KRAMS
+## TEST KRAMS 
 a <- bruno.verarbeitung(df.dem.2015.0)
 dem.vec <- c(df.dem.2015.0,df.dem.2016.0,df.dem.2017.0,df.dem.2018.0)
 test <- sapply(dem.vec, bruno.verarbeitung)
@@ -150,7 +158,7 @@ df.dem.2015$`DAY-AHEAD MW` <- as.numeric(df.dem.2015$`DAY-AHEAD MW`)
 ## 
 
 str(df.dem.2015)
-head(df.dem.2015)
+head(df.dem.2018)
 
 ### 2e. (GAS) ----
 
