@@ -31,9 +31,17 @@ library(tidyr)
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
 ### 1.a LOAD DATA  ----
 df.pun.0   <-  read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
+
 df.solar.D <-  read.csv2("source/Solarenergie_DE.csv")
 df.wind.D  <-  read.csv2("source/Windenergie_DE.csv")
-df.ren.AT  <-  read.csv2("source/export_daftg_2011-01-01T00_00_00Z_2011-01-31T23_45_00Z_60M_de.csv")
+
+df.ren.AT1  <-  read.csv2("source/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-07-01T23_45_00Z_60M_de.csv")
+df.ren.AT2  <-  read.csv2("source/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2016-01-01T23_45_00Z_60M_de.csv")
+df.ren.AT3  <-  read.csv2("source/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-07-01T23_45_00Z_60M_de.csv")
+df.ren.AT4  <-  read.csv2("source/AT - renewables/export_daftg_2016-07-01T00_00_00Z_2017-01-01T23_45_00Z_60M_de.csv")
+df.ren.AT5  <-  read.csv2("source/AT - renewables/export_daftg_2017-01-01T00_00_00Z_2017-07-01T23_45_00Z_60M_de.csv")
+df.ren.AT6  <-  read.csv2("source/AT - renewables/export_daftg_2017-07-01T00_00_00Z_2018-01-01T23_45_00Z_60M_de.csv")
+df.ren.AT7  <-  read.csv2("source/AT - renewables/export_daftg_2018-01-01T00_00_00Z_2018-05-25T23_45_00Z_60M_de.csv")
 
 df.dem.2015.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201501010000-201601010000.csv")
 df.dem.2016.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201601010000-201701010000.csv")
@@ -109,7 +117,7 @@ df.dem.2015 <- subset(df.dem.2015.0, select = c("Time..CET.",
                       "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
 
 names(df.dem.2015) <- c("TIME", "DAY-AHEAD MW")
-df.dem.2015$TIME <- split()
+df.dem.2015$TIME <- separate(df.dem.2015, )
 df.dem.2015$TIME <- dmy_hm(df.dem.2015$TIME)
 
 ### 2e. (GAS) ----
