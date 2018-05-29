@@ -116,16 +116,7 @@ names(df.ren.AT)
 
 ### 2d. *DEMAND ----
 
-df.dem.2015 <- subset(df.dem.2015.0, select = c("Time..CET.", 
-                      "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
-names(df.dem.2015) <- c("TIME", "DAY-AHEAD MW")
-df.dem.2015 <- separate(df.dem.2015, col = TIME, into = c("TIME","bis"), sep =  " - ")
-df.dem.2015 <- subset(df.dem.2015, select = c("TIME","DAY-AHEAD MW"))
-df.dem.2015$TIME <- dmy_hm(df.dem.2015$TIME)
-df.dem.2015$`DAY-AHEAD MW` <- as.numeric(df.dem.2015$`DAY-AHEAD MW`)
-
-
-bruno.verarbeitung = function(x) {
+bruno.verarbei = function(x) {
   y <- subset(x, select = c("Time..CET.", 
                        "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
   names(y) <- c("TIME", "DAY-AHEAD MW")
@@ -136,10 +127,28 @@ bruno.verarbeitung = function(x) {
   return(y)
 }
 
-vapply(dem.vec,bruno.verarbeitung )
+df.dem.2015 <- bruno.verarbei(df.dem.2015.0)
+df.dem.2016 <- bruno.verarbei(df.dem.2016.0)
+df.dem.2017 <- bruno.verarbei(df.dem.2017.0)
+df.dem.2018 <- bruno.verarbei(df.dem.2018.0)
 
 
+
+## TEST KRAMS
+a <- bruno.verarbeitung(df.dem.2015.0)
+dem.vec <- c(df.dem.2015.0,df.dem.2016.0,df.dem.2017.0,df.dem.2018.0)
+test <- sapply(dem.vec, bruno.verarbeitung)
 identical(a, df.dem.2015)
+## ALT KRAMS
+df.dem.2015 <- subset(df.dem.2015.0, select = c("Time..CET.", 
+                                                "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
+names(df.dem.2015) <- c("TIME", "DAY-AHEAD MW")
+df.dem.2015 <- separate(df.dem.2015, col = TIME, into = c("TIME","bis"), sep =  " - ")
+df.dem.2015 <- subset(df.dem.2015, select = c("TIME","DAY-AHEAD MW"))
+df.dem.2015$TIME <- dmy_hm(df.dem.2015$TIME)
+df.dem.2015$`DAY-AHEAD MW` <- as.numeric(df.dem.2015$`DAY-AHEAD MW`)
+## 
+
 str(df.dem.2015)
 head(df.dem.2015)
 
