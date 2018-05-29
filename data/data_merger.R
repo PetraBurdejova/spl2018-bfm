@@ -19,10 +19,9 @@
 #             DEM
 #             (GAS)
 #
-# ------------------------------
 
 # 0. PACKAGES AND ENVIRONMENT
-
+### 0.a PACKAGES ----
 rm(list = ls())
 library(lubridate)
 library(tidyr)
@@ -53,8 +52,6 @@ df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-2
 # 1.b LOOK FOR NA'S
 
 # 2. PREPARE DATA FOR MERGE
-
-
 # 2. CLEAN ALL VARIABLES
 ### 2a. *PUN ----
 df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
@@ -63,8 +60,7 @@ df.pun$TIME <- ymd_hm(df.pun$TIME)
 
 str(df.pun)
 head(df.pun)
-### 2b. SOLAR ----
-## SOLAR DE ----
+### 2b. SOLAR DE ----
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
                         "Amprion..MW.", "TenneT.TSO..MW.", "Transnet.BW..MW.") )
 df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
@@ -80,6 +76,94 @@ ind.start <- which(df.solar$TIME == start.d)
 ind.stop <- which(df.solar$TIME == stop.d)
 df.solar <- df.solar[ind.start: ind.stop, ]
 
+
+### 2b. SOLAR AT ----
+
+bruno.atsolar <- function(x){
+    y <- subset(x, select = c("V1", "V7"))
+    names(y) <- c("TIME", "SOLAR MW AT")
+    y$`SOLAR MW AT` <- as.numeric(y$`SOLAR MW AT`)
+    y$TIME <- dmy_hms(y$TIME)
+    return(y)
+}
+
+df.solar.AT1 <- bruno.atsolar(df.ren.AT1)
+df.solar.AT2 <- bruno.atsolar(df.ren.AT2)
+df.solar.AT3 <- bruno.atsolar(df.ren.AT3)
+df.solar.AT4 <- bruno.atsolar(df.ren.AT4)
+df.solar.AT5 <- bruno.atsolar(df.ren.AT5)
+df.solar.AT6 <- bruno.atsolar(df.ren.AT6)
+df.solar.AT7 <- bruno.atsolar(df.ren.AT7)
+
+
+
+
+
+## UNITE --
+
+# same for wind
+## --------------------------- ## 
+
+### 2c. WIND DE----
+
+df.wind <- subset(df.wind.D, select = c("Datum","von","X50Hertz..MW.", 
+                                        "Amprion..MW.", "TenneT.TSO..MW.", "TransnetBW") )
+df.wind <- unite(df.wind, TIME, c("Datum", "von"), sep = " ")
+names(df.wind) <- c("TIME", "50Hertz (MW)", 
+                     "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
+df.wind$TIME <- dmy_hm(df.wind$TIME)
+
+
+start.d <- ymd_hm("2015-01-01 00:00")
+stop.d <- ymd_hm("2017-12-31 23:00")
+ind.start <- which(df.wind$TIME == start.d)
+ind.stop <- which(df.wind$TIME == stop.d)
+df.wind <- df.wind[ind.start: ind.stop, ]
+
+
+### 2c. WIND AT -----
+
+
+
+
+
+
+
+
+
+### 2d. *DEMAND ----
+
+bruno.DEM = function(x) {
+  y <- subset(x, select = c("Time..CET.", 
+                       "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
+  names(y) <- c("TIME", "DAY-AHEAD MW")
+  y <- separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
+  y <- subset(y, select = c("TIME","DAY-AHEAD MW"))
+  y$TIME <- dmy_hm(y$TIME)
+  y$`DAY-AHEAD MW` <- as.numeric(y$`DAY-AHEAD MW`)
+  return(y)
+}
+
+df.dem.2015 <- bruno.DEM(df.dem.2015.0)
+df.dem.2016 <- bruno.DEM(df.dem.2016.0)
+df.dem.2017 <- bruno.DEM(df.dem.2017.0)
+df.dem.2018 <- bruno.DEM(df.dem.2018.0)
+
+df.dem.2017 <- na.omit(df.dem.2017)
+
+str(df.dem.2015)
+head(df.dem.2018)
+
+### 2e. (GAS) ----
+
+
+
+
+
+
+##### KRAM DEN ICH NOCH NICHT WEGWERFEN WOLLTE; DER ABER SONST NERVT.. -----
+
+# Solar DE - KRAMS
 
 
 ## Damit nochmal nach NA etc. checken ## 
@@ -98,49 +182,17 @@ summary(df.wind.D)
 
 
 
-## SOLAR AT ----
+#Solar AT - alt krams# 
 df.solar.AT1 <- subset(df.ren.AT1, select = c("V1", "V7"))
 names(df.solar.AT1) <- c("TIME", "SOLAR MW AT")
 df.solar.AT1$`SOLAR MW AT` <- as.numeric(df.solar.AT1$`SOLAR MW AT`)
 df.solar.AT1$TIME <- dmy_hms(df.solar.AT1$TIME)
 
 
-head(df.ren.AT1)
-head(df.solar.AT1)
-str(row1)
-?rbind
-## UNITE --
 
-# same for wind
-## --------------------------- ## 
-
-### 2c. WIND ----
-# + add AT
-#df.wind <- subset(df.wind0, select = c("Datum","von","50Hertz (MW)", 
-#                                         "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)") )
-#df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
-#df.solar$TIME <- dmy_hms(df.solar$TIME)
+# DEM - Alt krams 
 
 
-### 2d. *DEMAND ----
-
-bruno.verarbei = function(x) {
-  y <- subset(x, select = c("Time..CET.", 
-                       "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
-  names(y) <- c("TIME", "DAY-AHEAD MW")
-  y <- separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
-  y <- subset(y, select = c("TIME","DAY-AHEAD MW"))
-  y$TIME <- dmy_hm(y$TIME)
-  y$`DAY-AHEAD MW` <- as.numeric(y$`DAY-AHEAD MW`)
-  return(y)
-}
-
-df.dem.2015 <- bruno.verarbei(df.dem.2015.0)
-df.dem.2016 <- bruno.verarbei(df.dem.2016.0)
-df.dem.2017 <- bruno.verarbei(df.dem.2017.0)
-df.dem.2018 <- bruno.verarbei(df.dem.2018.0)
-
-df.dem.2017 <- na.omit(df.dem.2017)
 
 ## TEST KRAMS 
 a <- bruno.verarbeitung(df.dem.2015.0)
@@ -156,9 +208,4 @@ df.dem.2015 <- subset(df.dem.2015, select = c("TIME","DAY-AHEAD MW"))
 df.dem.2015$TIME <- dmy_hm(df.dem.2015$TIME)
 df.dem.2015$`DAY-AHEAD MW` <- as.numeric(df.dem.2015$`DAY-AHEAD MW`)
 ## 
-
-str(df.dem.2015)
-head(df.dem.2018)
-
-### 2e. (GAS) ----
 
