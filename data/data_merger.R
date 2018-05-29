@@ -21,45 +21,40 @@
 #
 # ------------------------------
 
+# 0. PACKAGES AND ENVIRONMENT
+
 rm(list = ls())
 library(lubridate)
 library(tidyr)
 
+
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
-
 ### 1.a LOAD DATA  ----
-df.pun.0   = read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
-df.solar.D  = read.csv2("source/Solarenergie_DE.csv")
-df.wind.D   = read.csv2("source/Windenergie_DE.csv")
+df.pun.0   <-  read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
+df.solar.D <-  read.csv2("source/Solarenergie_DE.csv")
+df.wind.D  <-  read.csv2("source/Windenergie_DE.csv")
+df.ren.AT  <-  read.csv2("source/export_daftg_2011-01-01T00_00_00Z_2011-01-31T23_45_00Z_60M_de.csv")
 
-neuerv  = read.csv2("source/Solarenergie_DE.csv")
-head(neuerv)
-ind <- which(is.na(neuerv))
-neuerv[ind, ]
-na.omit(neuerv)
-
-
-df.dem.2015.0 = read.csv("source/Total Load - Day Ahead _ Actual_201501010000-201601010000.csv")
-df.dem.2016.0 = read.csv("source/Total Load - Day Ahead _ Actual_201601010000-201701010000.csv")
-df.dem.2017.0 = read.csv("source/Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
-df.dem.2018.0 = read.csv("source/Total Load - Day Ahead _ Actual_201801010000-201901010000.csv")
+df.dem.2015.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201501010000-201601010000.csv")
+df.dem.2016.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201601010000-201701010000.csv")
+df.dem.2017.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
+df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-201901010000.csv")
 
 # 1.b LOOK FOR NA'S
 
-
-
 # 2. PREPARE DATA FOR MERGE
 
+
+# 2. CLEAN ALL VARIABLES
 ### 2a. PUN ----
 df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
 colnames(df.pun) = c("TIME", "PUN")
 df.pun$TIME <- ymd_hm(df.pun$TIME)
 
 
-
-
 ### 2b. SOLAR ----
-# subset
+## SOLAR DE --
+# subset + add AT
 
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
                         "Amprion..MW.", "TenneT.TSO..MW.", "Transnet.BW..MW.") )
@@ -83,10 +78,25 @@ ind <- which(is.na(df.solar[df.solar$TIME > ymd("2015-01-01"), ]))
 df.solar[ind, ]
 summary(df.wind.D)
 
+
+
+
+neuerv  = read.csv2("source/Solarenergie_DE.csv")
+head(neuerv)
+ind <- which(is.na(neuerv))
+neuerv[ind, ]
+na.omit(neuerv)
+
+## SOLAR AT --
+
+
+## UNITE --
+
 # same for wind
 ## --------------------------- ## 
 
 ### 2c. WIND ----
+# + add AT
 #df.wind <- subset(df.wind0, select = c("Datum","von","50Hertz (MW)", 
 #                                         "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)") )
 #df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
@@ -94,6 +104,5 @@ summary(df.wind.D)
 
 
 ### 2d. DEMAND ----
-
-### 2be. (GAS) ----
+### 2e. (GAS) ----
 
