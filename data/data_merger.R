@@ -22,6 +22,7 @@
 
 # 0. PACKAGES AND ENVIRONMENT
 ### 0.a PACKAGES ----
+
 rm(list = ls())
 library(lubridate)
 library(tidyr)
@@ -166,9 +167,6 @@ df.dem.2016 <- bruno.DEM(df.dem.2016.0)
 df.dem.2017 <- bruno.DEM(df.dem.2017.0)
 df.dem.2018 <- bruno.DEM(df.dem.2018.0)
 
-#### Kann ich das hier machen???? ## unbedingt angucken! ##
-df.dm <- na.omit(df.dm)
-
 # bind 
 df.dm <- rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
 
@@ -177,11 +175,18 @@ df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`),
                   list("TIME" = cut(df.dm$TIME, "1 hour")), FUN = mean)
 names(df.dm) <- c("TIME", "DAY-AHEAD MW")
 df.dm$TIME <- ymd_hms(df.dm$TIME)
-
 # besser wäre hier evtl. : 
 # https://stackoverflow.com/questions/13915549/
 # average-in-time-series-based-on-time-and-date-in-r
 # muss ich nochmal checken, ob das nicht besser mit einem time series package ist..
+
+# Chek for NA
+summary(df.dm)
+ind <- which(is.na(df.dm$`DAY-AHEAD MW`))
+df.dm[(ind-5):(ind+5), ]
+# Darf man nicht machen, aber: Fülle den Value mit mean aus den umgebungen
+df.dm$`DAY-AHEAD MW`[ind] <- mean(df.dm$`DAY-AHEAD MW`[(ind-5):(ind+5)], 
+                                  na.rm = T)
 
 
 tail(df.dm)
