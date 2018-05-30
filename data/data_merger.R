@@ -28,6 +28,7 @@ library(lubridate)
 library(tidyr)
 library(stringr)
 
+# don't forget to include timezones!
 
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
 ### 1.a *LOAD DATA  ----
@@ -49,6 +50,7 @@ df.dem.2015.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201501010000-2
 df.dem.2016.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201601010000-201701010000.csv")
 df.dem.2017.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
 df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-201901010000.csv")
+
 
 # 1.b LOOK FOR NA'S
 
@@ -189,10 +191,22 @@ df.dm$`DAY-AHEAD MW`[ind] <- mean(df.dm$`DAY-AHEAD MW`[(ind-5):(ind+5)],
                                   na.rm = T)
 
 
+
+
+
+test <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
+                   list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
+names(test) <- c("TIME", "DAY-AHEAD MW")
+test$TIME <- ymd(test$TIME)
+
+plot(df.dm)
+plot(test)
+
 tail(df.dm)
-str(df.dm)
 summary(df.dm)
 str(df.dm)
+boxplot(df.dm$`DAY-AHEAD MW`)
+
 ### 2e. (GAS) ----
 
 
@@ -249,4 +263,21 @@ df.dem.2015 <- subset(df.dem.2015, select = c("TIME","DAY-AHEAD MW"))
 df.dem.2015$TIME <- dmy_hm(df.dem.2015$TIME)
 df.dem.2015$`DAY-AHEAD MW` <- as.numeric(df.dem.2015$`DAY-AHEAD MW`)
 ## 
+
+
+
+head(df.dem.2017.0)
+str(df.dem.2017)
+
+identical(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), 
+          df.dem.2017$`DAY-AHEAD MW`)
+
+
+
+
+test1 <- sapply(df.dem.2017$`DAY-AHEAD MW`, mean, na.rm = T)
+test2 <- sapply(df.dem.2016$`DAY-AHEAD MW`, mean, na.rm = T)
+
+mean(test1,na.rm =T)
+mean(test2,na.rm =T)
 
