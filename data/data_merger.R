@@ -275,11 +275,28 @@ identical(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.A
 
 
 
-## HUCH!!! ------
+## HUCH!!! Was ist mit Demand los? ------
 
+
+#test: habe ich die daten beim verarbeiten verändert?
 test1 <- sapply(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), mean, na.rm = T)
 test2 <- sapply(as.numeric(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), mean, na.rm = T)
 
 mean(test1,na.rm =T)
 mean(test2,na.rm =T)
+
+# >> ne liegt wohl an den anfangs Daten
+
+# neu daten runtergeladen um das zu prüfen
+test3 <- read.csv("source/test - Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
+
+
+identical(as.numeric(test3$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU))
+
+# >> ne werte sind gleich.. Großes Problem.
+# Aber time series wird ja eh in Jahre gesplittet oder??
+# dann könnte das ja funktionieren..
+
+
+
 
