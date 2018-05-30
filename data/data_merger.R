@@ -275,8 +275,10 @@ identical(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.A
 
 
 
-test1 <- sapply(df.dem.2017$`DAY-AHEAD MW`, mean, na.rm = T)
-test2 <- sapply(df.dem.2016$`DAY-AHEAD MW`, mean, na.rm = T)
+## HUCH!!! ------
+
+test1 <- sapply(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), mean, na.rm = T)
+test2 <- sapply(as.numeric(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), mean, na.rm = T)
 
 mean(test1,na.rm =T)
 mean(test2,na.rm =T)
