@@ -96,6 +96,17 @@ df.solar.AT6 <- bruno.atsolar(df.ren.AT6)
 df.solar.AT7 <- bruno.atsolar(df.ren.AT7)
 
 ## UNITE --
+# habe jetzt hier das problem, dass der letzte eintrag
+# vom ersten df == dem ersten des neuen df ist.
+# ich glaube ich hole die daten nochmal neu,
+#d dann spar ich mir unnötiges gecode, das albern aussieht.
+
+solar.at <- rbind(df.solar.AT1,df.solar.AT2,df.solar.AT3)
+solar.at[4365:4400, ]  # <- hier liegt das problem
+tail(df.solar.AT1)
+head(df.solar.AT2)
+
+
 
 ### 2c. *WIND DE----
 
@@ -155,16 +166,24 @@ df.dem.2016 <- bruno.DEM(df.dem.2016.0)
 df.dem.2017 <- bruno.DEM(df.dem.2017.0)
 df.dem.2018 <- bruno.DEM(df.dem.2018.0)
 
-df.dem.2017 <- na.omit(df.dem.2017)
+#### Kann ich das hier machen???? ## unbedingt angucken! ##
+df.dm <- na.omit(df.dm)
 
-str(df.dem.2015)
-head(df.dem.2018)
+# bind 
+df.dm <- rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
 
+#mean per hour
+df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
+                  list("TIME" = cut(df.dm$TIME, "1 hour")), FUN = mean)
+names(df.dm) <- c("TIME", "DAY-AHEAD MW")
+df.dm$TIME <- ymd_hms(df.dm$TIME)
+
+
+tail(df.dm)
+str(df.dm)
+summary(df.dm)
+str(df.dm)
 ### 2e. (GAS) ----
-
-
-
-
 
 
 
