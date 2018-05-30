@@ -95,20 +95,21 @@ df.solar$TIME <- ymd_hms(df.solar$TIME)
 
 names(df.solar)
 #durchschnitt pro stunde und durchschnitt der firmen
-mean.bruno <- function(x){
+mean.bruno <- function(x) {
   x1 <- x$`50Hertz (MW)`
   x2 <- x$`Amprion (MW)`
   x3 <- x$`TenneT TSO (MW)`
   x4 <- x$`Transnet BW (MW)`
    y <- (x1 + x2 + x3 + x4)
   return(y)
-   
 }
 
 mean.bruno(df.solar[41, 2:5])
-df.solar[40, 2:5]
-test <- sapply(df.solar[, 2:5], mean.bruno)
+df.solar[36:45, 2:5]
 
+test <- sapply(df.solar, mean.bruno)
+
+str(df.solar)
 
 
 tail(df.solar, n = 50)
