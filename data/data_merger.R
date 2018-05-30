@@ -79,6 +79,16 @@ ind.start <- which(df.solar$TIME == start.d)
 ind.stop <- which(df.solar$TIME == stop.d)
 df.solar <- df.solar[ind.start: ind.stop, ]
 
+df.solar <- aggregate(list(df.solar$`50Hertz (MW)`, df.solar$`Amprion (MW)`, 
+                           df.solar$`TenneT TSO (MW)`, df.solar$`Transnet BW (MW)`), 
+                   list("TIME" = cut(df.solar$TIME, "1 hour")), FUN = mean)
+names(df.solar) <- c("TIME", "50Hertz (MW)", "Amprion (MW)", "TenneT TSO (MW)", 
+                  "Transnet BW (MW)")
+
+df.solar$TIME <- ymd_hms(df.solar$TIME)
+
+head(df.solar)
+
 
 ### 2b. *SOLAR AT ----
 
@@ -200,13 +210,10 @@ names(test) <- c("TIME", "DAY-AHEAD MW")
 test$TIME <- ymd(test$TIME)
 
 plot(df.dm)
-plot(test)
 
 tail(df.dm)
 summary(df.dm)
 str(df.dm)
-boxplot(df.dm$`DAY-AHEAD MW`)
-
 ### 2e. (GAS) ----
 
 
@@ -299,4 +306,12 @@ identical(as.numeric(test3$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), a
 
 
 
+
+test <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
+                  list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
+names(test) <- c("TIME", "DAY-AHEAD MW")
+test$TIME <- ymd(test$TIME)
+
+
+plot(test)
 
