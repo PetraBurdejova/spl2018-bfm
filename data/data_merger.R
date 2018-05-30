@@ -95,14 +95,7 @@ df.solar.AT5 <- bruno.atsolar(df.ren.AT5)
 df.solar.AT6 <- bruno.atsolar(df.ren.AT6)
 df.solar.AT7 <- bruno.atsolar(df.ren.AT7)
 
-
-
-
-
 ## UNITE --
-
-# same for wind
-## --------------------------- ## 
 
 ### 2c. *WIND DE----
 
