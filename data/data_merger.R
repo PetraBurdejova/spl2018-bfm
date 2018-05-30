@@ -178,6 +178,11 @@ df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`),
 names(df.dm) <- c("TIME", "DAY-AHEAD MW")
 df.dm$TIME <- ymd_hms(df.dm$TIME)
 
+# besser wäre hier evtl. : 
+# https://stackoverflow.com/questions/13915549/
+# average-in-time-series-based-on-time-and-date-in-r
+# muss ich nochmal checken, ob das nicht besser mit einem time series package ist..
+
 
 tail(df.dm)
 str(df.dm)
