@@ -21,7 +21,7 @@
 #
 
 # 0. PACKAGES AND ENVIRONMENT
-### 0.a PACKAGES ----
+### 0.a PACKAGES    ----
 
 rm(list = ls())
 library(lubridate)
@@ -56,14 +56,16 @@ df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-2
 
 # 2. PREPARE DATA FOR MERGE
 # 2. CLEAN ALL VARIABLES
-### 2a. *PUN ----
+### 2a. *PUN        ----
 df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
 colnames(df.pun) = c("TIME", "PUN")
 df.pun$TIME <- ymd_hm(df.pun$TIME)
 
 str(df.pun)
 head(df.pun)
-### 2b. *SOLAR DE ----
+### 2b. *SOLAR DE   ----
+
+#subsetting and first cleaning
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
                         "Amprion..MW.", "TenneT.TSO..MW.", "Transnet.BW..MW.") )
 df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
@@ -71,6 +73,7 @@ names(df.solar) <- c("TIME", "50Hertz (MW)",
                      "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
 df.solar$TIME <- dmy_hm(df.solar$TIME)
 
+#abgrenzen der Zeiträume
 # ich muss noch lernen eleganter mit lubridate umzugehen
 # aber trotzdem hier von 2015-2018 normiert
 start.d <- ymd_hm("2015-01-01 00:00")
@@ -79,18 +82,37 @@ ind.start <- which(df.solar$TIME == start.d)
 ind.stop <- which(df.solar$TIME == stop.d)
 df.solar <- df.solar[ind.start: ind.stop, ]
 
-df.solar <- aggregate(list(df.solar$`50Hertz (MW)`, df.solar$`Amprion (MW)`, 
-                           df.solar$`TenneT TSO (MW)`, df.solar$`Transnet BW (MW)`), 
-                   list("TIME" = cut(df.solar$TIME, "1 hour")), FUN = mean)
+#durchschnitt pro stunde
+df.solar <- aggregate(list(df.solar$`50Hertz (MW)`, 
+                           df.solar$`Amprion (MW)`, df.solar$`TenneT TSO (MW)`, 
+                           df.solar$`Transnet BW (MW)`), 
+                      list("TIME" = cut(df.solar$TIME, "1 hour")), FUN = mean)
+
 names(df.solar) <- c("TIME", "50Hertz (MW)", "Amprion (MW)", "TenneT TSO (MW)", 
                   "Transnet BW (MW)")
 
 df.solar$TIME <- ymd_hms(df.solar$TIME)
 
-head(df.solar)
+names(df.solar)
+#durchschnitt pro stunde und durchschnitt der firmen
+mean.bruno <- function(x){
+  x1 <- x$`50Hertz (MW)`
+  x2 <- x$`Amprion (MW)`
+  x3 <- x$`TenneT TSO (MW)`
+  x4 <- x$`Transnet BW (MW)`
+   y <- (x1 + x2 + x3 + x4)
+  return(y)
+   
+}
+
+mean.bruno(df.solar[41, 2:5])
+df.solar[40, 2:5]
+test <- sapply(df.solar[, 2:5], mean.bruno)
 
 
-### 2b. *SOLAR AT ----
+
+tail(df.solar, n = 50)
+### 2b. *SOLAR AT   ----
 
 bruno.atsolar <- function(x){
     y <- subset(x, select = c("V1", "V7"))
@@ -121,7 +143,7 @@ head(df.solar.AT2)
 
 
 
-### 2c. *WIND DE----
+### 2c. *WIND DE    ----
 
 df.wind <- subset(df.wind.D, select = c("Datum","von","X50Hertz..MW.", 
                                         "Amprion..MW.", "TenneT.TSO..MW.", "TransnetBW") )
@@ -138,7 +160,7 @@ ind.stop <- which(df.wind$TIME == stop.d)
 df.wind <- df.wind[ind.start: ind.stop, ]
 
 
-### 2c. *WIND AT -----
+### 2c. *WIND AT    -----
 
 head(df.ren.AT1)
 
@@ -161,7 +183,7 @@ df.wind.AT7 <- bruno.atwind(df.ren.AT7)
 
 
 
-### 2d. *DEMAND ----
+### 2d. *DEMAND     ----
 
 bruno.DEM = function(x) {
   y <- subset(x, select = c("Time..CET.", 
@@ -214,7 +236,7 @@ plot(df.dm)
 tail(df.dm)
 summary(df.dm)
 str(df.dm)
-### 2e. (GAS) ----
+### 2e.  GAS        ----
 
 
 
