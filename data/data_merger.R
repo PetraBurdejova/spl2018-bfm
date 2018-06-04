@@ -21,7 +21,7 @@
 #
 
 # 0. PACKAGES AND ENVIRONMENT
-### 0.a PACKAGES    ----
+### 0. PACKAGES      ----
 
 rm(list = ls())
 library(lubridate)
@@ -31,7 +31,7 @@ library(stringr)
 # don't forget to include timezones!
 
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
-### 1.a *LOAD DATA  ----
+### 1. *LOAD DATA    ----
 df.pun.0   <-  read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
 df.solar.D <-  read.csv2("source/Solarenergie_DE.csv")
@@ -56,7 +56,7 @@ df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-2
 
 # 2. PREPARE DATA FOR MERGE
 # 2. CLEAN ALL VARIABLES
-### 2a. *PUN        ----
+### 2a. *PUN         ----
 df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
 colnames(df.pun) = c("TIME", "PUN")
 df.pun$TIME <- ymd_hm(df.pun$TIME)
@@ -64,7 +64,7 @@ df.pun$TIME <- ymd_hm(df.pun$TIME)
 str(df.pun)
 head(df.pun)
 
-### 2b. *SOLAR DE   ----
+### 2b.1 *SOLAR DE   ----
 
 #subsetting and first cleaning
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
@@ -129,7 +129,7 @@ plot(df.solar)
 summary(df.solar)
 
 tail(df.solar, n = 50)
-### 2b. *SOLAR AT   ----
+### 2b.2 *SOLAR AT   ----
 
 bruno.atsolar <- function(x){
     y <- subset(x, select = c("V1", "V7"))
@@ -168,7 +168,7 @@ str(df.solar.AT)
 plot(df.solar.AT)
 
 
-### 2c. *WIND DE    ----
+### 2c. *WIND DE     ----
 
 df.wind <- subset(df.wind.D, select = c("Datum","von","X50Hertz..MW.", 
                                         "Amprion..MW.", "TenneT.TSO..MW.", "TransnetBW") )
@@ -185,7 +185,7 @@ ind.stop <- which(df.wind$TIME == stop.d)
 df.wind <- df.wind[ind.start: ind.stop, ]
 
 
-### 2c. *WIND AT    -----
+### 2c. *WIND AT     -----
 
 head(df.ren.AT1)
 
@@ -211,7 +211,7 @@ df.wind.AT <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
 
 
 
-### 2d. *DEMAND     ----
+### 2d. *DEMAND      ----
 
 bruno.DEM = function(x) {
   y <- subset(x, select = c("Time..CET.", 
@@ -264,7 +264,7 @@ plot(df.dm)
 tail(df.dm)
 summary(df.dm)
 str(df.dm)
-### 2e.  GAS        ----
+### 2e.  GAS         ----
 
 
 
@@ -380,6 +380,7 @@ plot(test)
 
 
 # Bruno merkliste
-# - alle werte pro tag
+# - alle werte pro tag ausrechnen
 # - sonne und wind de noch die einzelnen betreiber zusammenfassen
 # - zusammenführen von allen daten
+# - 
