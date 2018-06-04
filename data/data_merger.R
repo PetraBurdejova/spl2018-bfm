@@ -97,6 +97,7 @@ df.solar$TIME <- ymd_hms(df.solar$TIME)
 names(df.solar)
 #durchschnitt pro stunde und durchschnitt der firmen
 
+
 # funktioniert nicht... :/ gucke ich später an
 mean.bruno <- function(x) {
   x1 <- x$`50Hertz (MW)`
@@ -107,6 +108,16 @@ mean.bruno <- function(x) {
   return(y)
 }
 
+
+# alternativer versuch
+
+mean.bruno <- vapply(df.solar[, 2:5], mean, FUN.VALUE = T)
+
+
+
+
+
+-
 mean.bruno(df.solar[41, 2:5])
 df.solar[36:45, 2:5]
 
@@ -115,8 +126,7 @@ test <- sapply(df.solar, mean.bruno)
 str(df.solar)
 
 plot(df.solar)
-
-
+summary(df.solar)
 
 tail(df.solar, n = 50)
 ### 2b. *SOLAR AT   ----
