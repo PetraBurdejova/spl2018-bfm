@@ -99,6 +99,8 @@ names(df.solar)
 
 
 # funktioniert nicht... :/ gucke ich später an
+# problem ist, dass er nicht über die verschiedenen rows laufen will mit sapply oder so..
+
 mean.bruno <- function(x) {
   x1 <- x$`50Hertz (MW)`
   x2 <- x$`Amprion (MW)`
@@ -109,9 +111,9 @@ mean.bruno <- function(x) {
 }
 
 
-# alternativer versuch
+# alternativer versuch - geht bestimmt auch einfacher oder??
 
-mean.bruno <- vapply(df.solar[, 2:5], mean, FUN.VALUE = T)
+sum.bruno <- sapply(df.solar[, -1], sum, FUN.VALUE = T)
 
 
 
