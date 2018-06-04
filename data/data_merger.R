@@ -37,13 +37,13 @@ df.pun.0   <-  read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70f
 df.solar.D <-  read.csv2("source/Solarenergie_DE.csv")
 df.wind.D  <-  read.csv2("source/Windenergie_DE.csv")
 
-df.ren.AT1  <-  read.csv2("source/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-07-01T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT2  <-  read.csv2("source/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2016-01-01T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT3  <-  read.csv2("source/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-07-01T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT4  <-  read.csv2("source/AT - renewables/export_daftg_2016-07-01T00_00_00Z_2017-01-01T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT5  <-  read.csv2("source/AT - renewables/export_daftg_2017-01-01T00_00_00Z_2017-07-01T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT6  <-  read.csv2("source/AT - renewables/export_daftg_2017-07-01T00_00_00Z_2018-01-01T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT7  <-  read.csv2("source/AT - renewables/export_daftg_2018-01-01T00_00_00Z_2018-05-25T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT1  <-  read.csv2("source/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-06-30T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT2  <-  read.csv2("source/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2015-12-31T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT3  <-  read.csv2("source/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-06-30T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT4  <-  read.csv2("source/AT - renewables/export_daftg_2016-07-01T00_00_00Z_2016-12-31T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT5  <-  read.csv2("source/AT - renewables/export_daftg_2017-01-01T00_00_00Z_2017-06-30T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT6  <-  read.csv2("source/AT - renewables/export_daftg_2017-07-01T00_00_00Z_2017-12-31T23_45_00Z_60M_de.csv", header = F)
+df.ren.AT7  <-  read.csv2("source/AT - renewables/export_daftg_2018-01-01T00_00_00Z_2018-06-04T23_45_00Z_60M_de.csv", header = F)
 
 
 df.dem.2015.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201501010000-201601010000.csv")
@@ -142,7 +142,12 @@ solar.at[4365:4400, ]  # <- hier liegt das problem
 tail(df.solar.AT1)
 head(df.solar.AT2)
 
+# geschafft.. jetzt rbind und dann läuft
 
+df.solar.AT <- rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4,
+                      df.solar.AT5,df.solar.AT6,df.solar.AT7)
+
+# finished
 
 ### 2c. *WIND DE    ----
 
