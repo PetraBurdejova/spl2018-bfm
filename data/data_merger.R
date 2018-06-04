@@ -63,6 +63,7 @@ df.pun$TIME <- ymd_hm(df.pun$TIME)
 
 str(df.pun)
 head(df.pun)
+
 ### 2b. *SOLAR DE   ----
 
 #subsetting and first cleaning
@@ -95,6 +96,8 @@ df.solar$TIME <- ymd_hms(df.solar$TIME)
 
 names(df.solar)
 #durchschnitt pro stunde und durchschnitt der firmen
+
+# funktioniert nicht... :/ gucke ich später an
 mean.bruno <- function(x) {
   x1 <- x$`50Hertz (MW)`
   x2 <- x$`Amprion (MW)`
@@ -110,6 +113,9 @@ df.solar[36:45, 2:5]
 test <- sapply(df.solar, mean.bruno)
 
 str(df.solar)
+
+plot(df.solar)
+
 
 
 tail(df.solar, n = 50)
@@ -148,6 +154,9 @@ df.solar.AT <- rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4,
                       df.solar.AT5,df.solar.AT6,df.solar.AT7)
 
 # finished
+str(df.solar.AT)
+plot(df.solar.AT)
+
 
 ### 2c. *WIND DE    ----
 
@@ -186,6 +195,9 @@ df.wind.AT5 <- bruno.atwind(df.ren.AT5)
 df.wind.AT6 <- bruno.atwind(df.ren.AT6)
 df.wind.AT7 <- bruno.atwind(df.ren.AT7)
 
+
+df.wind.AT <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
+                    df.wind.AT5,df.wind.AT6,df.wind.AT7)
 
 
 
@@ -247,6 +259,15 @@ str(df.dm)
 
 
 
+
+
+
+
+
+
+### 3.  FINAL DATAFRAME        ----
+
+df <- rbind()
 
 
 
@@ -343,3 +364,12 @@ test$TIME <- ymd(test$TIME)
 
 plot(test)
 
+
+
+
+
+
+# Bruno merkliste
+# - alle werte pro tag
+# - sonne und wind de noch die einzelnen betreiber zusammenfassen
+# - zusammenführen von allen daten
