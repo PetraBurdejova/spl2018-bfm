@@ -385,4 +385,4 @@ plot(test)
 # - alle werte pro tag ausrechnen
 # - sonne und wind de noch die einzelnen betreiber zusammenfassen
 # - zusammenführen von allen daten
-# - 
+# - time zones!
