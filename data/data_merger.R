@@ -221,7 +221,7 @@ df.wind.AT <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
 
 ### 2d. *DEMAND      ----
 
-# Write a function to select the important data
+# Write a function to select the important data/ variables
 select.DEM = function(x) {
   # Selects the important variables for the demand data
   # Also checks if variable is factor or not
@@ -249,20 +249,34 @@ select.DEM = function(x) {
   
 }
 
-# Select important data
+
+# Select important data/ variables 
 df.dem.2015 <- select.DEM(df.dem.2015.0)
 df.dem.2016 <- select.DEM(df.dem.2016.0)
 df.dem.2017 <- select.DEM(df.dem.2017.0)
 df.dem.2018 <- select.DEM(df.dem.2018.0)
 
 
+######### Testing space -----
 test <- select.DEM(df.dem.2018.0)
 FindMissingValues(df.dem.2018.0, verbose = T)
 FindMissingValues(test, verbose = T)
 
 
-# Bind the different dataframes together
+######
+
+
+# Bind the dataframes together
 df.dm <- rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
+
+
+# Choose time frame to analyze
+start.d <- ymd_hm("2015-01-01 00:00")
+stop.d <- ymd_hm("2017-12-31 23:00")
+ind.start <- which(df.dm$TIME == start.d)
+ind.stop <- which(df.dm$TIME == stop.d)
+ind <- (ind.start: ind.stop)
+df.dm <- df.dm[ind, ]
 
 
 # Checking for NAs
@@ -306,9 +320,14 @@ FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
   }
   
 }
+ind <- FindMissingValues(df.dm$`DAY-AHEAD MW`, verbose = F, days = F)
 
-indi <- FindMissingValues(df.dm, verbose = T)
+df.dm[ind, ]
 
+
+# Removing said NAs
+df.dm$`DAY-AHEAD MW`[ind] <- mean(df.dm$`DAY-AHEAD MW`[(ind-5):(ind+5)], 
+                                  na.rm = T)
 
 
 # Calculate the mean MW per hour/ day
@@ -336,7 +355,6 @@ ind <- which(is.na(df.dm$`DAY-AHEAD MW`))
 # Darf man nicht machen, aber: Fülle den Value mit mean aus den umgebungen
 df.dm$`DAY-AHEAD MW`[ind] <- mean(df.dm$`DAY-AHEAD MW`[(ind-5):(ind+5)], 
                                   na.rm = T)
-
 
 
 plot(df.dm)
