@@ -31,7 +31,7 @@ library(stringr)
 # don't forget to include timezones!
 
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
-### 1. *LOAD DATA    ----
+### 1. LOAD DATA    ----
 df.pun.0   <-  read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
 df.solar.D <-  read.csv2("source/Solarenergie_DE.csv")
@@ -56,20 +56,24 @@ df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-2
 
 # 2. PREPARE DATA FOR MERGE
 # 2. CLEAN ALL VARIABLES
-### 2a. *PUN         ----
+### 2a. PUN         ----
+
+# create dataframe from loaded data
 df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
+
+# adding col names and POSIXct - time 
 colnames(df.pun) = c("TIME", "PUN")
 df.pun$TIME <- ymd_hm(df.pun$TIME)
 
-str(df.pun)
-head(df.pun)
 
 ### 2b.1 *SOLAR DE   ----
 
-#subsetting and first cleaning
+# create dataframe from loaded data
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
                         "Amprion..MW.", "TenneT.TSO..MW.", "Transnet.BW..MW.") )
 df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
+
+# adding col names and POSIXct - time 
 names(df.solar) <- c("TIME", "50Hertz (MW)", 
                      "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
 df.solar$TIME <- dmy_hm(df.solar$TIME)
@@ -215,36 +219,47 @@ df.wind.AT <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
 
 ### 2d. *DEMAND      ----
 
-bruno.DEM = function(x) {
+# Write function to select important data
+select.DEM = function(x) {
+  # Selects the important variables for the demand data
+  #
+  # Args:
+  #   x: Imported raw dataframe
+  #
+  # Returns:
+  #   y: Corrected demand dataframe
   y <- subset(x, select = c("Time..CET.", 
                        "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
   names(y) <- c("TIME", "DAY-AHEAD MW")
   y <- separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
   y <- subset(y, select = c("TIME","DAY-AHEAD MW"))
   y$TIME <- dmy_hm(y$TIME)
-  y$`DAY-AHEAD MW` <- as.numeric(y$`DAY-AHEAD MW`)
+  y$`DAY-AHEAD MW` <- as.numeric(as.character(y$`DAY-AHEAD MW`))
   return(y)
 }
 
-df.dem.2015 <- bruno.DEM(df.dem.2015.0)
-df.dem.2016 <- bruno.DEM(df.dem.2016.0)
-df.dem.2017 <- bruno.DEM(df.dem.2017.0)
-df.dem.2018 <- bruno.DEM(df.dem.2018.0)
+# Select important data
+df.dem.2015 <- select.DEM(df.dem.2015.0)
+df.dem.2016 <- select.DEM(df.dem.2016.0)
+df.dem.2017 <- select.DEM(df.dem.2017.0)
+df.dem.2018 <- select.DEM(df.dem.2018.0)
 
-# bind 
+
+# Bind the different dataframes together
 df.dm <- rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
 
-#mean per hour
+# Calculate the mean MW per hour/ day
 df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
-                  list("TIME" = cut(df.dm$TIME, "1 hour")), FUN = mean)
+                  list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
 names(df.dm) <- c("TIME", "DAY-AHEAD MW")
 df.dm$TIME <- ymd_hms(df.dm$TIME)
+
 # besser wäre hier evtl. : 
 # https://stackoverflow.com/questions/13915549/
 # average-in-time-series-based-on-time-and-date-in-r
 # muss ich nochmal checken, ob das nicht besser mit einem time series package ist..
 
-# Chek for NA
+# Checking for NAs and removing them
 summary(df.dm)
 ind <- which(is.na(df.dm$`DAY-AHEAD MW`))
 df.dm[(ind-5):(ind+5), ]
@@ -261,7 +276,7 @@ test <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`),
 names(test) <- c("TIME", "DAY-AHEAD MW")
 test$TIME <- ymd(test$TIME)
 
-plot(df.dm)
+plot(test)
 
 tail(df.dm)
 summary(df.dm)
@@ -352,6 +367,20 @@ test2 <- sapply(as.numeric(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZ
 
 mean(test1,na.rm =T)
 mean(test2,na.rm =T)
+
+
+str(df.dem.2017.0)
+summary(as.numeric(as.character(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU)))
+sum
+
+
+as.numeric(levels(f))[f] 
+
+head(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU)
+
+head(as.numeric(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU))
+
+head(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU))
 
 # >> ne liegt wohl an den anfangs Daten
 
