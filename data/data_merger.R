@@ -31,7 +31,7 @@ library(stringr)
 # don't forget to include timezones!
 
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
-### 1. LOAD DATA    ----
+### 1. LOAD DATA     ----
 df.pun.0   <-  read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
 df.solar.D <-  read.csv2("source/Solarenergie_DE.csv")
@@ -54,9 +54,11 @@ df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-2
 
 # 1.b LOOK FOR NA'S
 
+
+ 
 # 2. PREPARE DATA FOR MERGE
 # 2. CLEAN ALL VARIABLES
-### 2a. PUN         ----
+### 2a. PUN          ----
 
 # create dataframe from loaded data
 df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
@@ -219,10 +221,10 @@ df.wind.AT <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
 
 ### 2d. *DEMAND      ----
 
-# Write function to select important data
+# Write a function to select the important data
 select.DEM = function(x) {
   # Selects the important variables for the demand data
-  #
+  # Also checks if variable is factor or not
   # Args:
   #   x: Imported raw dataframe
   #
@@ -230,12 +232,21 @@ select.DEM = function(x) {
   #   y: Corrected demand dataframe
   y <- subset(x, select = c("Time..CET.", 
                        "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
+  
   names(y) <- c("TIME", "DAY-AHEAD MW")
   y <- separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
   y <- subset(y, select = c("TIME","DAY-AHEAD MW"))
   y$TIME <- dmy_hm(y$TIME)
-  y$`DAY-AHEAD MW` <- as.numeric(as.character(y$`DAY-AHEAD MW`))
-  return(y)
+  
+  if (class(y$`DAY-AHEAD MW` ) == "factor") {
+    y$`DAY-AHEAD MW` <- as.numeric(levels(y$`DAY-AHEAD MW`))[y$`DAY-AHEAD MW`]
+    return(y)
+    
+  } else {
+    y$`DAY-AHEAD MW` <- as.numeric(y$`DAY-AHEAD MW`)
+    return(y)
+  }
+  
 }
 
 # Select important data
@@ -245,38 +256,90 @@ df.dem.2017 <- select.DEM(df.dem.2017.0)
 df.dem.2018 <- select.DEM(df.dem.2018.0)
 
 
+test <- select.DEM(df.dem.2018.0)
+FindMissingValues(df.dem.2018.0, verbose = T)
+FindMissingValues(test, verbose = T)
+
+
 # Bind the different dataframes together
 df.dm <- rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
+
+
+# Checking for NAs
+FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
+  # Checks for NA values in dataframe and prints information. Returns a list of
+  # indices of the NA entries in dataframe.
+  #
+  # Args:
+  #   df: The dataframe that will be checked for missing values.
+  #   verbose: If TRUE, prints information on the missing values such as num-
+  #            ber and percentage of missing values, as well as number of days
+  #            affected.
+  #   days: If TRUE, returns a list of days with at least one missing value.
+  #
+  # Returns:
+  #   A list of indices that correspond to the possiton of missing values in df.
+  
+  indices <- which(is.na.data.frame(df))
+  
+  if (verbose == TRUE) {
+    
+    name <- deparse(substitute(df))  # get name of dataframe
+    no.na <- length(indices)  # number of na in df
+    entries <- nrow(df)  # number of values in df
+    
+    print(sprintf("Checking for missing values in dataframe '%s'.", name))
+    print(sprintf("%.0f of %.0f (%.3f%%) values are NA.",
+                  no.na, entries, no.na/entries))
+    
+  }
+  
+  if (days == TRUE) {
+    
+    naDays <- 0
+    return(naDays)
+    
+  } else {
+    
+    return(indices)
+    
+  }
+  
+}
+
+indi <- FindMissingValues(df.dm, verbose = T)
+
+
 
 # Calculate the mean MW per hour/ day
 df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
                   list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
-names(df.dm) <- c("TIME", "DAY-AHEAD MW")
-df.dm$TIME <- ymd_hms(df.dm$TIME)
 
 # besser wäre hier evtl. : 
 # https://stackoverflow.com/questions/13915549/
 # average-in-time-series-based-on-time-and-date-in-r
 # muss ich nochmal checken, ob das nicht besser mit einem time series package ist..
 
-# Checking for NAs and removing them
-summary(df.dm)
+
+# Adding names and POSIXct Time 
+names(df.dm) <- c("TIME", "DAY-AHEAD MW")
+df.dm$TIME <- ymd(df.dm$TIME)
+
+
+# Checking which indices are NAs
 ind <- which(is.na(df.dm$`DAY-AHEAD MW`))
-df.dm[(ind-5):(ind+5), ]
+
+
+
+
+
 # Darf man nicht machen, aber: Fülle den Value mit mean aus den umgebungen
 df.dm$`DAY-AHEAD MW`[ind] <- mean(df.dm$`DAY-AHEAD MW`[(ind-5):(ind+5)], 
                                   na.rm = T)
 
 
 
-
-
-test <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
-                   list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
-names(test) <- c("TIME", "DAY-AHEAD MW")
-test$TIME <- ymd(test$TIME)
-
-plot(test)
+plot(df.dm)
 
 tail(df.dm)
 summary(df.dm)
