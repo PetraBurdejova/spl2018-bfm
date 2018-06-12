@@ -63,72 +63,61 @@ df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-2
 # Select important data/ variables 
 df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
 
+
 # Adding names and POSIXct Time 
 colnames(df.pun) = c("TIME", "PUN")
 df.pun$TIME <- ymd_hm(df.pun$TIME)
 
+
+# Choose time-frame to analyze 
+start.d <- ymd_hm("2015-01-01 00:00")
+stop.d <- ymd_hm("2017-12-31 23:00")
+ind.start <- which(df.pun$TIME == start.d)
+ind.stop <- which(df.pun$TIME == stop.d)
+ind <- (ind.start: ind.stop)
+df.pun <- df.pun[ind, ]
+## Comment: This is a stupid way to do it. do you know a better way? ## 
+
 ### 2b.1  SOLAR DE   ----
 
-# create dataframe from loaded data
+# Select important data/ variables 
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
                         "Amprion..MW.", "TenneT.TSO..MW.", "Transnet.BW..MW.") )
 df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
 
-# adding col names and POSIXct - time 
+# Adding names and POSIXct Time 
 names(df.solar) <- c("TIME", "50Hertz (MW)", 
                      "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
 df.solar$TIME <- dmy_hm(df.solar$TIME)
 
-#abgrenzen der Zeiträume
-# ich muss noch lernen eleganter mit lubridate umzugehen
-# aber trotzdem hier von 2015-2018 normiert
+
+# Choose time-frame to analyze 
 start.d <- ymd_hm("2015-01-01 00:00")
 stop.d <- ymd_hm("2017-12-31 23:00")
 ind.start <- which(df.solar$TIME == start.d)
 ind.stop <- which(df.solar$TIME == stop.d)
-df.solar <- df.solar[ind.start: ind.stop, ]
+ind <- (ind.start: ind.stop)
+df.solar <- df.solar[ind, ]
+## Comment: This is a stupid way to do it. do you know a better way? ## 
 
-#durchschnitt pro stunde
+
+# Daily Average of MW produced per Firm
 df.solar <- aggregate(list(df.solar$`50Hertz (MW)`, 
                            df.solar$`Amprion (MW)`, df.solar$`TenneT TSO (MW)`, 
                            df.solar$`Transnet BW (MW)`), 
-                      list("TIME" = cut(df.solar$TIME, "1 hour")), FUN = mean)
+                      list("TIME" = cut(df.solar$TIME, "day")), FUN = mean)
 
+
+# Adding names and POSIXct Time 
 names(df.solar) <- c("TIME", "50Hertz (MW)", "Amprion (MW)", "TenneT TSO (MW)", 
                   "Transnet BW (MW)")
-
-df.solar$TIME <- ymd_hms(df.solar$TIME)
-
-names(df.solar)
-#durchschnitt pro stunde und durchschnitt der firmen
+df.solar$TIME <- ymd(df.solar$TIME)
 
 
-# funktioniert nicht... :/ gucke ich später an
-# problem ist, dass er nicht über die verschiedenen rows laufen will mit sapply oder so..
-
-mean.bruno <- function(x) {
-  x1 <- x$`50Hertz (MW)`
-  x2 <- x$`Amprion (MW)`
-  x3 <- x$`TenneT TSO (MW)`
-  x4 <- x$`Transnet BW (MW)`
-   y <- (x1 + x2 + x3 + x4)
-  return(y)
-}
+# Sum of the MW per Day produced by the different Firms
+df.solar <- rbind(df.solar$TIME, rowSums(df.solar[ ,-1]))
 
 
-# alternativer versuch - geht bestimmt auch einfacher oder??
-
-sum.bruno <- sapply(df.solar[, -1], sum, FUN.VALUE = T)
-
-
-
-
-
--
-mean.bruno(df.solar[41, 2:5])
-df.solar[36:45, 2:5]
-
-test <- sapply(df.solar, mean.bruno)
 
 str(df.solar)
 
@@ -405,31 +394,6 @@ df <- rbind()
 # Solar DE - KRAMS
 
 
-## Damit nochmal nach NA etc. checken ## 
-str(df.solar)
-names(df.solar)
-head(df.solar)
-summary(df.solar)
-ind <- which(is.na(df.solar))
-df.solar[ind, ]
-class(df.solar$TIME)
-head(ind, n=100)
-
-ind <- which(is.na(df.solar[df.solar$TIME > ymd("2015-01-01"), ]))
-df.solar[ind, ]
-summary(df.wind.D)
-
-
-
-#Solar AT - alt krams# 
-df.solar.AT1 <- subset(df.ren.AT1, select = c("V1", "V7"))
-names(df.solar.AT1) <- c("TIME", "SOLAR MW AT")
-df.solar.AT1$`SOLAR MW AT` <- as.numeric(df.solar.AT1$`SOLAR MW AT`)
-df.solar.AT1$TIME <- dmy_hms(df.solar.AT1$TIME)
-
-
-
-# DEM - Alt krams 
 
 
 
