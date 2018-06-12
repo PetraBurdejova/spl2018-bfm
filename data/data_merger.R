@@ -78,7 +78,7 @@ ind <- (ind.start: ind.stop)
 df.pun <- df.pun[ind, ]
 ## Comment: This is a stupid way to do it. do you know a better way? ## 
 
-### 2b.1  SOLAR DE   ----
+### 2b.1  SOLAR DE  ("fertig") ----
 
 # Select important data/ variables 
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
@@ -115,15 +115,13 @@ df.solar$TIME <- ymd(df.solar$TIME)
 
 
 # Sum of the MW per Day produced by the different Firms
-df.solar <- rbind(df.solar$TIME, rowSums(df.solar[ ,-1]))
-
+MW.per.Day <- rowSums(df.solar[ ,-1])
+df.solar <- data.frame(df.solar$TIME, MW.per.Day)
 
 
 str(df.solar)
-
 plot(df.solar)
 summary(df.solar)
-
 tail(df.solar, n = 50)
 ### 2b.2 SOLAR AT  ("fertig") ----
 
