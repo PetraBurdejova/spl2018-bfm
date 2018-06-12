@@ -270,14 +270,14 @@ FindMissingValues(test, verbose = T)
 df.dm <- rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
 
 
-# Choose time frame to analyze
+# Choose time frame to analyze 
 start.d <- ymd_hm("2015-01-01 00:00")
 stop.d <- ymd_hm("2017-12-31 23:00")
 ind.start <- which(df.dm$TIME == start.d)
 ind.stop <- which(df.dm$TIME == stop.d)
 ind <- (ind.start: ind.stop)
 df.dm <- df.dm[ind, ]
-
+## Comment: This is a stupid way to do it. do you know a better way? ## 
 
 # Checking for NAs
 FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
@@ -320,19 +320,24 @@ FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
   }
   
 }
+
 ind <- FindMissingValues(df.dm$`DAY-AHEAD MW`, verbose = F, days = F)
 
 df.dm[ind, ]
 
 
 # Removing said NAs
-df.dm$`DAY-AHEAD MW`[ind] <- mean(df.dm$`DAY-AHEAD MW`[(ind-5):(ind+5)], 
+for (i in ind) {
+df.dm$`DAY-AHEAD MW`[i] <- mean(df.dm$`DAY-AHEAD MW`[(i-5):(i+5)], 
                                   na.rm = T)
+}
+## Comment: Statistisch gesehen böse, aber klappt. was meint ihr? ## 
 
 
 # Calculate the mean MW per hour/ day
 df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
                   list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
+
 
 # besser wäre hier evtl. : 
 # https://stackoverflow.com/questions/13915549/
@@ -344,24 +349,11 @@ df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`),
 names(df.dm) <- c("TIME", "DAY-AHEAD MW")
 df.dm$TIME <- ymd(df.dm$TIME)
 
-
-# Checking which indices are NAs
-ind <- which(is.na(df.dm$`DAY-AHEAD MW`))
-
-
-
-
-
-# Darf man nicht machen, aber: Fülle den Value mit mean aus den umgebungen
-df.dm$`DAY-AHEAD MW`[ind] <- mean(df.dm$`DAY-AHEAD MW`[(ind-5):(ind+5)], 
-                                  na.rm = T)
-
-
-plot(df.dm)
-
-tail(df.dm)
 summary(df.dm)
 str(df.dm)
+head(df.dm)
+tail(df.dm)
+plot(df.dm)
 ### 2e.  GAS         ----
 
 
