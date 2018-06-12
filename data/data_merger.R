@@ -58,17 +58,16 @@ df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-2
  
 # 2. PREPARE DATA FOR MERGE
 # 2. CLEAN ALL VARIABLES
-### 2a. PUN          ----
+### 2a. PUN       ("fertig")   ----
 
-# create dataframe from loaded data
+# Select important data/ variables 
 df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
 
-# adding col names and POSIXct - time 
+# Adding names and POSIXct Time 
 colnames(df.pun) = c("TIME", "PUN")
 df.pun$TIME <- ymd_hm(df.pun$TIME)
 
-
-### 2b.1 *SOLAR DE   ----
+### 2b.1  SOLAR DE   ----
 
 # create dataframe from loaded data
 df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.", 
@@ -137,9 +136,17 @@ plot(df.solar)
 summary(df.solar)
 
 tail(df.solar, n = 50)
-### 2b.2 *SOLAR AT   ----
+### 2b.2 SOLAR AT  ("fertig") ----
 
-bruno.atsolar <- function(x){
+# Write a function to select the important data/ variables
+select.ATSOLAR <- function(x){
+    # Selects the important variables for the ren.AT data
+    #
+    # Args:
+    #   x: Imported raw dataframe
+    #
+    # Returns:
+    #   y: Corrected solar.AT dataframe
     y <- subset(x, select = c("V1", "V7"))
     names(y) <- c("TIME", "SOLAR MW AT")
     y$`SOLAR MW AT` <- as.numeric(y$`SOLAR MW AT`)
@@ -147,36 +154,47 @@ bruno.atsolar <- function(x){
     return(y)
 }
 
-df.solar.AT1 <- bruno.atsolar(df.ren.AT1)
-df.solar.AT2 <- bruno.atsolar(df.ren.AT2)
-df.solar.AT3 <- bruno.atsolar(df.ren.AT3)
-df.solar.AT4 <- bruno.atsolar(df.ren.AT4)
-df.solar.AT5 <- bruno.atsolar(df.ren.AT5)
-df.solar.AT6 <- bruno.atsolar(df.ren.AT6)
-df.solar.AT7 <- bruno.atsolar(df.ren.AT7)
 
-## UNITE --
-# habe jetzt hier das problem, dass der letzte eintrag
-# vom ersten df == dem ersten des neuen df ist.
-# ich glaube ich hole die daten nochmal neu,
-#d dann spar ich mir unnötiges gecode, das albern aussieht.
+# Select important data/ variables 
+df.solar.AT1 <- select.ATSOLAR(df.ren.AT1)
+df.solar.AT2 <- select.ATSOLAR(df.ren.AT2)
+df.solar.AT3 <- select.ATSOLAR(df.ren.AT3)
+df.solar.AT4 <- select.ATSOLAR(df.ren.AT4)
+df.solar.AT5 <- select.ATSOLAR(df.ren.AT5)
+df.solar.AT6 <- select.ATSOLAR(df.ren.AT6)
+df.solar.AT7 <- select.ATSOLAR(df.ren.AT7)
 
-solar.at <- rbind(df.solar.AT1,df.solar.AT2,df.solar.AT3)
-solar.at[4365:4400, ]  # <- hier liegt das problem
-tail(df.solar.AT1)
-head(df.solar.AT2)
-
-# geschafft.. jetzt rbind und dann läuft
-
+# Bind the dataframes together
 df.solar.AT <- rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4,
                       df.solar.AT5,df.solar.AT6,df.solar.AT7)
 
-# finished
+
+# Choose time-frame to analyze 
+start.d <- ymd_hm("2015-01-01 00:00")
+stop.d <- ymd_hm("2017-12-31 23:00")
+ind.start <- which(df.solar.AT$TIME == start.d)
+ind.stop <- which(df.solar.AT$TIME == stop.d)
+ind <- (ind.start: ind.stop)
+df.solar.AT <- df.solar.AT[ind, ]
+## Comment: This is a stupid way to do it. do you know a better way? ## 
+
+
+# Calculate the mean MW per hour/ day
+df.solar.AT <- aggregate(list("SOLAR MW AT" = df.solar.AT$`SOLAR MW AT`), 
+                        list("TIME" = cut(df.solar.AT$TIME, "1 day")), FUN = mean)
+
+
+# Adding names and POSIXct Time 
+names(df.solar.AT) <- c("TIME", "SOLAR MW AT")
+df.solar.AT$TIME <- ymd(df.solar.AT$TIME)
+
+
+summary(df.solar.AT)
 str(df.solar.AT)
+head(df.solar.AT)
+tail(df.solar.AT)
 plot(df.solar.AT)
-
-
-### 2c. *WIND DE     ----
+### 2c. WIND DE     ----
 
 df.wind <- subset(df.wind.D, select = c("Datum","von","X50Hertz..MW.", 
                                         "Amprion..MW.", "TenneT.TSO..MW.", "TransnetBW") )
@@ -193,11 +211,17 @@ ind.stop <- which(df.wind$TIME == stop.d)
 df.wind <- df.wind[ind.start: ind.stop, ]
 
 
-### 2c. *WIND AT     -----
+### 2c. WIND AT  ("fertig")   -----
 
-head(df.ren.AT1)
-
+# Write a function to select the important data/ variables
 bruno.atwind <- function(x){
+  # Selects the important variables for the ren.AT data
+  #
+  # Args:
+  #   x: Imported raw dataframe
+  #
+  # Returns:
+  #   y: Corrected wind.AT dataframe
   y <- subset(x, select = c("V1", "V5"))
   names(y) <- c("TIME", "WIND MW AT")
   y$`WIND MW AT` <- as.numeric(y$`WIND MW AT`)
@@ -205,6 +229,8 @@ bruno.atwind <- function(x){
   return(y)
 }
 
+
+# Select important data/ variables 
 df.wind.AT1 <- bruno.atwind(df.ren.AT1)
 df.wind.AT2 <- bruno.atwind(df.ren.AT2)
 df.wind.AT3 <- bruno.atwind(df.ren.AT3)
@@ -214,12 +240,37 @@ df.wind.AT6 <- bruno.atwind(df.ren.AT6)
 df.wind.AT7 <- bruno.atwind(df.ren.AT7)
 
 
+# Bind the dataframes together
 df.wind.AT <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
                     df.wind.AT5,df.wind.AT6,df.wind.AT7)
 
 
+# Choose time-frame to analyze 
+start.d <- ymd_hm("2015-01-01 00:00")
+stop.d <- ymd_hm("2017-12-31 23:00")
+ind.start <- which(df.wind.AT$TIME == start.d)
+ind.stop <- which(df.wind.AT$TIME == stop.d)
+ind <- (ind.start: ind.stop)
+df.wind.AT <- df.wind.AT[ind, ]
+## Comment: This is a stupid way to do it. do you know a better way? ## 
 
-### 2d. *DEMAND      ----
+
+# Calculate the mean MW per hour/ day
+df.wind.AT <- aggregate(list("WIND MW AT" = df.wind.AT$`WIND MW AT`), 
+                   list("TIME" = cut(df.wind.AT$TIME, "1 day")), FUN = mean)
+
+
+# Adding names and POSIXct Time 
+names(df.wind.AT) <- c("TIME", "WIND MW AT")
+df.wind.AT$TIME <- ymd(df.wind.AT$TIME)
+
+
+summary(df.wind.AT)
+str(df.wind.AT)
+head(df.wind.AT)
+tail(df.wind.AT)
+plot(df.wind.AT)
+### 2d. DEMAND    ("fertig")  ----
 
 # Write a function to select the important data/ variables
 select.DEM = function(x) {
@@ -255,15 +306,6 @@ df.dem.2015 <- select.DEM(df.dem.2015.0)
 df.dem.2016 <- select.DEM(df.dem.2016.0)
 df.dem.2017 <- select.DEM(df.dem.2017.0)
 df.dem.2018 <- select.DEM(df.dem.2018.0)
-
-
-######### Testing space -----
-test <- select.DEM(df.dem.2018.0)
-FindMissingValues(df.dem.2018.0, verbose = T)
-FindMissingValues(test, verbose = T)
-
-
-######
 
 
 # Bind the dataframes together
@@ -320,11 +362,7 @@ FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
   }
   
 }
-
 ind <- FindMissingValues(df.dm$`DAY-AHEAD MW`, verbose = F, days = F)
-
-df.dm[ind, ]
-
 
 # Removing said NAs
 for (i in ind) {
@@ -337,8 +375,7 @@ df.dm$`DAY-AHEAD MW`[i] <- mean(df.dm$`DAY-AHEAD MW`[(i-5):(i+5)],
 # Calculate the mean MW per hour/ day
 df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
                   list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
-
-
+## Comment: 
 # besser wäre hier evtl. : 
 # https://stackoverflow.com/questions/13915549/
 # average-in-time-series-based-on-time-and-date-in-r
@@ -354,15 +391,6 @@ str(df.dm)
 head(df.dm)
 tail(df.dm)
 plot(df.dm)
-### 2e.  GAS         ----
-
-
-
-
-
-
-
-
 
 
 ### 3.  FINAL DATAFRAME        ----
