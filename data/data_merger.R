@@ -28,10 +28,11 @@ library(lubridate)
 library(tidyr)
 library(stringr)
 
-# don't forget to include timezones!
 
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
 ### 1. LOAD DATA     ----
+
+# 
 df.pun.0   <-  read.csv("source/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
 df.solar.D <-  read.csv2("source/Solarenergie_DE.csv")
@@ -64,6 +65,7 @@ df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
 colnames(df.pun) = c("TIME", "PUN")
 df.pun$TIME <- ymd_hm(df.pun$TIME)
 
+###-CUT--###
 
 # Choose time-frame to analyze 
 start.d <- ymd_hm("2015-01-01 00:00")
@@ -87,6 +89,7 @@ names(df.solar) <- c("TIME", "50Hertz (MW)",
                      "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
 df.solar$TIME <- dmy_hm(df.solar$TIME)
 
+###-CUT--###
 
 # Choose time-frame to analyze 
 start.d <- ymd_hm("2015-01-01 00:00")
@@ -181,6 +184,7 @@ df.solar.AT7 <- select.ATSOLAR(df.ren.AT7)
 df.solar.AT <- rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4,
                       df.solar.AT5,df.solar.AT6,df.solar.AT7)
 
+###-CUT--###
 
 # Choose time-frame to analyze 
 start.d <- ymd_hm("2015-01-01 00:00")
@@ -216,6 +220,7 @@ names(df.wind) <- c("TIME", "50Hertz (MW)",
                      "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
 df.wind$TIME <- dmy_hm(df.wind$TIME)
 
+###-CUT--###
 
 start.d <- ymd_hm("2015-01-01 00:00")
 stop.d <- ymd_hm("2017-12-31 23:00")
@@ -257,6 +262,7 @@ df.wind.AT7 <- bruno.atwind(df.ren.AT7)
 df.wind.AT <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
                     df.wind.AT5,df.wind.AT6,df.wind.AT7)
 
+###-CUT--###
 
 # Choose time-frame to analyze 
 start.d <- ymd_hm("2015-01-01 00:00")
@@ -377,7 +383,7 @@ FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
 }
 ind <- FindMissingValues(df.dm$`DAY-AHEAD MW`, verbose = F, days = F)
 
-# Removing said NAs
+# Dirty removing said NAs
 for (i in ind) {
 df.dm$`DAY-AHEAD MW`[i] <- mean(df.dm$`DAY-AHEAD MW`[(i-5):(i+5)], 
                                   na.rm = T)
@@ -446,18 +452,6 @@ identical(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.A
           df.dem.2017$`DAY-AHEAD MW`)
 
 
-
-
-
-
-
-test <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
-                  list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
-names(test) <- c("TIME", "DAY-AHEAD MW")
-test$TIME <- ymd(test$TIME)
-
-
-plot(test)
 
 
 
