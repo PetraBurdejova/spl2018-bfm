@@ -51,10 +51,6 @@ df.dem.2016.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201601010000-2
 df.dem.2017.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
 df.dem.2018.0 <- read.csv("source/Total Load - Day Ahead _ Actual_201801010000-201901010000.csv")
 
-
-# 1.b LOOK FOR NA'S
-
-
  
 # 2. PREPARE DATA FOR MERGE
 # 2. CLEAN ALL VARIABLES
@@ -77,6 +73,7 @@ ind.stop <- which(df.pun$TIME == stop.d)
 ind <- (ind.start: ind.stop)
 df.pun <- df.pun[ind, ]
 ## Comment: This is a stupid way to do it. do you know a better way? ## 
+## Funktion draus schreiben?
 
 ### 2b.1  SOLAR DE  ("fertig") ----
 
@@ -101,17 +98,44 @@ df.solar <- df.solar[ind, ]
 ## Comment: This is a stupid way to do it. do you know a better way? ## 
 
 
-# Daily Average of MW produced per Firm
+##### 
+# hier mit XTS eher? also nochmal gucken, wie du die averages bildest
+# Hourly average of MW produced per Firm 
+#    df.solar <- aggregate(list(df.solar$`50Hertz (MW)`, 
+#                              df.solar$`Amprion (MW)`, df.solar$`TenneT TSO (MW)`, 
+#                               df.solar$`Transnet BW (MW)`), 
+#                          list("TIME" = cut(df.solar$TIME, "hour")), FUN = mean)
+#    
+#    # Adding names and POSIXct Time 
+#    names(df.solar) <- c("TIME", "50Hertz (MW)", "Amprion (MW)", "TenneT TSO (MW)", 
+#                        "Transnet BW (MW)")
+#    df.solar$TIME <- ymd_h(df.solar$TIME)
+
+# erst mal durch 4 teilen --> megawatt stunde und dann summe des tages berechnen
+######
+
+hour.MW.comp <- function(x){
+  # Computes MW per hour from 15 minute intervalls
+  # 
+  # Args:
+  #   x =...
+  y <- sum(x)*0.25
+  return(y)
+}
+
+# Daily average of MW produced per Firm
 df.solar <- aggregate(list(df.solar$`50Hertz (MW)`, 
                            df.solar$`Amprion (MW)`, df.solar$`TenneT TSO (MW)`, 
                            df.solar$`Transnet BW (MW)`), 
-                      list("TIME" = cut(df.solar$TIME, "day")), FUN = mean)
+                      list("TIME" = cut(df.solar$TIME, "day")), FUN = hour.MW.comp)
 
 
 # Adding names and POSIXct Time 
 names(df.solar) <- c("TIME", "50Hertz (MW)", "Amprion (MW)", "TenneT TSO (MW)", 
-                  "Transnet BW (MW)")
+                     "Transnet BW (MW)")
 df.solar$TIME <- ymd(df.solar$TIME)
+
+# evtl. geht hier auch einfach mal 24 nehmen, um aus den MW Tagen MW Stunden zu machen. ?
 
 
 # Sum of the MW per Day produced by the different Firms
@@ -123,6 +147,8 @@ str(df.solar)
 plot(df.solar)
 summary(df.solar)
 tail(df.solar, n = 50)
+
+
 ### 2b.2 SOLAR AT  ("fertig") ----
 
 # Write a function to select the important data/ variables
@@ -166,9 +192,9 @@ df.solar.AT <- df.solar.AT[ind, ]
 ## Comment: This is a stupid way to do it. do you know a better way? ## 
 
 
-# Calculate the mean MW per hour/ day
+# Calculate the sum MW per hour/ day
 df.solar.AT <- aggregate(list("SOLAR MW AT" = df.solar.AT$`SOLAR MW AT`), 
-                        list("TIME" = cut(df.solar.AT$TIME, "1 day")), FUN = mean)
+                        list("TIME" = cut(df.solar.AT$TIME, "1 day")), FUN = sum)
 
 
 # Adding names and POSIXct Time 
@@ -359,9 +385,9 @@ df.dm$`DAY-AHEAD MW`[i] <- mean(df.dm$`DAY-AHEAD MW`[(i-5):(i+5)],
 ## Comment: Statistisch gesehen böse, aber klappt. was meint ihr? ## 
 
 
-# Calculate the mean MW per hour/ day
+# Calculate the sum MW per hour/ day
 df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
-                  list("TIME" = cut(df.dm$TIME, "1 day")), FUN = mean)
+                  list("TIME" = cut(df.dm$TIME, "1 day")), FUN = sum)
 ## Comment: 
 # besser wäre hier evtl. : 
 # https://stackoverflow.com/questions/13915549/
@@ -380,9 +406,10 @@ tail(df.dm)
 plot(df.dm)
 
 
+
 ### 3.  FINAL DATAFRAME        ----
 
-df <- rbind()
+df <- cbind()
 
 
 
@@ -420,42 +447,6 @@ identical(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.A
 
 
 
-
-## HUCH!!! Was ist mit Demand los? ------
-
-
-#test: habe ich die daten beim verarbeiten verändert?
-test1 <- sapply(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), mean, na.rm = T)
-test2 <- sapply(as.numeric(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), mean, na.rm = T)
-
-mean(test1,na.rm =T)
-mean(test2,na.rm =T)
-
-
-str(df.dem.2017.0)
-summary(as.numeric(as.character(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU)))
-sum
-
-
-as.numeric(levels(f))[f] 
-
-head(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU)
-
-head(as.numeric(df.dem.2016.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU))
-
-head(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU))
-
-# >> ne liegt wohl an den anfangs Daten
-
-# neu daten runtergeladen um das zu prüfen
-test3 <- read.csv("source/test - Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
-
-
-identical(as.numeric(test3$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU))
-
-# >> ne werte sind gleich.. Großes Problem.
-# Aber time series wird ja eh in Jahre gesplittet oder??
-# dann könnte das ja funktionieren..
 
 
 
