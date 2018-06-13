@@ -7,13 +7,13 @@ library(stringr)
 
 
 # 1. READ DATA FROM DATA/SOURCE SUBDIRECTORY
-### 1. LOAD RAW DATA     ----
+### 1. LOAD RAW DATA          ----
 
 # Importing Data
 source("raw_data.R")
 
 
-### 2a. PUN          ----
+### 2a. PUN                   ----
 
 # Function for Time Frame
 time.FRAME <- function(x) {
@@ -40,7 +40,13 @@ df.pun <- aggregate(list("PUN" = df.pun$PUN),
                          list("TIME" = cut(df.pun$TIME, "1 day")), FUN = sum)
 
 
-### 2b.1  SOLAR DE  ("fertig") ----
+# Adding names and POSIXct Time 
+names(df.pun) <- c("TIME", "DAY-AHEAD MW")
+df.pun$TIME <- ymd(df.pun$TIME)
+
+
+
+### 2b.1  SOLAR DE  ("fertig")----
 
 # Choose time-frame to analyze 
 df.solar <- time.FRAME(df.solar)
@@ -94,7 +100,7 @@ names(df.solar) <- c("TIME", "MW.per.Day")
 
 
 
-### 2b.2 SOLAR AT   ----
+### 2b.2 SOLAR AT             ----
 
 # Choose time-frame to analyze 
 df.solar.AT <- time.FRAME(df.solar.AT)
@@ -110,7 +116,7 @@ names(df.solar.AT) <- c("TIME", "SOLAR MW AT")
 df.solar.AT$TIME <- ymd(df.solar.AT$TIME)
 
 
-### 2c. WIND DE     ----
+### 2c. WIND DE               ----
 
 # Choose time-frame to analyze 
 df.wind <- time.FRAME(df.wind)
@@ -228,57 +234,15 @@ names(df.dm) <- c("TIME", "DAY-AHEAD MW")
 df.dm$TIME <- ymd(df.dm$TIME)
 
 
-### 3.  FINAL DATAFRAME        ----
+### 3.  FINAL DATAFRAME       ----
 
-df <- merge(df.pun, df.solar, df.wind, df.solar.AT, df.wind.AT, df.dm, by = "TIME")
-
-
+df <- cbind(df.pun, df.solar, df.wind, df.solar.AT, df.wind.AT, df.dm)
+df <- df[ -c(3, 5, 7, 9, 11) ]
 
 names(df) <- c("TIME", "PUN", "SOLAR DE MW/h", "WIND DE MW/h", "SOLAR AT MW/h",
                "WIND AT MW/h", "DEMAND DAY-AHEAD MW/h")
 
-
-
-df <- merge(df.pun$PUN, df.solar$MW.per.Day, 
-            df.wind$MW.per.Day, df.solar.AT$`SOLAR MW AT`, 
-            df.wind.AT$`WIND MW AT`, df.dm$`DAY-AHEAD MW`)
-
-
-summary(c(df.pun, df.solar, df.wind, df.solar.AT, df.wind.AT, df.dm))
-
-
-##### KRAM DEN ICH NOCH NICHT WEGWERFEN WOLLTE; DER ABER SONST NERVT.. -----
-
-# Solar DE - KRAMS
-
-
-
-
-
-## TEST KRAMS 
-a <- bruno.verarbeitung(df.dem.2015.0)
-dem.vec <- c(df.dem.2015.0,df.dem.2016.0,df.dem.2017.0,df.dem.2018.0)
-test <- sapply(dem.vec, bruno.verarbeitung)
-identical(a, df.dem.2015)
-## ALT KRAMS
-df.dem.2015 <- subset(df.dem.2015.0, select = c("Time..CET.", 
-                                                "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
-names(df.dem.2015) <- c("TIME", "DAY-AHEAD MW")
-df.dem.2015 <- separate(df.dem.2015, col = TIME, into = c("TIME","bis"), sep =  " - ")
-df.dem.2015 <- subset(df.dem.2015, select = c("TIME","DAY-AHEAD MW"))
-df.dem.2015$TIME <- dmy_hm(df.dem.2015$TIME)
-df.dem.2015$`DAY-AHEAD MW` <- as.numeric(df.dem.2015$`DAY-AHEAD MW`)
-## 
-
-
-
-head(df.dem.2017.0)
-str(df.dem.2017)
-
-identical(as.numeric(df.dem.2017.0$Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU), 
-          df.dem.2017$`DAY-AHEAD MW`)
-
-
+rm(list=ls()[! ls() %in% c("df")]) 
 
 
 
