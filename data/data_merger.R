@@ -35,12 +35,16 @@ time.FRAME <- function(x) {
 # Choose time-frame to analyze 
 df.pun <- time.FRAME(df.pun)
 
+# Calculate the sum MW per hour/ day
+df.pun <- aggregate(list("PUN" = df.pun$PUN), 
+                         list("TIME" = cut(df.pun$TIME, "1 day")), FUN = sum)
 
 
 ### 2b.1  SOLAR DE  ("fertig") ----
 
 # Choose time-frame to analyze 
 df.solar <- time.FRAME(df.solar)
+
 
 # Comment ###
 # hier mit XTS eher? also nochmal gucken, wie du die averages bildest
@@ -84,6 +88,8 @@ df.solar$TIME <- ymd(df.solar$TIME)
 # Sum of the MW per Day produced by the different Firms
 MW.per.Day <- rowSums(df.solar[ ,-1])
 df.solar <- data.frame(df.solar$TIME, MW.per.Day)
+
+names(df.solar) <- c("TIME", "MW.per.Day")
 
 
 
@@ -129,7 +135,7 @@ df.wind$TIME <- ymd(df.wind$TIME)
 MW.per.Day <- rowSums(df.wind[ ,-1])
 df.wind <- data.frame(df.wind$TIME, MW.per.Day)
 
-
+names(df.wind) <- c("TIME", "MW.per.Day")
 
 
 ### 2c. WIND AT  ("fertig")   -----
@@ -224,22 +230,21 @@ df.dm$TIME <- ymd(df.dm$TIME)
 
 ### 3.  FINAL DATAFRAME        ----
 
-df <- cbind(ymd(df.pun$TIME), df.pun$PUN, df.solar$MW.per.Day, 
-            df.wind$MW.per.Day, df.solar.AT$`SOLAR MW AT`, 
-             df.wind.AT$`WIND MW AT`, df.dm$`DAY-AHEAD MW`)
+df <- merge(df.pun, df.solar, df.wind, df.solar.AT, df.wind.AT, df.dm, by = "TIME")
+
 
 
 names(df) <- c("TIME", "PUN", "SOLAR DE MW/h", "WIND DE MW/h", "SOLAR AT MW/h",
                "WIND AT MW/h", "DEMAND DAY-AHEAD MW/h")
 
-df.pun$TIME
-
-ymd()
-
-df <- cbind(alles)
 
 
+df <- merge(df.pun$PUN, df.solar$MW.per.Day, 
+            df.wind$MW.per.Day, df.solar.AT$`SOLAR MW AT`, 
+            df.wind.AT$`WIND MW AT`, df.dm$`DAY-AHEAD MW`)
 
+
+summary(c(df.pun, df.solar, df.wind, df.solar.AT, df.wind.AT, df.dm))
 
 
 ##### KRAM DEN ICH NOCH NICHT WEGWERFEN WOLLTE; DER ABER SONST NERVT.. -----
