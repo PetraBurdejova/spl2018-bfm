@@ -59,7 +59,7 @@ df.pun <- subset( df.pun.0, select = c(HourUTC, SpotPriceEUR ) )
 
 # Adding names and POSIXct Time 
 colnames(df.pun) = c("TIME", "PUN")
-df.pun$TIME <- ymd_hm(df.pun$TIME)
+df.pun$TIME <- ymd_hm(df.pun$TIME, tz= "UTC")
 
 
 ### 2b.1  SOLAR DE   ----
@@ -72,7 +72,7 @@ df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
 # Adding names and POSIXct Time 
 names(df.solar) <- c("TIME", "50Hertz (MW)", 
                      "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
-df.solar$TIME <- dmy_hm(df.solar$TIME)
+df.solar$TIME <- dmy_hm(df.solar$TIME, tz= "UTC")
 
 
 ### 2b.2 SOLAR AT    ----
@@ -89,7 +89,7 @@ select.ATSOLAR <- function(x){
   y <- subset(x, select = c("V1", "V7"))
   names(y) <- c("TIME", "SOLAR MW AT")
   y$`SOLAR MW AT` <- as.numeric(y$`SOLAR MW AT`)
-  y$TIME <- dmy_hms(y$TIME)
+  y$TIME <- dmy_hms(y$TIME,tz= "CET")
   return(y)
 }
 
@@ -118,7 +118,7 @@ df.wind <- unite(df.wind, TIME, c("Datum", "von"), sep = " ")
 # Adding names and POSIXct Time 
 names(df.wind) <- c("TIME", "50Hertz (MW)", 
                     "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
-df.wind$TIME <- dmy_hm(df.wind$TIME)
+df.wind$TIME <- dmy_hm(df.wind$TIME,tz= "CET")
 
 
 ### 2c. WIND AT      -----
@@ -135,7 +135,7 @@ select.ATWIND <- function(x){
   y <- subset(x, select = c("V1", "V5"))
   names(y) <- c("TIME", "WIND MW AT")
   y$`WIND MW AT` <- as.numeric(y$`WIND MW AT`)
-  y$TIME <- dmy_hms(y$TIME)
+  y$TIME <- dmy_hms(y$TIME,tz= "CET")
   return(y)
 }
 
@@ -172,7 +172,7 @@ select.DEM = function(x) {
   names(y) <- c("TIME", "DAY-AHEAD MW")
   y <- separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
   y <- subset(y, select = c("TIME","DAY-AHEAD MW"))
-  y$TIME <- dmy_hm(y$TIME)
+  y$TIME <- dmy_hm(y$TIME, tz= "CET")
   
   if (class(y$`DAY-AHEAD MW` ) == "factor") {
     # zwischenzeitig ausgeschaltet, um an NAs zu arbeiten...
