@@ -242,15 +242,31 @@ df <- df[ -c(3, 5, 7, 9, 11) ]
 names(df) <- c("TIME", "PUN", "SOLAR DE MW/h", "WIND DE MW/h", "SOLAR AT MW/h",
                "WIND AT MW/h", "DEMAND DAY-AHEAD MW/h")
 
+
+ind <- FindMissingValues(df$`SOLAR DE MW/h`, verbose = F, days = F)
+
+
+## Comment: Quick fix. will do it good soon
+# Dirty removing said NAs solar
+for (i in ind) {
+  df$`SOLAR DE MW/h`[i] <- mean(df$`SOLAR DE MW/h`[(i-1):(i+1)], 
+                                na.rm = T)
+}
+
+
+
+ind <- FindMissingValues(df$`WIND DE MW/h`, verbose = F, days = F)
+
+# Dirty removing said NAs wind
+for (i in ind) {
+  df$`WIND DE MW/h`[i] <- mean(df$`WIND DE MW/h`[(i-1):(i+1)], 
+                                na.rm = T)
+}
+
 rm(list=ls()[! ls() %in% c("df")]) 
 
 
 
 
-
-
 # Bruno merkliste
-# - alle werte pro tag ausrechnen
-# - sonne und wind de noch die einzelnen betreiber zusammenfassen
-# - zusammenführen von allen daten
 # - time zones!
