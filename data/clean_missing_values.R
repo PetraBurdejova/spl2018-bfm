@@ -35,22 +35,6 @@ DiagMissingValues <- function(df, verbose = FALSE, days = FALSE) {
     i <- i+1
   }
 
-}
+  # TODO: Add regression tests.
 
-
-# Function for Time Frame
-time.FRAME <- function(x) {
-  # Chooses Time frame for all variables
-  #
-  # Args:
-  #   x: Imported dataframe
-  #
-  # Returns:
-  #   y: Dataframe with right time frame
-  start.d <- ymd_hm("2015-01-01 00:00")
-  stop.d <- ymd_hm("2017-12-31 23:00")
-  ind.start <- which(x$TIME == start.d)
-  ind.stop <- which(x$TIME == stop.d)
-  ind <- (ind.start: ind.stop)
-  y <- x[ind, ]
 }
