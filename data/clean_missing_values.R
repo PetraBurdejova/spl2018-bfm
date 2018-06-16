@@ -1,5 +1,5 @@
 
-FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
+DiagMissingValues <- function(df, verbose = FALSE, days = FALSE) {
   # Checks for NA values in dataframe and prints information. Returns a list of
   # indices of the NA entries in dataframe.
   #
@@ -13,29 +13,36 @@ FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
   # Returns:
   #   A list of indices that correspond to the possiton of missing values in df.
 
-  indices <- which(is.na.data.frame(df))
+  name <- deparse(substitute(df))  # get name of dataframe
 
-  if (verbose == TRUE) {
+  r <- is.na(df)
+  cc <- complete.cases(df)
+  
+  # Diagnostics Output
+  cat(sprintf("\n---- NA Diagnostics for '%s' ----\n", name))
+  cat(sprintf("Number of complete cases: %i of %i.\n", 
+              sum(cc), nrow(df) ))
+  cat(sprintf("Number of incomplete cases: %i (%.3f%%).\n\n\n",
+              (nrow(df)-sum(cc)), (1-sum(cc)/nrow(df)) ))
+  cat(sprintf("NA's per column:\n\n"))
+  print(apply(r, 2, sum))
 
-    name <- deparse(substitute(df))  # get name of dataframe
-    no.na <- length(indices)  # number of na in df
-    entries <- nrow(df)  # number of values in df
+}
 
-    print(sprintf("Checking for missing values in dataframe '%s'.", name))
-    print(sprintf("%.0f of %.0f (%.3f%%) values are NA.",
-                  no.na, entries, no.na/entries))
 
-  }
-
-  if (days == TRUE) {
-
-    naDays <- 0
-    return(naDays)
-
-  } else {
-
-    return(indices)
-
-  }
-
+# Function for Time Frame
+time.FRAME <- function(x) {
+  # Chooses Time frame for all variables
+  #
+  # Args:
+  #   x: Imported dataframe
+  #
+  # Returns:
+  #   y: Dataframe with right time frame
+  start.d <- ymd_hm("2015-01-01 00:00")
+  stop.d <- ymd_hm("2017-12-31 23:00")
+  ind.start <- which(x$TIME == start.d)
+  ind.stop <- which(x$TIME == stop.d)
+  ind <- (ind.start: ind.stop)
+  y <- x[ind, ]
 }
