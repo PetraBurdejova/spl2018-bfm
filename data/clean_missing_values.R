@@ -26,6 +26,14 @@ DiagMissingValues <- function(df, verbose = FALSE, days = FALSE) {
               (nrow(df)-sum(cc)), (1-sum(cc)/nrow(df)) ))
   cat(sprintf("NA's per column:\n\n"))
   print(apply(r, 2, sum))
+  cat("\n")
+  
+  i <- 1
+  for (col in names(df)){
+    cat(sprintf("NA's in at least %i columns: %i\n",
+                i, sum(apply(r, 1, sum) >= i) ))
+    i <- i+1
+  }
 
 }
 
