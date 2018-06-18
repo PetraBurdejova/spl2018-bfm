@@ -236,6 +236,8 @@ names(df.dm) <- c("TIME", "DAY-AHEAD.MW")
 df.dm$TIME <- ymd(df.dm$TIME)
 
 
+
+### 2e. MERGE OF AT & DE
 ### 3.  FINAL DATAFRAME       ----
 
 df <- cbind(df.pun, df.solar, df.wind, df.solar.AT, df.wind.AT, df.dm)
@@ -264,6 +266,29 @@ for (i in ind) {
   df$`WIND.DE.MW/h`[i] <- mean(df$`WIND.DE.MW/h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
+
+
+
+sum.f <- function(x, solar = TRUE) {
+  # Calculates the *rowsum* for solar and wind variables in DE & AT
+  #
+  # Args: 
+  #   x = Input Dataframe
+  #   solar = specification if solar or wind, TRUE by default
+  #
+  # Output: 
+  #   y = Vector of values
+  if (solar == T) {
+    y <- x$`SOLAR.DE.MW/h` + x$`SOLAR.AT.MW/h`
+    return(y)
+  } else {
+    y <- x$`WIND.DE.MW/h` + x$`WIND.AT.MW/h`
+    return(y)
+  }
+}
+
+
+
 
 rm(list=ls()[! ls() %in% c("df")]) 
 
