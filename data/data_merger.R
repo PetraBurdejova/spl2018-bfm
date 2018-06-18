@@ -41,7 +41,7 @@ df.pun <- aggregate(list("PUN" = df.pun$PUN),
 
 
 # Adding names and POSIXct Time 
-names(df.pun) <- c("TIME", "DAY-AHEAD MW")
+names(df.pun) <- c("TIME", "DAY-AHEAD.MW")
 df.pun$TIME <- ymd(df.pun$TIME)
 
 
@@ -77,15 +77,15 @@ hour.MW.comp <- function(x){
 }
 
 # Daily average of MW produced per Firm
-df.solar <- aggregate(list(df.solar$`50Hertz (MW)`, 
-                           df.solar$`Amprion (MW)`, df.solar$`TenneT TSO (MW)`, 
-                           df.solar$`Transnet BW (MW)`), 
+df.solar <- aggregate(list(df.solar$`50Hertz`, 
+                           df.solar$`Amprion`, df.solar$`TenneT.TSO`, 
+                           df.solar$`Transnet.BW`), 
                       list("TIME" = cut(df.solar$TIME, "day")), FUN = hour.MW.comp)
 
 
 # Adding names and POSIXct Time 
-names(df.solar) <- c("TIME", "50Hertz (MW)", "Amprion (MW)", "TenneT TSO (MW)", 
-                     "Transnet BW (MW)")
+names(df.solar) <- c("TIME", "50Hertz", "Amprion", "TenneT.TSO", 
+                     "Transnet.BW")
 df.solar$TIME <- ymd(df.solar$TIME)
 
 # evtl. geht hier auch einfach mal 24 nehmen, um aus den MW Tagen MW Stunden zu machen. ?
@@ -107,12 +107,12 @@ df.solar.AT <- time.FRAME(df.solar.AT)
 
 
 # Calculate the sum MW per hour/ day
-df.solar.AT <- aggregate(list("SOLAR MW AT" = df.solar.AT$`SOLAR MW AT`), 
+df.solar.AT <- aggregate(list("SOLAR.MW.AT" = df.solar.AT$`SOLAR.MW.AT`), 
                         list("TIME" = cut(df.solar.AT$TIME, "1 day")), FUN = sum)
 
 
 # Adding names and POSIXct Time 
-names(df.solar.AT) <- c("TIME", "SOLAR MW AT")
+names(df.solar.AT) <- c("TIME", "SOLAR.MW.AT")
 df.solar.AT$TIME <- ymd(df.solar.AT$TIME)
 
 
@@ -123,15 +123,15 @@ df.wind <- time.FRAME(df.wind)
 
 
 # Daily average of MW produced per Firm
-df.wind <- aggregate(list(df.wind$`50Hertz (MW)`, 
-                          df.wind$`Amprion (MW)`, df.wind$`TenneT TSO (MW)`, 
-                          df.wind$`Transnet BW (MW)`), 
+df.wind <- aggregate(list(df.wind$`50Hertz`, 
+                          df.wind$`Amprion`, df.wind$`TenneT.TSO`, 
+                          df.wind$`Transnet.BW`), 
                       list("TIME" = cut(df.wind$TIME, "day")), FUN = hour.MW.comp)
 
 
 # Adding names and POSIXct Time 
-names(df.wind) <- c("TIME", "50Hertz (MW)", "Amprion (MW)", "TenneT TSO (MW)", 
-                     "Transnet BW (MW)")
+names(df.wind) <- c("TIME", "50Hertz", "Amprion", "TenneT.TSO", 
+                     "Transnet.BW")
 df.wind$TIME <- ymd(df.wind$TIME)
 
 # evtl. geht hier auch einfach mal 24 nehmen, um aus den MW Tagen MW Stunden zu machen. ?
@@ -151,12 +151,12 @@ df.wind.AT <- time.FRAME(df.wind.AT)
 
 
 # Calculate the mean MW per hour/ day
-df.wind.AT <- aggregate(list("WIND MW AT" = df.wind.AT$`WIND MW AT`), 
+df.wind.AT <- aggregate(list("WIND.MW.AT" = df.wind.AT$`WIND.MW.AT`), 
                    list("TIME" = cut(df.wind.AT$TIME, "1 day")), FUN = sum)
 
 
 # Adding names and POSIXct Time 
-names(df.wind.AT) <- c("TIME", "WIND MW AT")
+names(df.wind.AT) <- c("TIME", "WIND.MW.AT")
 df.wind.AT$TIME <- ymd(df.wind.AT$TIME)
 
 
@@ -166,7 +166,7 @@ df.wind.AT$TIME <- ymd(df.wind.AT$TIME)
 df.dm <- time.FRAME(df.dm)
 # Choose time frame to analyze 
 
-df.dm$`DAY-AHEAD MW` <- as.numeric(levels(df.dm$`DAY-AHEAD MW`))[df.dm$`DAY-AHEAD MW`]
+df.dm$`DAY-AHEAD.MW` <- as.numeric(levels(df.dm$`DAY-AHEAD.MW`))[df.dm$`DAY-AHEAD.MW`]
 
 
 # Checking for NAs
@@ -210,17 +210,19 @@ FindMissingValues <- function(df, verbose = FALSE, days = FALSE) {
   }
   
 }
-ind <- FindMissingValues(df.dm$`DAY-AHEAD MW`, verbose = F, days = F)
+
+
+ind <- FindMissingValues(df.dm$`DAY-AHEAD.MW`, verbose = F, days = F)
 
 # Dirty removing said NAs
 for (i in ind) {
-df.dm$`DAY-AHEAD MW`[i] <- mean(df.dm$`DAY-AHEAD MW`[(i-5):(i+5)], 
+df.dm$`DAY-AHEAD.MW`[i] <- mean(df.dm$`DAY-AHEAD.MW`[(i-1):(i+1)], 
                                   na.rm = T)
 }
 
 
 # Calculate the sum MW per hour/ day
-df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`), 
+df.dm <- aggregate(list("DAY-AHEAD.MW" = df.dm$`DAY-AHEAD.MW`), 
                   list("TIME" = cut(df.dm$TIME, "1 day")), FUN = sum)
 
 ## Comment: 
@@ -230,7 +232,7 @@ df.dm <- aggregate(list("DAY-AHEAD-MW" = df.dm$`DAY-AHEAD MW`),
 # muss ich nochmal checken, ob das nicht besser mit einem time series package ist..
 
 # Adding names and POSIXct Time 
-names(df.dm) <- c("TIME", "DAY-AHEAD MW")
+names(df.dm) <- c("TIME", "DAY-AHEAD.MW")
 df.dm$TIME <- ymd(df.dm$TIME)
 
 
@@ -239,27 +241,27 @@ df.dm$TIME <- ymd(df.dm$TIME)
 df <- cbind(df.pun, df.solar, df.wind, df.solar.AT, df.wind.AT, df.dm)
 df <- df[ -c(3, 5, 7, 9, 11) ]
 
-names(df) <- c("TIME", "PUN", "SOLAR DE MW/h", "WIND DE MW/h", "SOLAR AT MW/h",
-               "WIND AT MW/h", "DEMAND DAY-AHEAD MW/h")
+names(df) <- c("TIME", "PUN", "SOLAR.DE.MW/h", "WIND.DE.MW/h", "SOLAR.AT.MW/h",
+               "WIND.AT.MW/h", "DEMAND.DAY-AHEAD.MW/h")
 
 
-ind <- FindMissingValues(df$`SOLAR DE MW/h`, verbose = F, days = F)
+ind <- FindMissingValues(df$`SOLAR.DE.MW/h`, verbose = F, days = F)
 
 
 ## Comment: Quick fix. will do it good soon
 # Dirty removing said NAs solar
 for (i in ind) {
-  df$`SOLAR DE MW/h`[i] <- mean(df$`SOLAR DE MW/h`[(i-1):(i+1)], 
+  df$`SOLAR DE MW/h`[i] <- mean(df$`SOLAR.DE.MW/h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
 
 
-ind <- FindMissingValues(df$`WIND DE MW/h`, verbose = F, days = F)
+ind <- FindMissingValues(df$`WIND.DE.MW/h`, verbose = F, days = F)
 
 # Dirty removing said NAs wind
 for (i in ind) {
-  df$`WIND DE MW/h`[i] <- mean(df$`WIND DE MW/h`[(i-1):(i+1)], 
+  df$`WIND.DE.MW/h`[i] <- mean(df$`WIND.DE.MW/h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
