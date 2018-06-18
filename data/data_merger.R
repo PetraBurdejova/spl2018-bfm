@@ -274,7 +274,7 @@ names(df) <- c("TIME", "PUN", "DEMAND.DAY-AHEAD.MW/h",
 ind <- FindMissingValues(df$`SOLAR.MW/h`, verbose = F, days = F)
 
 for (i in ind) {
-  df$`SOLAR.DE.MW/h`[i] <- mean(df$`SOLAR.MW/h`[(i-1):(i+1)], 
+  df$`SOLAR.MW/h`[i] <- mean(df$`SOLAR.MW/h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
@@ -282,7 +282,7 @@ for (i in ind) {
 # Dirty removing said NAs wind
 ind <- FindMissingValues(df$`WIND.MW/h`, verbose = F, days = F)
 for (i in ind) {
-  df$`WIND.DE.MW/h`[i] <- mean(df$`WIND.DE.MW/h`[(i-1):(i+1)], 
+  df$`WIND.MW/h`[i] <- mean(df$`WIND.MW/h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
