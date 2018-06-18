@@ -112,7 +112,7 @@ df.solar.AT <- aggregate(list("SOLAR.MW.AT" = df.solar.AT$`SOLAR.MW.AT`),
 
 
 # Adding names and POSIXct Time 
-names(df.solar.AT) <- c("TIME", "SOLAR.MW.AT")
+names(df.solar.AT) <- c("TIME", "MW.per.Day")
 df.solar.AT$TIME <- ymd(df.solar.AT$TIME)
 
 
@@ -156,7 +156,7 @@ df.wind.AT <- aggregate(list("WIND.MW.AT" = df.wind.AT$`WIND.MW.AT`),
 
 
 # Adding names and POSIXct Time 
-names(df.wind.AT) <- c("TIME", "WIND.MW.AT")
+names(df.wind.AT) <- c("TIME", "MW.per.Day")
 df.wind.AT$TIME <- ymd(df.wind.AT$TIME)
 
 
@@ -237,62 +237,58 @@ df.dm$TIME <- ymd(df.dm$TIME)
 
 
 
-### 2e. MERGE OF AT & DE
+### 2e. MERGE OF AT & DE      ------
+
+# Function for merging AT & DE
+sum.f <- function(x, y) {
+  # Calculates the *rowsum* for solar and wind variables in DE & AT
+  #
+  # Args: 
+  #   x, y = Input Dataframes
+  #
+  # Output: 
+  #   z = Vector of values
+    z <- x$`MW.per.Day` + y$`MW.per.Day`
+    return(z)
+}
+
+# Merging AT & DE Data  
+df.solar <- sum.f(df.solar, df.solar.AT)
+df.wind  <- sum.f(df.wind, df.wind.AT)
+
+
 ### 3.  FINAL DATAFRAME       ----
 
-df <- cbind(df.pun, df.solar, df.wind, df.solar.AT, df.wind.AT, df.dm)
-df <- df[ -c(3, 5, 7, 9, 11) ]
+# Bind final Dataframe
+df <- cbind(df.pun, df.dm, df.solar, df.wind)
+df <- df[ -c(3) ]
 
-names(df) <- c("TIME", "PUN", "SOLAR.DE.MW/h", "WIND.DE.MW/h", "SOLAR.AT.MW/h",
-               "WIND.AT.MW/h", "DEMAND.DAY-AHEAD.MW/h")
-
-
-ind <- FindMissingValues(df$`SOLAR.DE.MW/h`, verbose = F, days = F)
+# Adding names
+names(df) <- c("TIME", "PUN", "DEMAND.DAY-AHEAD.MW/h", 
+               "SOLAR.MW/h", "WIND.MW/h")
 
 
 ## Comment: Quick fix. will do it good soon
 # Dirty removing said NAs solar
+# Solar
+ind <- FindMissingValues(df$`SOLAR.MW/h`, verbose = F, days = F)
+
 for (i in ind) {
-  df$`SOLAR.DE.MW/h`[i] <- mean(df$`SOLAR.DE.MW/h`[(i-1):(i+1)], 
+  df$`SOLAR.DE.MW/h`[i] <- mean(df$`SOLAR.MW/h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
-
-
-ind <- FindMissingValues(df$`WIND.DE.MW/h`, verbose = F, days = F)
-
+# WIND
 # Dirty removing said NAs wind
+ind <- FindMissingValues(df$`WIND.MW/h`, verbose = F, days = F)
 for (i in ind) {
   df$`WIND.DE.MW/h`[i] <- mean(df$`WIND.DE.MW/h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
 
-
-sum.f <- function(x, solar = TRUE) {
-  # Calculates the *rowsum* for solar and wind variables in DE & AT
-  #
-  # Args: 
-  #   x = Input Dataframe
-  #   solar = specification if solar or wind, TRUE by default
-  #
-  # Output: 
-  #   y = Vector of values
-  if (solar == T) {
-    y <- x$`SOLAR.DE.MW/h` + x$`SOLAR.AT.MW/h`
-    return(y)
-  } else {
-    y <- x$`WIND.DE.MW/h` + x$`WIND.AT.MW/h`
-    return(y)
-  }
-}
-
-
-
-
+# Removeing everything except for "df" from environment
 rm(list=ls()[! ls() %in% c("df")]) 
-
-
 
 
 # Bruno merkliste
