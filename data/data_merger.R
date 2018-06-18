@@ -251,7 +251,7 @@ ind <- FindMissingValues(df$`SOLAR.DE.MW/h`, verbose = F, days = F)
 ## Comment: Quick fix. will do it good soon
 # Dirty removing said NAs solar
 for (i in ind) {
-  df$`SOLAR DE MW/h`[i] <- mean(df$`SOLAR.DE.MW/h`[(i-1):(i+1)], 
+  df$`SOLAR.DE.MW/h`[i] <- mean(df$`SOLAR.DE.MW/h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
