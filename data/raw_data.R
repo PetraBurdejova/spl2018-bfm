@@ -70,8 +70,8 @@ df.solar <- subset(df.solar.D, select = c("Datum","von","X50Hertz..MW.",
 df.solar <- unite(df.solar, TIME, c("Datum", "von"), sep = " ")
 
 # Adding names and POSIXct Time 
-names(df.solar) <- c("TIME", "50Hertz (MW)", 
-                     "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
+names(df.solar) <- c("TIME", "50Hertz", 
+                     "Amprion", "TenneT.TSO", "Transnet.BW")
 df.solar$TIME <- dmy_hm(df.solar$TIME)
 
 
@@ -87,8 +87,8 @@ select.ATSOLAR <- function(x){
   # Returns:
   #   y: Corrected solar.AT dataframe
   y <- subset(x, select = c("V1", "V7"))
-  names(y) <- c("TIME", "SOLAR MW AT")
-  y$`SOLAR MW AT` <- as.numeric(y$`SOLAR MW AT`)
+  names(y) <- c("TIME", "SOLAR.MW.AT")
+  y$`SOLAR.MW.AT` <- as.numeric(y$`SOLAR.MW.AT`)
   y$TIME <- dmy_hms(y$TIME)
   return(y)
 }
@@ -116,8 +116,8 @@ df.wind <- unite(df.wind, TIME, c("Datum", "von"), sep = " ")
 
 
 # Adding names and POSIXct Time 
-names(df.wind) <- c("TIME", "50Hertz (MW)", 
-                    "Amprion (MW)", "TenneT TSO (MW)", "Transnet BW (MW)")
+names(df.wind) <- c("TIME", "50Hertz", 
+                    "Amprion", "TenneT.TSO", "Transnet.BW")
 df.wind$TIME <- dmy_hm(df.wind$TIME)
 
 
@@ -133,11 +133,12 @@ select.ATWIND <- function(x){
   # Returns:
   #   y: Corrected wind.AT dataframe
   y <- subset(x, select = c("V1", "V5"))
-  names(y) <- c("TIME", "WIND MW AT")
-  y$`WIND MW AT` <- as.numeric(y$`WIND MW AT`)
+  names(y) <- c("TIME", "WIND.MW.AT")
+  y$`WIND.MW.AT` <- as.numeric(y$`WIND.MW.AT`)
   y$TIME <- dmy_hms(y$TIME)
   return(y)
 }
+
 
 # Select important data/ variables 
 df.wind.AT1 <- select.ATWIND(df.ren.AT1)
@@ -169,23 +170,24 @@ select.DEM = function(x) {
   y <- subset(x, select = c("Time..CET.", 
                             "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU"))
   
-  names(y) <- c("TIME", "DAY-AHEAD MW")
+  names(y) <- c("TIME", "DAY-AHEAD.MW")
   y <- separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
-  y <- subset(y, select = c("TIME","DAY-AHEAD MW"))
+  y <- subset(y, select = c("TIME","DAY-AHEAD.MW"))
   y$TIME <- dmy_hm(y$TIME)
   
-  if (class(y$`DAY-AHEAD MW` ) == "factor") {
+  if (class(y$`DAY-AHEAD.MW` ) == "factor") {
     # zwischenzeitig ausgeschaltet, um an NAs zu arbeiten...
-    # y$`DAY-AHEAD MW` <- as.numeric(levels(y$`DAY-AHEAD MW`))[y$`DAY-AHEAD MW`]
+    # y$`DAY-AHEAD.MW` <- as.numeric(levels(y$`DAY-AHEAD.MW`))[y$`DAY-AHEAD.MW`]
     return(y)
     
   } else {
     # hier jetzt statt as.numeric zu Faktor gemacht. Wird dann umgestellt! 
-    y$`DAY-AHEAD MW` <- as.factor(y$`DAY-AHEAD MW`)
+    y$`DAY-AHEAD.MW` <- as.factor(y$`DAY-AHEAD.MW`)
     return(y)
   }
   
 } 
+
 
 # Select important data/ variables 
 df.dem.2015 <- select.DEM(df.dem.2015.0)
