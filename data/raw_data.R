@@ -158,7 +158,6 @@ df.wind.AT <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
 ### 2d. DEMAND       ----
 
 # Write a function to select the important data/ variables
-# IN ARBEIT!! MÜSSEN ERST NA-PROBLEM LÖSEN!!!
 select.DEM = function(x) {
   # Selects the important variables for the demand data
   # Also checks if variable is factor or not
@@ -174,15 +173,14 @@ select.DEM = function(x) {
   y <- separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
   y <- subset(y, select = c("TIME","DAY-AHEAD.MW"))
   y$TIME <- dmy_hm(y$TIME)
+  # y$TIME <- dmy_hm(y$TIME, tz = "CET")
+  # y$TIME <- with_tz(y$TIME, tz="UTC")
   
   if (class(y$`DAY-AHEAD.MW` ) == "factor") {
-    # zwischenzeitig ausgeschaltet, um an NAs zu arbeiten...
-    # y$`DAY-AHEAD.MW` <- as.numeric(levels(y$`DAY-AHEAD.MW`))[y$`DAY-AHEAD.MW`]
+    y$`DAY-AHEAD.MW` <- as.numeric(levels(y$`DAY-AHEAD.MW`))[y$`DAY-AHEAD.MW`]
     return(y)
-    
   } else {
-    # hier jetzt statt as.numeric zu Faktor gemacht. Wird dann umgestellt! 
-    y$`DAY-AHEAD.MW` <- as.factor(y$`DAY-AHEAD.MW`)
+    y$`DAY-AHEAD.MW` <- as.numeric(y$`DAY-AHEAD.MW`)
     return(y)
   }
   

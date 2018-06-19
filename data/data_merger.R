@@ -166,7 +166,7 @@ df.wind.AT$TIME <- ymd(df.wind.AT$TIME)
 df.dm <- time.FRAME(df.dm)
 # Choose time frame to analyze 
 
-df.dm$`DAY-AHEAD.MW` <- as.numeric(levels(df.dm$`DAY-AHEAD.MW`))[df.dm$`DAY-AHEAD.MW`]
+# df.dm$`DAY-AHEAD.MW` <- as.numeric(levels(df.dm$`DAY-AHEAD.MW`))[df.dm$`DAY-AHEAD.MW`]
 
 
 # Checking for NAs
@@ -264,25 +264,25 @@ df <- cbind(df.pun, df.dm, df.solar, df.wind)
 df <- df[ -c(3) ]
 
 # Adding names
-names(df) <- c("TIME", "PUN", "DEMAND.DAY-AHEAD.MW/h", 
-               "SOLAR.MW/h", "WIND.MW/h")
+names(df) <- c("TIME", "PUN", "DEMAND.DAY.AHEAD.MW.h", 
+               "SOLAR.MW.h", "WIND.MW.h")
 
 
 ## Comment: Quick fix. will do it good soon
 # Dirty removing said NAs solar
 # Solar
-ind <- FindMissingValues(df$`SOLAR.MW/h`, verbose = F, days = F)
+ind <- FindMissingValues(df$`SOLAR.MW.h`, verbose = F, days = F)
 
 for (i in ind) {
-  df$`SOLAR.MW/h`[i] <- mean(df$`SOLAR.MW/h`[(i-1):(i+1)], 
+  df$`SOLAR.MW.h`[i] <- mean(df$`SOLAR.MW.h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
 # WIND
 # Dirty removing said NAs wind
-ind <- FindMissingValues(df$`WIND.MW/h`, verbose = F, days = F)
+ind <- FindMissingValues(df$`WIND.MW.h`, verbose = F, days = F)
 for (i in ind) {
-  df$`WIND.MW/h`[i] <- mean(df$`WIND.MW/h`[(i-1):(i+1)], 
+  df$`WIND.MW.h`[i] <- mean(df$`WIND.MW.h`[(i-1):(i+1)], 
                                 na.rm = T)
 }
 
