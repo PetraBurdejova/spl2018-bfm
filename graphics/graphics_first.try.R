@@ -5,23 +5,22 @@
 
 ## LOADING DATA FROM DATA-MERGER & LOADING PACKAGES -----
 
-source("data_merger.R")
+#source("data_merger.R")
 library(ggplot2)
 
 ## GRAPHICS -----
 ## SUN --
 
 # Nice graphic of sun per year 
-ggplot(data=df, aes(x=`TIME`, y=log(`SOLAR.MW/h`))) +  
+ggplot(data=df, aes(x=TIME, y=SOLAR)) +  
   geom_point(size=0.5) + 
-  # geom_smooth(method="lm", aes(fill=`TIME`)) + 
-  facet_wrap(~year(TIME)) +
-  geom_smooth(method="loess", color="blue", se=FALSE) + 
-  ggtitle(label = "Solar Production per Year, DE & AT", 
-          subtitle = "log of Solar MW/h") +
+  geom_smooth(method="loess", span = 0.25, color="orange", se=FALSE) + 
+  ggtitle(label = "Solar Production per Day, DE & AT", 
+          subtitle = "Daily Solar Production in MW/h") +
   xlab(label= " ") +
-  ylab(label = "lg. MW/h")+
+  ylab(label = "MW/h")+
   labs(caption = "(based on data from ...)")
+<<<<<<< HEAD
 
 
 
@@ -89,3 +88,5 @@ ggplot(data=df, aes(y=`PUN`, x=log(`DEM`))) +
 # geom_smooth(method="loess", color="green", se=FALSE) 
 # facet_wrap(~year(TIME)) 
 
+=======
+>>>>>>> d40d2d9b3b8744b4a59983a53f5e87b1fd44ae66
