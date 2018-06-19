@@ -20,7 +20,6 @@ ggplot(data=df, aes(x=TIME, y=SOLAR)) +
   xlab(label= " ") +
   ylab(label = "MW/h")+
   labs(caption = "(based on data from ...)")
-<<<<<<< HEAD
 
 
 
