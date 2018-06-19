@@ -1,3 +1,5 @@
+library(ggplot2)
+library(plotly)
 
 DiagMissingValues <- function(df, dlevel = 0) {
   # Checks for NA values in dataframe and prints information.
@@ -42,6 +44,16 @@ DiagMissingValues <- function(df, dlevel = 0) {
   names(tp) <- "TIME"
 
   return(tp)
+}
+
+GgNaGeom <- function(df) {
+  tps <- DiagMissingValues(df)
+  tps <- as.data.frame(tps)
+  names(tps) <- "TIME"
+  
+  geom <- geom_histogram(data=tps, aes(x=TIME), alpha = 0.5)
+
+  return(geom)
 }
 
 # Function for Time Frame
