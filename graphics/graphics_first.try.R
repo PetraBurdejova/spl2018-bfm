@@ -15,27 +15,19 @@ library(ggplot2)
 ggplot(data=df, aes(x=TIME, y=SOLAR)) +  
   geom_point(size=0.5) + 
   geom_smooth(method="loess", span = 0.25, color="orange", se=FALSE) + 
-  ggtitle(label = "Solar Production per Day, DE & AT", 
-          subtitle = "Daily Solar Production in MW/h") +
+  ggtitle(label = "Solar Energy Production per Day", 
+          subtitle = "German and Austrian Production in MW/h") +
   xlab(label= " ") +
   ylab(label = "MW/h")+
-  labs(caption = "(based on data from ...)")
+  labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
 
 
 
-### ideen:
+ggsave("SOLARGRAPH", plot = last_plot(), device = "pdf", 
+       path =  NULL,
+       scale = 1, width = NA, height = NA, units = c("in", "cm", "mm"),
+       dpi = 800, limitsize = TRUE)
 
-
-library(ggplot2)
-
-## SUN DE --
-
-ggplot(data=df, aes(x=`TIME`, y=log(`SOLAR`))) +  
-  geom_point(size=0.5) + 
-  # geom_smooth(method="lm", aes(fill=`TIME`)) + 
-  facet_wrap(~year(TIME)) +
-  geom_smooth(method="loess", color="blue", se=FALSE)
-# nur ein jahranzeigen pro grafik
 
 
 ## WIND --
@@ -57,13 +49,17 @@ ggplot(data=df, aes(x=`TIME`, y=`PUN`))  +
 
 ## DEMAND -- 
 
-ggplot(data=df, aes(x=`TIME`, y=log(`DEM`))) +  
+ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +  
   geom_point(size=0.5) + 
-  # geom_smooth(method="lm", aes(fill=`TIME`)) + 
-  # facet_wrap(~year(TIME)) +
-  geom_smooth(method="loess", color="green", se=FALSE) +
-  ylim(15.5, 15.8)
-# facet_wrap(~year(TIME)) 
+  # geom_smooth(method="lm", aes(fill=`TIME`)) +
+  # facet_wrap(~year(TIME+365*0.5)) +
+  geom_smooth(method="loess", span = 0.3, color="orange", se=FALSE) +
+  ylim(3.5e+06, 7.5e+06) +
+  ggtitle(label = "Demand Day-Ahead forecast MW/h ") +
+  xlab(label= " ") +
+  ylab(label = "Demand")
+  # labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
+
 
 
 ## PUN ~ SOLAR --   
@@ -79,13 +75,12 @@ ggplot(data=df, aes(y=`PUN`, x=log(`SOLAR`))) +
 
 ## PUN ~ DEMAND --
 
-ggplot(data=df, aes(y=`PUN`, x=log(`DEM`))) +  
+ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +  
   ylim(0,1500) +
   geom_point(size=0.5) + 
-  geom_smooth(method="lm", aes(fill=`TIME`))  
-# facet_wrap(~year(TIME)) +
-# geom_smooth(method="loess", color="green", se=FALSE) 
-# facet_wrap(~year(TIME)) 
+  geom_smooth(method="lm", aes(fill=`TIME`))+
+  ggtitle(label = "Price and Demand") +
+  xlab(label= "Demand in MW/h") +
+  ylab(label = "€ per MW/h ")+
+  labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
 
-=======
->>>>>>> d40d2d9b3b8744b4a59983a53f5e87b1fd44ae66
