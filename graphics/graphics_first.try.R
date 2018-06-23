@@ -5,7 +5,7 @@
 
 ## LOADING DATA FROM DATA-MERGER & LOADING PACKAGES -----
 
-#source("data_merger.R")
+source("data_merger.R")
 library(ggplot2)
 
 ## GRAPHICS -----
@@ -84,3 +84,17 @@ ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
   ylab(label = "€ per MW/h ")+
   labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
 
+
+
+
+
+
+## tabplot idea
+# dont really get the idea..
+
+install.packages("tabplot")
+library("tabplot")
+library("MASS")
+
+tableplot(df[, -1], colorNA = "red", colorNA_num = "red")
+summary(df)
