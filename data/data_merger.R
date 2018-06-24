@@ -1,4 +1,4 @@
-### 0. EXPLANATION            ------               
+### 0.   EXPLANATION            ------               
 # Data from raw_data is formatted and merged in a single dataframe
 #
 # Input:  Variables from raw_data.R
@@ -12,13 +12,13 @@
 
 
 
-### 1. LOAD RAW DATA          ----
+### 1.   LOAD RAW DATA          ----
 
 # Importing Data
 source("raw_data.R")
 
 
-### 2a. PUN                   ----
+### 2a.  PUN                    ----
 
 # Function for time frame
 time.FRAME <- function(x) {
@@ -49,7 +49,7 @@ names(df.pun) <- c("TIME", "DAY-AHEAD.MW")
 df.pun$TIME <- ymd(df.pun$TIME)
 
 
-### 2b.1  SOLAR DE            ----
+### 2b.1 SOLAR DE               ----
 
 # Choose time-frame to analyze 
 df.solar <- time.FRAME(df.solar)
@@ -82,7 +82,7 @@ df.solar <- data.frame(df.solar$TIME, MW.per.Day)
 names(df.solar) <- c("TIME", "MW.per.Day")
 
 
-### 2b.2 SOLAR AT             ----
+### 2b.2 SOLAR AT               ----
 
 # Choose time frame to analyze 
 df.solar.AT <- time.FRAME(df.solar.AT)
@@ -96,7 +96,7 @@ names(df.solar.AT) <- c("TIME", "MW.per.Day")
 df.solar.AT$TIME <- ymd(df.solar.AT$TIME)
 
 
-### 2c. WIND DE               ----
+### 2c.  WIND DE                ----
 
 # Choose time frame to analyze 
 df.wind <- time.FRAME(df.wind)
@@ -121,7 +121,7 @@ df.wind <- data.frame(df.wind$TIME, MW.per.Day)
 names(df.wind) <- c("TIME", "MW.per.Day")
 
 
-### 2c. WIND AT               -----
+### 2c.  WIND AT                -----
 
 # Choose time frame to analyze 
 df.wind.AT <- time.FRAME(df.wind.AT)
@@ -135,7 +135,7 @@ names(df.wind.AT) <- c("TIME", "MW.per.Day")
 df.wind.AT$TIME <- ymd(df.wind.AT$TIME)
 
 
-### 2d. DEMAND                ----
+### 2d.  DEMAND                 ----
 
 # Choose time frame to analyze 
 df.dm <- time.FRAME(df.dm)
@@ -200,7 +200,7 @@ names(df.dm) <- c("TIME", "DAY-AHEAD.MW")
 df.dm$TIME <- ymd(df.dm$TIME)
 
 
-### 2e. MERGE OF AT & DE DATA ------
+### 2e.  MERGE OF AT & DE DATA  ------
 
 # Function for merging AT & DE
 sum.f <- function(x, y) {
@@ -220,7 +220,7 @@ df.solar <- sum.f(df.solar, df.solar.AT)
 df.wind  <- sum.f(df.wind, df.wind.AT)
 
 
-### 3.  FINAL DATAFRAME       ----
+### 3.   FINAL DATAFRAME        ----
 
 # Bind final Dataframe
 df <- cbind(df.pun, df.dm, df.solar, df.wind)
@@ -252,5 +252,9 @@ for (i in ind) {
 rm(list=ls()[! ls() %in% c("df")]) 
 
 
-# Bruno merkliste
+## Bruno merkliste
 # - time zones!
+# - maybe use XTS for averaging daily 
+# - check if rowsums function works correctly
+#     is there an alternative? 
+# - alternative for aggregate functions - maybe a bit inefficient?
