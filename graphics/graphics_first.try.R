@@ -11,19 +11,19 @@ library(ggplot2)
 ## GRAPHICS -----
 ## SUN --
 
-# Nice graphic of sun per year 
+# Sun per Year 
 ggplot(data=df, aes(x=TIME, y=SOLAR)) +  
   geom_point(size=0.5) + 
   geom_smooth(method="loess", span = 0.25, color="orange", se=FALSE) + 
-  ggtitle(label = "Solar Energy Production per Day", 
-          subtitle = "German and Austrian Production in MW/h") +
+  #ggtitle(label = "Solar Energy Production per Day", 
+   #       subtitle = "German and Austrian Production in MW/h") +
   xlab(label= " ") +
   ylab(label = "MW/h")
   # labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
 
 
 
-ggsave("Hourly Demand", plot = last_plot(), device = "pdf", 
+ggsave("Price ~Renewable Production", plot = last_plot(), device = "pdf", 
        path =  NULL,
        scale = 1.5, width = NA, height = NA, units = c("in", "cm", "mm"),
        dpi = 800, limitsize = TRUE)
@@ -35,8 +35,8 @@ ggsave("Hourly Demand", plot = last_plot(), device = "pdf",
 ggplot(data=df, aes(x=`TIME`, y=(`WIND`))) +  
   geom_point(size=0.5) + 
   geom_smooth(method="lm", span = 1.5, color="blue", se=T) + 
-  ggtitle(label = "Wind Energy Production per Day", 
-        subtitle = "German and Austrian Production in MW/h") +
+ # ggtitle(label = "Wind Energy Production per Day", 
+   #     subtitle = "German and Austrian Production in MW/h") +
   xlab(label= " ") +
   ylab(label = "MW/h")
   # labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
@@ -48,22 +48,22 @@ ggplot(data=df, aes(x=`TIME`, y=`PUN`))  +
   geom_point(size=0.5, color = "black") + 
   # geom_smooth(method="lm", aes(fill=`TIME`), color = "black")  + 
   geom_smooth(method="lm", color="gold", se=T) +
-  ggtitle(label = "Day-Ahead Price MW/h") +
+  # ggtitle(label = "Day-Ahead Price MW/h") +
   xlab(label= "") +
-  ylab(label = "€ per MW/h ")
+  ylab(label = "Euro per MW/h ")
   # labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
 
 
 ## DEMAND -- 
 
 ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +  
-  geom_point(size=0.2, color = "black") + 
+  geom_point(size=0.5, color = "black") + 
   # geom_smooth(method="lm", aes(fill=`TIME`)) +
   # facet_wrap(~year(TIME+365*0.5)) +
   geom_smooth(method="loess", span = 0.3, color="blue", se=FALSE) +
   #ylim(3.5e+06, 7.5e+06) +
-  ggtitle(label = "Demand Day-Ahead forecast ",
-          subtitle = "Daily MW/h") +
+  #ggtitle(label = "Demand Day-Ahead forecast ",
+   #       subtitle = "Daily MW/h") +
   xlab(label= " ") +
   ylab(label = "MW/h")
   # labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
@@ -72,25 +72,42 @@ ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +
 
 ## PUN ~ SOLAR --   
 
-ggplot(data=df, aes(y=`PUN`, x=log(`SOLAR`))) +  
-  ylim(200,1500) +
+ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`))) +  
+  #ylim(200,1500) +
   geom_point(size=0.5) + 
-  geom_smooth(method="lm", aes(fill=`TIME`))  
+  geom_smooth(method="lm", aes(fill=`TIME`)) + 
 # facet_wrap(~year(TIME)) +
 # geom_smooth(method="loess", color="green", se=FALSE) +
 # facet_wrap(~year(TIME)) 
+xlab(label = "Solar Production Day-Ahead MW/h")+
+ylab(label = "Euro per MW/h")
+
+
+
+## PUN ~ Renewables --   
+
+ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`+`WIND`))) +  
+  #ylim(200,1500) +
+  geom_point(size=0.5) + 
+  geom_smooth(method="lm", aes(fill=`TIME`)) + 
+  # facet_wrap(~year(TIME)) +
+  # geom_smooth(method="loess", color="green", se=FALSE) +
+  # facet_wrap(~year(TIME)) 
+  xlab(label = "Renewable Production Day-Ahead MW/h")+
+  ylab(label = "Euro per MW/h")
+
 
 
 ## PUN ~ DEMAND --
 
 ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +  
-  ylim(0,1500) +
+  # ylim(0,1500) +
   geom_point(size=0.5) + 
   geom_smooth(method="lm", aes(fill=`TIME`))+
-  ggtitle(label = "Price and Demand") +
+  #ggtitle(label = "Price and Demand") +
   xlab(label= "Demand in MW/h") +
-  ylab(label = "€ per MW/h ")+
-  labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
+  ylab(label = "Euro per MW/h ")
+ #  labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
 
 
 
@@ -106,3 +123,10 @@ library("MASS")
 
 tableplot(df[, -1], colorNA = "red", colorNA_num = "red")
 summary(df)
+
+
+
+
+
+
+
