@@ -24,7 +24,7 @@ ggplot(data=df, aes(x=TIME, y=SOLAR)) +
 
 
 ggsave("Solar Production", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       path =  NULL, scale = 1.5, width = 7.5 , height = 5, 
        units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
@@ -45,7 +45,7 @@ ggplot(data=df, aes(x=`TIME`, y=(`WIND`))) +
 
 
 ggsave("Wind", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
        units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
@@ -65,7 +65,7 @@ ggplot(data=df, aes(x=`TIME`, y=`PUN`))  +
 
 
 ggsave("Price", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
        units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
@@ -88,7 +88,7 @@ ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +
 
 
 ggsave("Demand", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
        units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
@@ -127,7 +127,7 @@ ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
 
 
 ggsave("Price ~Demand", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
        units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
