@@ -1,4 +1,7 @@
-### 0.   EXPLANATION            ------               
+### 0.   EXPLANATION            ------   
+#
+# data_merger.R
+#
 # Data from raw_data is formatted and merged in a single dataframe
 #
 # Input:  Variables from raw_data.R
