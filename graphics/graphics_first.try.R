@@ -109,7 +109,7 @@ ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`+`WIND`))) +
 
 
 ggsave("Price ~Renewable Production", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
        units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
