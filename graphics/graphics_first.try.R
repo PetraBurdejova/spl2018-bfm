@@ -18,15 +18,15 @@ ggplot(data=df, aes(x=TIME, y=SOLAR)) +
   #ggtitle(label = "Solar Energy Production per Day", 
    #       subtitle = "German and Austrian Production in MW/h") +
   xlab(label= " ") +
-  ylab(label = "MW/h")
+  ylab(label = "MW/h")+
+  theme_bw()
   # labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
 
 
+ggsave("Solar Production", plot = last_plot(), device = "pdf", 
+       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
-ggsave("Price ~Renewable Production", plot = last_plot(), device = "pdf", 
-       path =  NULL,
-       scale = 1.5, width = NA, height = NA, units = c("in", "cm", "mm"),
-       dpi = 800, limitsize = TRUE)
 
 
 
@@ -38,8 +38,17 @@ ggplot(data=df, aes(x=`TIME`, y=(`WIND`))) +
  # ggtitle(label = "Wind Energy Production per Day", 
    #     subtitle = "German and Austrian Production in MW/h") +
   xlab(label= " ") +
-  ylab(label = "MW/h")
+  ylab(label = "MW/h")+
+  theme_bw()
   # labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
+
+
+
+ggsave("Wind", plot = last_plot(), device = "pdf", 
+       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
+
+
 
 
 ## PUN --
@@ -50,8 +59,15 @@ ggplot(data=df, aes(x=`TIME`, y=`PUN`))  +
   geom_smooth(method="lm", color="gold", se=T) +
   # ggtitle(label = "Day-Ahead Price MW/h") +
   xlab(label= "") +
-  ylab(label = "Euro per MW/h ")
+  ylab(label = "Euro per MW/h ")+
+  theme_bw()
   # labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
+
+
+ggsave("Price", plot = last_plot(), device = "pdf", 
+       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
+
 
 
 ## DEMAND -- 
@@ -65,22 +81,15 @@ ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +
   #ggtitle(label = "Demand Day-Ahead forecast ",
    #       subtitle = "Daily MW/h") +
   xlab(label= " ") +
-  ylab(label = "MW/h")
+  ylab(label = "MW/h")+
+  theme_bw()
   # labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
 
 
 
-## PUN ~ SOLAR --   
-
-ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`))) +  
-  #ylim(200,1500) +
-  geom_point(size=0.5) + 
-  geom_smooth(method="lm", aes(fill=`TIME`)) + 
-# facet_wrap(~year(TIME)) +
-# geom_smooth(method="loess", color="green", se=FALSE) +
-# facet_wrap(~year(TIME)) 
-xlab(label = "Solar Production Day-Ahead MW/h")+
-ylab(label = "Euro per MW/h")
+ggsave("Demand", plot = last_plot(), device = "pdf", 
+       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
 
@@ -94,8 +103,14 @@ ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`+`WIND`))) +
   # geom_smooth(method="loess", color="green", se=FALSE) +
   # facet_wrap(~year(TIME)) 
   xlab(label = "Renewable Production Day-Ahead MW/h")+
-  ylab(label = "Euro per MW/h")
+  ylab(label = "Euro per MW/h")+
+  theme_bw()
 
+
+
+ggsave("Price ~Renewable Production", plot = last_plot(), device = "pdf", 
+       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
 ## PUN ~ DEMAND --
@@ -106,9 +121,14 @@ ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
   geom_smooth(method="lm", aes(fill=`TIME`))+
   #ggtitle(label = "Price and Demand") +
   xlab(label= "Demand in MW/h") +
-  ylab(label = "Euro per MW/h ")
+  ylab(label = "Euro per MW/h ")+
+  theme_bw()
  #  labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
 
+
+ggsave("Price ~Demand", plot = last_plot(), device = "pdf", 
+       path =  NULL, scale = 1.5, width = NA, height = NA, 
+       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
 
 
