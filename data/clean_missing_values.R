@@ -1,5 +1,4 @@
 library(ggplot2)
-library(plotly)
 
 DiagMissingValues <- function(df, dlevel = 0) {
   # Checks for NA values in dataframe and prints information.
