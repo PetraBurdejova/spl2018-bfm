@@ -18,8 +18,8 @@ ggplot(data=df, aes(x=TIME, y=SOLAR)) +
   ggtitle(label = "Solar Energy Production per Day", 
           subtitle = "German and Austrian Production in MW/h") +
   xlab(label= " ") +
-  ylab(label = "MW/h")+
-  labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
+  ylab(label = "MW/h")
+  # labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
 
 
 
@@ -32,11 +32,14 @@ ggsave("Hourly Demand", plot = last_plot(), device = "pdf",
 
 ## WIND --
 
-ggplot(data=df, aes(x=`TIME`, y=log(`WIND`))) +  
+ggplot(data=df, aes(x=`TIME`, y=(`WIND`))) +  
   geom_point(size=0.5) + 
-  geom_smooth(method="lm", aes(fill=`TIME`))  
-# facet_wrap(~year(TIME)) +
-# geom_smooth(method="loess", color="blue", se=FALSE)
+  geom_smooth(method="lm", span = 1.5, color="blue", se=T) + 
+  ggtitle(label = "Wind Energy Production per Day", 
+        subtitle = "German and Austrian Production in MW/h") +
+  xlab(label= " ") +
+  ylab(label = "MW/h")
+  # labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
 
 
 ## PUN --
@@ -44,7 +47,11 @@ ggplot(data=df, aes(x=`TIME`, y=log(`WIND`))) +
 ggplot(data=df, aes(x=`TIME`, y=`PUN`))  +
   geom_point(size=0.5, color = "black") + 
   # geom_smooth(method="lm", aes(fill=`TIME`), color = "black")  + 
-  geom_smooth(method="lm", color="blue", se=T) 
+  geom_smooth(method="lm", color="gold", se=T) +
+  ggtitle(label = "Day-Ahead Price MW/h") +
+  xlab(label= "") +
+  ylab(label = "€ per MW/h ")
+  # labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
 
 
 ## DEMAND -- 
@@ -53,7 +60,7 @@ ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +
   geom_point(size=0.2, color = "black") + 
   # geom_smooth(method="lm", aes(fill=`TIME`)) +
   # facet_wrap(~year(TIME+365*0.5)) +
-  geom_smooth(method="loess", span = 0.2, color="blue", se=FALSE) +
+  geom_smooth(method="loess", span = 0.3, color="blue", se=FALSE) +
   #ylim(3.5e+06, 7.5e+06) +
   ggtitle(label = "Demand Day-Ahead forecast ",
           subtitle = "Daily MW/h") +
