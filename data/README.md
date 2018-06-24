@@ -19,13 +19,13 @@
 #### WIND+SOLAR DE (Day Ahead Prognose, seit 2015):
 [Link zu den Daten](https://transparency.entsoe.eu/generation/r2/dayAheadGenerationForecastWindAndSolar/show?name=&defaultValue=false&viewType=TABLE&areaType=CTY&atch=false&dateTime.dateTime=01.05.2015+00:00|CET|DAYTIMERANGE&dateTime.endDateTime=01.05.2015+00:00|CET|DAYTIMERANGE&area.values=CTY|10Y1001A1001A83F!CTY|10Y1001A1001A83F&productionType.values=B16&productionType.values=B18&productionType.values=B19&processType.values=A18&processType.values=A01&processType.values=A40&dateTime.timezone=CET_CEST&dateTime.timezone_input=CET+(UTC+1)+/+CEST+(UTC+2))
 
-###### WIND DE (Day Ahead Prognose, seit 2012):
+##### WIND DE (Day Ahead Prognose, seit 2012):
 [Link zu den Daten](https://www.netztransparenz.de/Weitere-Veroeffentlichungen/Windenergie-Prognose). Hier ist Direktvermarktung nicht mit drin, daher sind die Daten unvollständig.
 
 ###### WIND DE (Day Ahead Gehandelt, seit 2012):
 [Link zu den Daten](https://www.netztransparenz.de/Erneuerbare-Energien-Gesetz/Transparenzanforderungen/Vermarktung-1h-Auktion-Windenergie)
 
-#### SOLAR DE (Day Ahead Prognose, seit 2012):
+##### SOLAR DE (Day Ahead Prognose, seit 2012):
 [Link zu den Daten](https://www.netztransparenz.de/Weitere-Veroeffentlichungen/Solarenergie-Prognose)
 
 ###### SOLAR DE (Day Ahead Gehandelt, seit 2012) 
