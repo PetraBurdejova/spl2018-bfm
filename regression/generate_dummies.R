@@ -7,28 +7,20 @@
 #For each type of dummy (Years, Months, Days), a dummy to be left out can be specified in the 3 other parameters.
 #e.g: the parameter del.Y specifies the number of the year to be left out (1 for the oldest year, 2 for the second oldest year etc...)
 #e.g: the parameter del.M specifies the number of the Month to be left out (1 for January, 2 for february...)
-#e.g: the parameter del.D specifies the number of the Day to be left out(1 for monday, 2 for tuesday etc..)
+#e.g: the parameter del.D specifies the number of the Day to be left out(1 for Sunday, 2 for Monday, 3 for Tuesday etc.. until 7 for Saturday)
 
-library("xts") 
+#library("xts") 
 
 
 
 ###TOBE DELETED LATER
 #This is fictionnal data. Real data will be integrated later.
 
-dateVec <- seq(from=as.Date("2015-01-01"), to=as.Date("2018-01-01"), by="days")
-Preis <-c(1:1097)
-Demand <- c(10001:11097)
-Solar <- c(20001:21097)
-Wind <- c(30001:31097)
+#load("data/data.merge")
 
-FullDat <- cbind( Preis,Demand, Solar, Wind)
+#mydata <- df
 
-FullDat.xts <-xts(x=FullDat,order.by=dateVec)
-
-FullDat.msts <-msts(FullDat, seasonal.periods=c(7,365.25))
-
-as.ts(FullDat.xts)
+#mydata.xts <- xts(mydata[, -1], order.by=df$TIME)
 
 ###END OF "TOBE DELETED LATER"
 
@@ -45,8 +37,8 @@ YMDDummy = function(FullDat.xts, del.Y=1,del.M=1, del.D=1){
   
   ##Step 0: Check parameters
   ##0.a: 
-  if(class(FullDat.xts))!=xts()){ ###TO BE FIXED
-  stop("The called object is an xts")
+  if(is(FullDat.xts, "xts")==FALSE){ ###TO BE FIXED
+  stop("The called object is not an xts")
   }else if(del.Y<1 | del.Y> Year.max.number-Year.min.number+1 ){
     stop('The specified Year to be left away in the dummy variables does not exist')
   }else if(del.M<1 | del.M>12){
@@ -80,15 +72,15 @@ YMDDummy = function(FullDat.xts, del.Y=1,del.M=1, del.D=1){
 
   ## 1.c Dummy variables for DAYS
 
-  n=7
-  days.of.the.week           <- c("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
-  Day.Dummy.matrix           <- matrix(,nrow = length(FullDat.xts[,1]), ncol=n)
+  n=6
+  days.of.the.week           <- c("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday")
+  Day.Dummy.matrix           <- matrix(,nrow = length(FullDat.xts[,1]), ncol=n+1)
   colnames(Day.Dummy.matrix) <- days.of.the.week
-  Weekdays                   <- as.POSIXlt(index(FullDat.xts))$wday  ##vector of the week day of each day ( in numbers : 1=Monday..., 7=Sunday)
+  Weekdays                   <- as.POSIXlt(index(FullDat.xts))$wday  ##vector of the week day of each day ( in numbers : 0=Sunday, 1=Monday...6=Saturday)
 
 
-  for (i in 1:n) {
-    Day.Dummy.matrix[,i] <- Weekdays== i
+  for (i in 0:n) {
+    Day.Dummy.matrix[,i+1] <- Weekdays== i
   }
 
 
@@ -104,5 +96,9 @@ YMDDummy = function(FullDat.xts, del.Y=1,del.M=1, del.D=1){
 }
 }
 
-YMDDummy(FullDat.xts)
+
+####Test
+
+
+
 
