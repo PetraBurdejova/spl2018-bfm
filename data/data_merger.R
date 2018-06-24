@@ -43,9 +43,9 @@ time.FRAME <- function(x) {
 # Choose time frame to analyze 
 df.pun <- time.FRAME(df.pun)
 
-# Calculate the sum MW per hour/ day
+# Calculate the mean price per hour/ day
 df.pun <- aggregate(list("PUN" = df.pun$PUN), 
-                         list("TIME" = cut(df.pun$TIME, "1 day")), FUN = sum)
+                         list("TIME" = cut(df.pun$TIME, "1 day")), FUN = mean)
 
 # Adding names and POSIXct time 
 names(df.pun) <- c("TIME", "DAY-AHEAD.MW")
