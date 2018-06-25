@@ -1,0 +1,16 @@
+
+Name of Quantlet : MOEmergedata
+
+Published in : Statistical Programming Languages SS2018
+
+Description : Merges energy market data into single dataframe with daily
+              resolution. Does *NOT* interpolate missing values, which 
+              resuls in data loss.
+
+Keywords : data, cleaning, merging
+
+Author : Bruni Puri, Manuel Pfeuffer
+
+Input : MOErawdata (sourced)
+
+Output : energy_market.csv
