@@ -1,0 +1,16 @@
+
+Name of Quantlet : MOErawdata
+
+Published in : Statistical Programming Languages SS2018
+
+Description : Saves a cleaned version of raw energy market data.
+
+Keywords : data, clean
+
+Author : Bruni Puri
+
+Datafile : 
+
+Input : 
+
+Output :

@@ -87,5 +87,5 @@ df.wind[,-1]    <- df.wind[,-1] + df.wind.AT[,-1]
 df <- cbind(df.pun, df.dm, df.solar, df.wind)
 df <- df[ -c(3,5,7) ]
 
-# Removeing everything except for "df" from environment
+# Removing everything except for "df" from environment
 rm(list=ls()[! ls() %in% c("df")]) 
