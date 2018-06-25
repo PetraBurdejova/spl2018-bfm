@@ -1,5 +1,5 @@
 # Importing data and functions
-source("MOErawdata/MOErawdata.R")
+load("MOErawdata/energy_market_raw.Rdata")
 
 # Small fix
 names(df.dm) <- c("TIME", "DEM")
@@ -89,3 +89,6 @@ df <- df[ -c(3,5,7) ]
 
 # Removing everything except for "df" from environment
 rm(list=ls()[! ls() %in% c("df")]) 
+
+# Save
+save(df, file="MOEmergedata/energy_market.Rdata")

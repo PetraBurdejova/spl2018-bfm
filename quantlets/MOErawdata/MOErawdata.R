@@ -165,3 +165,7 @@ df.wind.AT  <- rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
 ### 3.    CLEAN ENVIRONMENT    -----
 rm(list=ls()[! ls() %in% c("df.pun", "df.solar", "df.solar.AT", "df.wind", 
                         "df.wind.AT", "df.dm")]) 
+
+### 4.    SAVE DATA AS RFILE    -----
+save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
+     file="MOErawdata/energy_market_raw.Rdata")
