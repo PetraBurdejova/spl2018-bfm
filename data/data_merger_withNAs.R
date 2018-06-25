@@ -2,15 +2,16 @@
 source("raw_data.R")
 source("clean_missing_values.R")
 
+# Small fix
+names(df.dm) <- c("TIME", "DEM")
 
-## Choose time frame to analyze 
-#df.dm       <- time.FRAME(df.dm)
-#df.pun      <- time.FRAME(df.pun)
-#df.solar    <- time.FRAME(df.solar)
-#df.wind     <- time.FRAME(df.wind)
-#df.solar.AT <- time.FRAME(df.solar.AT)
-#df.wind.AT  <- time.FRAME(df.wind.AT)
-
+# Choose time frame to analyze 
+df.dm       <- time.FRAME(df.dm)
+df.pun      <- time.FRAME(df.pun)
+df.solar    <- time.FRAME(df.solar)
+df.wind     <- time.FRAME(df.wind)
+df.solar.AT <- time.FRAME(df.solar.AT)
+df.wind.AT  <- time.FRAME(df.wind.AT)
 
 # Function for computing MW/h from quater-hourly values
 hour.MW.comp <- function(x){
@@ -20,12 +21,12 @@ hour.MW.comp <- function(x){
 }
 
 # Calculate daily averages/sums
-df.dm       <- aggregate(list("DM" = df.dm$dm),
-                         list("TIME" = cut(df.dm$TIME, "1 day")),
-                         FUN = sum)
 df.pun      <- aggregate(list("PUN" = df.pun$PUN),
                          list("TIME" = cut(df.pun$TIME, "1 day")),
                          FUN = mean)  # 'FUN = mean' because PUN is prize.
+df.dm       <- aggregate(list("DM" = df.dm$DEM),
+                         list("TIME" = cut(df.dm$TIME, "1 day")),
+                         FUN = sum)
 df.solar    <- aggregate(list(df.solar$`50Hertz`, df.solar$`Amprion`, 
                            df.solar$`TenneT.TSO`, df.solar$`Transnet.BW`), 
                          list("TIME" = cut(df.solar$TIME, "1 day")),
@@ -41,20 +42,35 @@ df.wind.AT  <- aggregate(list("WIND.MW.AT" = df.wind.AT$`WIND.MW.AT`),
                          list("TIME" = cut(df.wind.AT$TIME, "1 day")),
                          FUN = sum)
 
+# Fix formating (formating is lost bc use of aggregate())
+names(df.pun)     <- c("TIME", "PUN")
+names(df.dm)      <- c("TIME", "DEM")
+names(df.solar)   <- c("TIME", "50Hertz", "Amprion",
+                       "TenneT.TSO", "Transnet.BW")
+names(df.wind)    <- c("TIME", "50Hertz", "Amprion",
+                       "TenneT.TSO", "Transnet.BW")
+names(df.solar.AT)<- c("TIME", "SOLAR")
+names(df.wind.AT) <- c("TIME", "WIND")
+df.pun$TIME       <- ymd(df.pun$TIME)
+df.dm$TIME        <- ymd(df.dm$TIME)
+df.solar$TIME     <- ymd(df.solar$TIME)
+df.wind$TIME      <- ymd(df.wind$TIME)
+df.solar.AT$TIME  <- ymd(df.solar.AT$TIME)
+df.wind.AT$TIME   <- ymd(df.wind.AT$TIME)
 
-# Function for merging AT & DE
-sum.f <- function(x, y) {
-  # Calculates the *rowsum* for solar and wind variables in DE & AT
-  #
-  # Args: 
-  #   x, y = Input Dataframes
-  #
-  # Output: 
-  #   z = Vector of values
-    z <- x$`MW.per.Day` + y$`MW.per.Day`
-    return(z)
-}
+# Aggregate producers for df.solar and df.wind
+df.solar  <- data.frame(df.solar$TIME, rowSums(df.solar[ ,-1]))
+df.wind   <- data.frame(df.wind$TIME, rowSums(df.wind[ ,-1]))
+names(df.solar)   <- c("TIME", "SOLAR")
+names(df.wind)    <- c("TIME", "WIND")
 
-# Merging AT & DE data  
-#df.solar <- sum.f(df.solar, df.solar.AT)
-#df.wind  <- sum.f(df.wind, df.wind.AT)
+# Merge AT & DE renewable data  
+df.solar[,-1]   <- df.solar[,-1] + df.solar.AT[,-1]
+df.wind[,-1]    <- df.wind[,-1] + df.wind.AT[,-1]
+
+# Bind final Dataframe
+df <- cbind(df.pun, df.dm, df.solar, df.wind)
+df <- df[ -c(3,5,7) ]
+
+# Removeing everything except for "df" from environment
+rm(list=ls()[! ls() %in% c("df")]) 
