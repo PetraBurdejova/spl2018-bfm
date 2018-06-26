@@ -56,4 +56,6 @@ names(df.na.wind) <- c("TIME", "SOURCE")
 df.na <- rbind(df.na.dm,df.na.solar,df.na.wind)
 
 gg <- ggplot(df.na) +
-  geom_histogram(aes(x=TIME, col=SOURCE, fill=SOURCE), binwidth = 24*3600)
+  geom_histogram(aes(x=TIME, col=SOURCE, fill=SOURCE), alpha = 0.8, binwidth = 24*3600) +
+  labs(title = "Histogram of NAs per day in raw datasets",
+       x = "Date", y = "NAs per day")  
