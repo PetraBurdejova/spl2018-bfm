@@ -57,15 +57,15 @@ df.dem.2018.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_20
 ###############################################################################
 ####    2.  CLEANING AND FORMATING    #########################################
 ###############################################################################
-####    TODO: Explain solution to timezones problem in this comment.       ####
-###############################################################################
 
 
 ###############################################################################
 ####    2a. SINGLE DATAFRAMES (df.pun, df.solar, df.wind)    ################## 
 ###############################################################################
 
-# Remove unwanted columns 
+# Remove unwanted columns. Columns are selected by their position and not by
+# their name, to prevent parsing errors. E.g.: use `select = names(df)[c(1, 
+# ...)]` instead of `select = c("Datum", ...)`.
 df.pun    = subset(df.pun.0, select = names(df.pun.0)[c(1,5)])
 df.solar  = subset(df.solar.D, select = names(df.solar.D)[-3])
 df.solar  = unite(df.solar, TIME, names(df.solar)[c(1,2)], sep = " ")
