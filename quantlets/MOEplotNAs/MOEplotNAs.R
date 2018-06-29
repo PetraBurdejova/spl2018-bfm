@@ -66,12 +66,12 @@ time.FRAME <- function(x) {
   y <- x[ind, ]
 }
 
-df.dm       <- time.FRAME(df.dm)
-df.pun      <- time.FRAME(df.pun)
-df.solar    <- time.FRAME(df.solar)
-df.wind     <- time.FRAME(df.wind)
-df.solar.AT <- time.FRAME(df.solar.AT)
-df.wind.AT  <- time.FRAME(df.wind.AT)
+#df.dm       <- time.FRAME(df.dm)
+#df.pun      <- time.FRAME(df.pun)
+#df.solar    <- time.FRAME(df.solar)
+#df.wind     <- time.FRAME(df.wind)
+#df.solar.AT <- time.FRAME(df.solar.AT)
+#df.wind.AT  <- time.FRAME(df.wind.AT)
 
 df.na.clean <- data.frame(DiagMissingValues(df), "CLEAN")
 names(df.na.clean) <- c("TIME", "SOURCE")
