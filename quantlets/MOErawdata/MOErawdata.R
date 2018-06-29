@@ -44,27 +44,41 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 ###############################################################################
 
 
-# Load price data.
-df.pun.0        =  read.csv("MOErawdata/inputs/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
+# READ PRICE DATA:
+#   Units:      UTC, EUR
+#   Delim:      ,
+#   Decimal:    .
+#   Enclosed:   none
+df.pun.0        =  read.csv("MOErawdata/inputs/price_elspot.csv")
 
-# Load renewables DE data (solar and wind are available in seperate files).
-df.solar.D      =  read.csv2("MOErawdata/inputs/Solarenergie_DE.csv")
-df.wind.D       =  read.csv2("MOErawdata/inputs/Windenergie_DE.csv")
+# READ DEMAND DATA:
+#   Format:     UTC, MW
+#   Delim:      ,
+#   Decimal:    none
+#   Enclosed:   ""
+df.dem.2015.0   = read.csv("MOErawdata/inputs/demand_2015_entsoe.csv")
+df.dem.2016.0   = read.csv("MOErawdata/inputs/demand_2016_entsoe.csv")
+df.dem.2017.0   = read.csv("MOErawdata/inputs/demand_2017_entsoe.csv")
+df.dem.2018.0   = read.csv("MOErawdata/inputs/demand_2018_entsoe.csv")
 
-# Load renewables AT data (solar.AT and wind.AT are separate columns in one file).
-df.ren.AT1      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-06-30T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT2      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2015-12-31T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT3      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-06-30T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT4      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2016-07-01T00_00_00Z_2016-12-31T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT5      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2017-01-01T00_00_00Z_2017-06-30T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT6      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2017-07-01T00_00_00Z_2017-12-31T23_45_00Z_60M_de.csv", header = F)
-df.ren.AT7      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2018-01-01T00_00_00Z_2018-06-04T23_45_00Z_60M_de.csv", header = F)
+# READ SOLAR.DE, WIND.DE DATA:
+#   Units:      CET/CEST, MW
+#   Delim:      ;
+#   Decimal:    ,
+#   Enclosed:   ""
+df.solar.D      =  read.csv2("MOErawdata/inputs/solar_DE_netztransp.csv")
+df.wind.D       =  read.csv2("MOErawdata/inputs/wind_DE_netztransp.csv")
 
-# Load demand data.
-df.dem.2015.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201501010000-201601010000.csv")
-df.dem.2016.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201601010000-201701010000.csv")
-df.dem.2017.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
-df.dem.2018.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201801010000-201901010000.csv")
+# READ RENEWABLES.AT (SOLAR + WIND) DATA:
+#   Units:      CET/CEST, MW 
+#   Delim:      ;
+#   Decimal:    ,
+#   Enclosed:   none
+#   Header:     FALSE
+df.ren.AT.2015  =  read.csv2("MOErawdata/inputs/renew_AT_2015.csv", header = F)
+df.ren.AT.2016  =  read.csv2("MOErawdata/inputs/renew_AT_2016.csv", header = F)
+df.ren.AT.2017  =  read.csv2("MOErawdata/inputs/renew_AT_2017.csv", header = F)
+df.ren.AT.2018  =  read.csv2("MOErawdata/inputs/renew_AT_2018.csv", header = F)
 
 
 
@@ -163,21 +177,15 @@ select.DEM = function(x) {
 ###############################################################################
 ####    APPLY SUBROUTINES    ##################################################
 
-df.solar.AT1    = select.ATSOLAR(df.ren.AT1)
-df.solar.AT2    = select.ATSOLAR(df.ren.AT2)
-df.solar.AT3    = select.ATSOLAR(df.ren.AT3)
-df.solar.AT4    = select.ATSOLAR(df.ren.AT4)
-df.solar.AT5    = select.ATSOLAR(df.ren.AT5)
-df.solar.AT6    = select.ATSOLAR(df.ren.AT6)
-df.solar.AT7    = select.ATSOLAR(df.ren.AT7)
+df.solar.AT1    = select.ATSOLAR(df.ren.AT.2015)
+df.solar.AT2    = select.ATSOLAR(df.ren.AT.2016)
+df.solar.AT3    = select.ATSOLAR(df.ren.AT.2017)
+df.solar.AT4    = select.ATSOLAR(df.ren.AT.2018)
 
-df.wind.AT1     = select.ATWIND(df.ren.AT1)
-df.wind.AT2     = select.ATWIND(df.ren.AT2)
-df.wind.AT3     = select.ATWIND(df.ren.AT3)
-df.wind.AT4     = select.ATWIND(df.ren.AT4)
-df.wind.AT5     = select.ATWIND(df.ren.AT5)
-df.wind.AT6     = select.ATWIND(df.ren.AT6)
-df.wind.AT7     = select.ATWIND(df.ren.AT7)
+df.wind.AT1     = select.ATWIND(df.ren.AT.2015)
+df.wind.AT2     = select.ATWIND(df.ren.AT.2016)
+df.wind.AT3     = select.ATWIND(df.ren.AT.2017)
+df.wind.AT4     = select.ATWIND(df.ren.AT.2018)
 
 df.dem.2015     = select.DEM(df.dem.2015.0)
 df.dem.2016     = select.DEM(df.dem.2016.0)
@@ -193,12 +201,8 @@ df.dem.2018     = select.DEM(df.dem.2018.0)
 
 # Bind dataframes.
 df.dm       = rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
-df.solar.AT = rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4,
-                    df.solar.AT5,df.solar.AT6,df.solar.AT7
-                    )
-df.wind.AT  = rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
-                    df.wind.AT5,df.wind.AT6,df.wind.AT7
-                    )
+df.solar.AT = rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4)
+df.wind.AT  = rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4)
 
 # Save dataframes as '.Rdata' file for easy read-in in R.
 save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
