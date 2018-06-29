@@ -1,29 +1,27 @@
-### 0.    EXPLANATION          ------     
+#### raw_data.R  ------     
 #
-# raw_data.R
+# Energy market data is read in, formatted using the 'lubridate' and 
+# 'tidyr' packages and saved as .csv and .Rdata file.
 #
-# Data is loaded and formatted
+# Input:  Data '.csv' files from the 'input' subdirectory.
 #
-# Input:  Raw data files
-#
-# Ouput:  Variables in unprocessed form for further work
-#             TIME
-#             PUN (PRICE)
-#             SOLAR DE
-#             SOLAR AT
-#             WIND DE
-#             WIND AT
-#             DEMAND
+# Ouput:  .csv    - data in table form
+#         .Rdata  - data in Rdata form
 
+
+# Clear all variables.
+rm(list = ls(all = TRUE))
+graphics.off()
+
+# Install and load libraries.
+libraries = c("tidyr", "stringr", "lubridate")
+lapply(libraries, function(x) if (!(x %in% installed.packages())) {
+    install.packages(x)
+})
+lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 
 
 ### 1.    LOAD DATA            ----
-
-# Deleting environment and loading packages
-rm(list = ls())
-library(lubridate)
-library(tidyr)
-library(stringr)
 
 # Loading price data
 df.pun.0   <-  read.csv("MOErawdata/inputs/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
@@ -168,4 +166,4 @@ rm(list=ls()[! ls() %in% c("df.pun", "df.solar", "df.solar.AT", "df.wind",
 
 ### 4.    SAVE DATA AS RFILE    -----
 save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
-     file="MOErawdata/energy_market_raw.Rdata")
+     file="MOErawdata/output-raw.Rdata")
