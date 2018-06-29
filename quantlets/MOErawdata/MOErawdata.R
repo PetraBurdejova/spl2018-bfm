@@ -2,8 +2,8 @@
 ####    MOErawdata.R    #######################################################     
 ###############################################################################     
 #
-# Energy market data is read in, formatted using the 'lubridate' and 
-# 'tidyr' packages and saved as .csv and .Rdata files.
+# Energy market data is read in using 'readr', formatted using the 'lubridate' 
+# and 'tidyr' packages and saved as .csv and .Rdata files.
 #
 # Input:  Data '.csv' files from the 'input' subdirectory.
 #
@@ -17,7 +17,7 @@ rm(list = ls(all = TRUE))
 graphics.off()
 
 # Install and load libraries.
-libraries = c("tidyr", "stringr", "lubridate")
+libraries = c("tidyr", "stringr", "lubridate", "readr")
 lapply(libraries, function(x) if (!(x %in% installed.packages())) {
     install.packages(x)
 })
@@ -29,15 +29,15 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 ####    1.  READ ENERGY MARKET DATA    ########################################
 ###############################################################################
 
-# Loading price data
+
+# Load price data
 df.pun.0        =  read.csv("MOErawdata/inputs/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
-# Loading renewables DE data
-df.solar.D      =  read.csv2("MOErawdata/inputs/Solarenergie_DE.csv",
-                             econding = "utf-8")
+# Load renewables DE data
+df.solar.D      =  read.csv2("MOErawdata/inputs/Solarenergie_DE.csv")
 df.wind.D       =  read.csv2("MOErawdata/inputs/Windenergie_DE.csv")
 
-# Loading renewables AT data
+# Load renewables AT data
 df.ren.AT1      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-06-30T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT2      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2015-12-31T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT3      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-06-30T23_45_00Z_60M_de.csv", header = F)
@@ -46,7 +46,7 @@ df.ren.AT5      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_201
 df.ren.AT6      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2017-07-01T00_00_00Z_2017-12-31T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT7      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2018-01-01T00_00_00Z_2018-06-04T23_45_00Z_60M_de.csv", header = F)
 
-# Loading demand data
+# Load demand data
 df.dem.2015.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201501010000-201601010000.csv")
 df.dem.2016.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201601010000-201701010000.csv")
 df.dem.2017.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
@@ -57,41 +57,27 @@ df.dem.2018.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_20
 ###############################################################################
 ####    2.  CLEANING AND FORMATING    #########################################
 ###############################################################################
+####    TODO: Explain solution to timezones problem in this comment.       ####
+###############################################################################
 
 
 ###############################################################################
 ####    2a. SINGLE DATAFRAMES (df.pun, df.solar, df.wind)    ################## 
 ###############################################################################
 
-# Select important data/variables 
-df.pun    = subset(df.pun.0, select = c(HourUTC, SpotPriceEUR))
-df.solar  = subset(df.solar.D,
-                    select = c("Datum",
-                               "von",
-                               "X50Hertz..MW.",
-                               "Amprion..MW.", 
-                               "TenneT.TSO..MW.",
-                               "Transnet.BW..MW."
-                               )
-                    )
-df.wind   = subset(df.wind.D, 
-                    select = c("Datum",
-                               "von",
-                               "X50Hertz..MW.", 
-                               "Amprion..MW.", 
-                               "TenneT.TSO..MW.", 
-                               "TransnetBW"
-                               )
-                    )
+# Remove unwanted columns 
+df.pun    = subset(df.pun.0, select = names(df.pun.0)[c(1,5)])
+df.solar  = subset(df.solar.D, select = names(df.solar.D)[-3])
+df.solar  = unite(df.solar, TIME, names(df.solar)[c(1,2)], sep = " ")
+df.wind   = subset(df.wind.D, select = names(df.wind.D)[-3])
+df.wind   = unite(df.wind, TIME, names(df.wind)[c(1,2)], sep = " ")
 
-# Adding names and POSIXct time 
-df.solar    = unite(df.solar, TIME, c("Datum", "von"), sep = " ")
-df.wind     = unite(df.wind, TIME, c("Datum", "von"), sep = " ")
-
+# Change column names 
 names(df.pun)   = c("TIME", "PUN")
-names(df.solar) = c("TIME", "50Hertz", "Amprion", "TenneT.TSO", "Transnet.BW")
-names(df.wind)  = c("TIME", "50Hertz", "Amprion", "TenneT.TSO", "Transnet.BW")
+names(df.solar) = c("TIME", "FzHertz", "Amprion", "TenneT.TSO", "Transnet.BW")
+names(df.wind)  = c("TIME", "FzHertz", "Amprion", "TenneT.TSO", "Transnet.BW")
 
+# Format as POSIXct time
 df.pun$TIME     = ymd_hm(df.pun$TIME)
 df.solar$TIME   = dmy_hm(df.solar$TIME)
 df.wind$TIME    = dmy_hm(df.wind$TIME)
@@ -100,7 +86,6 @@ df.wind$TIME    = dmy_hm(df.wind$TIME)
 ###############################################################################
 ####    2a. MULTIPLE DATAFRAMES (df.dm, df.solar.AT, df.wind.AT)    ###########
 ###############################################################################
-
 
 ###############################################################################
 ####    DEFINE SUBROUTINES    #################################################
@@ -113,7 +98,7 @@ select.ATSOLAR = function(x){
   #
   # Returns:
   #   y: Corrected solar.AT dataframe
-  y                 = subset(x, select = c("V1", "V7"))
+  y                 = subset(x, select = names(x)[c(1, 7)])
   names(y)          = c("TIME", "SOLAR.MW.AT")
   y$`SOLAR.MW.AT`   = as.numeric(y$`SOLAR.MW.AT`)
   y$TIME            = dmy_hms(y$TIME)
@@ -128,7 +113,7 @@ select.ATWIND = function(x){
   #
   # Returns:
   #   y: Corrected wind.AT dataframe
-  y                 = subset(x, select = c("V1", "V5"))
+  y                 = subset(x, select = names(x)[c(1,7)])
   names(y)          = c("TIME", "WIND.MW.AT")
   y$`WIND.MW.AT`    = as.numeric(y$`WIND.MW.AT`)
   y$TIME            = dmy_hms(y$TIME)
@@ -143,26 +128,21 @@ select.DEM = function(x) {
   #
   # Returns:
   #   y: Selection of demand dataframes
-  y         = subset(x, select = c("Time..CET.", 
-                "Day.ahead.Total.Load.Forecast..MW....BZN.DE.AT.LU")
-                     )
+  y         = subset(x, select = names(x)[c(1,2)])
   names(y)  = c("TIME", "DEM")
   y         = separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
   y         = subset(y, select = c("TIME","DEM"))
   y$TIME    = dmy_hm(y$TIME)
   # y$TIME = dmy_hm(y$TIME, tz = "CET")
-  # y$TIME = with_tz(y$TIME, tz="UTC")
-  
+  # y$TIME = with_tz(y$TIME, tz="UTC")  
   if (class(y$DEM) == "factor") {
     y$DEM   = as.numeric(levels(y$DEM))[y$DEM]
     return(y)
   } else {
     y$DEM   = as.numeric(y$DEM)
     return(y)
-  }
-  
+  }  
 } 
-
 
 ###############################################################################
 ####    APPLY SUBROUTINES    ##################################################
