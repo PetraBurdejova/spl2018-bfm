@@ -1,16 +1,17 @@
 
 Name of Quantlet : MOErawdata
 
-Published in : Statistical Programming Languages SS2018
+Published in : 'SPL2018 - The Merit Order Effect in the German Power Market'
 
-Description : Saves a cleaned version of raw energy market data.
+Description : 'Reads, formats and cleans the raw data sets. Resulting
+dataframes are saved as .csv and .Rdata files.'
 
-Keywords : data, clean
+Keywords : data, read, clean, time, energy market
 
-Author : Bruni Puri
+Author : Bruni Puri, Manuel Pfeuffer
 
-Datafile : 
+Submitted : Fri, June 29 2018 by Manuel Pfeuffer
 
-Input : 
+Datafile : All files in the ''input'' subdirectory.
 
-Output :
+Output : MOEdata_clean.Rdata

@@ -1,16 +1,19 @@
 
 Name of Quantlet : MOEmergedata
 
-Published in : Statistical Programming Languages SS2018
+Published in : 'SPL2018 - The Merit Order Effect in the German Power Market'
 
-Description : Merges energy market data into single dataframe with daily
-              resolution. Does *NOT* interpolate missing values, which 
-              resuls in data loss.
+Description : 'Matches the timeframes, calculates daily values and merges data
+cleaned by the ''MOErawdata'' Quantlet.'
 
-Keywords : data, cleaning, merging
+Keywords : data, read, clean, time, energy market, merge, aggregate
 
 Author : Bruni Puri, Manuel Pfeuffer
 
-Input : MOErawdata (sourced)
+See also : 'MOErawdata'
 
-Output : energy_market.csv
+Submitted : Fri, June 29 2018 by Manuel Pfeuffer
+
+Datafile : '../MOErawdata/MOEdata_clean.Rdata'
+
+Output : MOEdata_merge.Rdata
