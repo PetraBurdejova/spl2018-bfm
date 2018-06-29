@@ -30,14 +30,14 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 ###############################################################################
 
 
-# Load price data
+# Load price data.
 df.pun.0        =  read.csv("MOErawdata/inputs/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
-# Load renewables DE data
+# Load renewables DE data.
 df.solar.D      =  read.csv2("MOErawdata/inputs/Solarenergie_DE.csv")
 df.wind.D       =  read.csv2("MOErawdata/inputs/Windenergie_DE.csv")
 
-# Load renewables AT data
+# Load renewables AT data.
 df.ren.AT1      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-06-30T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT2      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2015-12-31T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT3      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-06-30T23_45_00Z_60M_de.csv", header = F)
@@ -46,7 +46,7 @@ df.ren.AT5      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_201
 df.ren.AT6      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2017-07-01T00_00_00Z_2017-12-31T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT7      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2018-01-01T00_00_00Z_2018-06-04T23_45_00Z_60M_de.csv", header = F)
 
-# Load demand data
+# Load demand data.
 df.dem.2015.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201501010000-201601010000.csv")
 df.dem.2016.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201601010000-201701010000.csv")
 df.dem.2017.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201701010000-201801010000.csv")
@@ -64,27 +64,29 @@ df.dem.2018.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_20
 ###############################################################################
 
 # Remove unwanted columns. Columns are selected by their position and not by
-# their name, to prevent parsing errors. E.g.: use `select = names(df)[c(1, 
-# ...)]` instead of `select = c("Datum", ...)`.
+# their name to prevent parsing errors. E.g.: use `select = names(df)[c(1)]`
+# instead of `select = "Datum"`.
 df.pun    = subset(df.pun.0, select = names(df.pun.0)[c(1,5)])
+
 df.solar  = subset(df.solar.D, select = names(df.solar.D)[-3])
 df.solar  = unite(df.solar, TIME, names(df.solar)[c(1,2)], sep = " ")
+
 df.wind   = subset(df.wind.D, select = names(df.wind.D)[-3])
 df.wind   = unite(df.wind, TIME, names(df.wind)[c(1,2)], sep = " ")
 
-# Change column names 
+# Change column names.
 names(df.pun)   = c("TIME", "PUN")
 names(df.solar) = c("TIME", "FzHertz", "Amprion", "TenneT.TSO", "Transnet.BW")
 names(df.wind)  = c("TIME", "FzHertz", "Amprion", "TenneT.TSO", "Transnet.BW")
 
-# Format as POSIXct time
+# Format as POSIXct time.
 df.pun$TIME     = ymd_hm(df.pun$TIME)
 df.solar$TIME   = dmy_hm(df.solar$TIME)
 df.wind$TIME    = dmy_hm(df.wind$TIME)
 
 
 ###############################################################################
-####    2a. MULTIPLE DATAFRAMES (df.dm, df.solar.AT, df.wind.AT)    ###########
+####    2b. MULTIPLE DATAFRAMES (df.dm, df.solar.AT, df.wind.AT)    ###########
 ###############################################################################
 
 ###############################################################################
@@ -174,6 +176,7 @@ df.dem.2018     = select.DEM(df.dem.2018.0)
 ####    3. BIND AND SAVE DATAFRAMES    ########################################
 ###############################################################################
 
+# Bind dataframes.
 df.dm       = rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
 df.solar.AT = rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4,
                     df.solar.AT5,df.solar.AT6,df.solar.AT7
