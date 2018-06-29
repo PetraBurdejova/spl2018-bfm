@@ -2,13 +2,14 @@
 ####    MOErawdata.R    #######################################################     
 ###############################################################################     
 #
-# Energy market data is read in using 'readr', formatted using the 'lubridate' 
-# and 'tidyr' packages and saved as .csv and .Rdata files.
+# Energy market data is read in using 'readr'and  formatted using the 
+# 'lubridate' and 'tidyr' packages. Cleaned <dataframes> are saved as .csv and 
+# .Rdata files. Working directory may need to be set corectly (see section 0).
 #
 # Input:  Data '.csv' files from the 'input' subdirectory.
 #
-# Ouput:  .csv    - data in table form
-#         .Rdata  - data in Rdata form
+# Ouput:  output-<variable_name>.csv    - data in table form
+#         output-raw.Rdata              - data in Rdata form
 #
 ###############################################################################
 
@@ -26,6 +27,17 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 
 
 ###############################################################################
+####    0.  SET WORKING DIRECTORY    ##########################################
+###############################################################################
+####    ATTENTION: Working directory is assumed to be the root of the MOE 
+####    repository, not the MOErawdata Quantlet subdirectory!!!
+
+# If needed, set working directory accordingly:
+#setwd("path/to/MOE_repository")
+
+
+
+###############################################################################
 ####    1.  READ ENERGY MARKET DATA    ########################################
 ###############################################################################
 
@@ -33,11 +45,11 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 # Load price data.
 df.pun.0        =  read.csv("MOErawdata/inputs/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
-# Load renewables DE data (solar and wind in seperate files).
+# Load renewables DE data (solar and wind are available in seperate files).
 df.solar.D      =  read.csv2("MOErawdata/inputs/Solarenergie_DE.csv")
 df.wind.D       =  read.csv2("MOErawdata/inputs/Windenergie_DE.csv")
 
-# Load renewables AT data (solar and wind in one file).
+# Load renewables AT data (solar.AT and wind.AT are separate columns in one file).
 df.ren.AT1      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-06-30T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT2      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2015-12-31T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT3      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-06-30T23_45_00Z_60M_de.csv", header = F)
@@ -64,8 +76,8 @@ df.dem.2018.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_20
 ###############################################################################
 
 # Remove unwanted columns. Merge date and hour columns. Columns are selected by
-# their position and not by their name to prevent parsing errors. 
-# Example: Use 'select = names(df)[c(1)]' instead of 'select = "Datum"'.
+# their position and not by their name to prevent parsing errors. (mpff)
+# Example: Use 'select = names(df)[c(1)]' instead of 'select = "Date"'.
 df.pun    = subset(df.pun.0, select = names(df.pun.0)[c(1,5)])
 
 df.solar  = subset(df.solar.D, select = names(df.solar.D)[-3])
@@ -191,7 +203,7 @@ save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
      )
 
 # Save dataframes as '.csv' files for use with other software.
-####    TODO: Save dataframes as .csv (mpff)
+####    TODO: Save dataframes as .csv
 
 
 
