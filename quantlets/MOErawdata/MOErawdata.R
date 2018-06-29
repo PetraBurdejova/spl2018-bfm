@@ -33,11 +33,11 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 # Load price data.
 df.pun.0        =  read.csv("MOErawdata/inputs/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
-# Load renewables DE data.
+# Load renewables DE data (solar and wind in seperate files).
 df.solar.D      =  read.csv2("MOErawdata/inputs/Solarenergie_DE.csv")
 df.wind.D       =  read.csv2("MOErawdata/inputs/Windenergie_DE.csv")
 
-# Load renewables AT data.
+# Load renewables AT data (solar and wind in one file).
 df.ren.AT1      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-01-01T00_00_00Z_2015-06-30T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT2      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2015-07-01T00_00_00Z_2015-12-31T23_45_00Z_60M_de.csv", header = F)
 df.ren.AT3      =  read.csv2("MOErawdata/inputs/AT - renewables/export_daftg_2016-01-01T00_00_00Z_2016-06-30T23_45_00Z_60M_de.csv", header = F)
@@ -55,7 +55,7 @@ df.dem.2018.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_20
 
 
 ###############################################################################
-####    2.  CLEANING AND FORMATING    #########################################
+####    2.  CLEAN AND FORMAT    ###############################################
 ###############################################################################
 
 
@@ -63,9 +63,9 @@ df.dem.2018.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_20
 ####    2a. SINGLE DATAFRAMES (df.pun, df.solar, df.wind)    ################## 
 ###############################################################################
 
-# Remove unwanted columns. Columns are selected by their position and not by
-# their name to prevent parsing errors. E.g.: use `select = names(df)[c(1)]`
-# instead of `select = "Datum"`.
+# Remove unwanted columns. Merge date and hour columns. Columns are selected by
+# their position and not by their name to prevent parsing errors. 
+# Example: Use 'select = names(df)[c(1)]' instead of 'select = "Datum"'.
 df.pun    = subset(df.pun.0, select = names(df.pun.0)[c(1,5)])
 
 df.solar  = subset(df.solar.D, select = names(df.solar.D)[-3])
