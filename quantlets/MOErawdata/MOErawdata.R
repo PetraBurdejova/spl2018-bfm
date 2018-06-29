@@ -107,10 +107,12 @@ names(df.pun)   = c("TIME", "PUN")
 names(df.solar) = c("TIME", "FzHertz", "Amprion", "TenneT.TSO", "Transnet.BW")
 names(df.wind)  = c("TIME", "FzHertz", "Amprion", "TenneT.TSO", "Transnet.BW")
 
-# Format as POSIXct time.
-df.pun$TIME     = ymd_hm(df.pun$TIME)
-df.solar$TIME   = dmy_hm(df.solar$TIME)
-df.wind$TIME    = dmy_hm(df.wind$TIME)
+# Format as POSIXct time in UTC. Beware of different timezones in  raw data!
+df.pun$TIME     = ymd_hm(df.pun$TIME, tz = "UTC")
+df.solar$TIME   = dmy_hm(df.solar$TIME, tz = "Europe/Brussels")
+df.solar$TIME   = with_tz(df.solar$TIME, tz = "UTC")
+df.wind$TIME    = dmy_hm(df.wind$TIME, tz = "Europe/Brussels")
+df.wind$TIME    = with_tz(df.wind$TIME, tz = "UTC")
 
 
 ###############################################################################
@@ -131,7 +133,8 @@ select.ATSOLAR = function(x){
   y                 = subset(x, select = names(x)[c(1, 7)])
   names(y)          = c("TIME", "SOLAR.MW.AT")
   y$`SOLAR.MW.AT`   = as.numeric(y$`SOLAR.MW.AT`)
-  y$TIME            = dmy_hms(y$TIME)
+  y$TIME            = dmy_hms(y$TIME, tz = "Europe/Brussels")
+  y$TIME            = with_tz(y$TIME, tz = "UTC")  # Convert timezone
   return(y)
 }
 
@@ -146,7 +149,8 @@ select.ATWIND = function(x){
   y                 = subset(x, select = names(x)[c(1,7)])
   names(y)          = c("TIME", "WIND.MW.AT")
   y$`WIND.MW.AT`    = as.numeric(y$`WIND.MW.AT`)
-  y$TIME            = dmy_hms(y$TIME)
+  y$TIME            = dmy_hms(y$TIME, tz = "Europe/Brussels")
+  y$TIME            = with_tz(y$TIME, tz = "UTC")  # Convert timezone
   return(y)
 }
 
@@ -162,9 +166,7 @@ select.DEM = function(x) {
   names(y)  = c("TIME", "DEM")
   y         = separate(y, col = TIME, into = c("TIME","bis"), sep =  " - ")
   y         = subset(y, select = c("TIME","DEM"))
-  y$TIME    = dmy_hm(y$TIME)
-  # y$TIME = dmy_hm(y$TIME, tz = "CET")
-  # y$TIME = with_tz(y$TIME, tz="UTC")  
+  y$TIME    = dmy_hm(y$TIME, tz = "UTC")
   if (class(y$DEM) == "factor") {
     y$DEM   = as.numeric(levels(y$DEM))[y$DEM]
     return(y)
