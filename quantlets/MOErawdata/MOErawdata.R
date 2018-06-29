@@ -23,6 +23,8 @@ lapply(libraries, function(x) if (!(x %in% installed.packages())) {
 })
 lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 
+
+
 ###############################################################################
 ####    1.  READ ENERGY MARKET DATA    ########################################
 ###############################################################################
@@ -31,7 +33,8 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 df.pun.0        =  read.csv("MOErawdata/inputs/Elspot_Prices_Data-5375228caa4c48ad9b969f250d70fe2e.csv")
 
 # Loading renewables DE data
-df.solar.D      =  read.csv2("MOErawdata/inputs/Solarenergie_DE.csv")
+df.solar.D      =  read.csv2("MOErawdata/inputs/Solarenergie_DE.csv",
+                             econding = "utf-8")
 df.wind.D       =  read.csv2("MOErawdata/inputs/Windenergie_DE.csv")
 
 # Loading renewables AT data
@@ -50,9 +53,17 @@ df.dem.2017.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_20
 df.dem.2018.0   = read.csv("MOErawdata/inputs/Total Load - Day Ahead _ Actual_201801010000-201901010000.csv")
 
 
-### 2. Clean Data
 
-# Select important data/ variables 
+###############################################################################
+####    2.  CLEANING AND FORMATING    #########################################
+###############################################################################
+
+
+###############################################################################
+####    2a. SINGLE DATAFRAMES (df.pun, df.solar, df.wind)    ################## 
+###############################################################################
+
+# Select important data/variables 
 df.pun    = subset(df.pun.0, select = c(HourUTC, SpotPriceEUR))
 df.solar  = subset(df.solar.D,
                     select = c("Datum",
@@ -85,7 +96,15 @@ df.pun$TIME     = ymd_hm(df.pun$TIME)
 df.solar$TIME   = dmy_hm(df.solar$TIME)
 df.wind$TIME    = dmy_hm(df.wind$TIME)
 
-# Build functions to format dem/wind.AT/solar.AT
+
+###############################################################################
+####    2a. MULTIPLE DATAFRAMES (df.dm, df.solar.AT, df.wind.AT)    ###########
+###############################################################################
+
+
+###############################################################################
+####    DEFINE SUBROUTINES    #################################################
+
 select.ATSOLAR = function(x){
   # Selects the important variables for the ren.AT data
   #
@@ -144,7 +163,10 @@ select.DEM = function(x) {
   
 } 
 
-# Apply functions
+
+###############################################################################
+####    APPLY SUBROUTINES    ##################################################
+
 df.solar.AT1    = select.ATSOLAR(df.ren.AT1)
 df.solar.AT2    = select.ATSOLAR(df.ren.AT2)
 df.solar.AT3    = select.ATSOLAR(df.ren.AT3)
@@ -166,7 +188,12 @@ df.dem.2016     = select.DEM(df.dem.2016.0)
 df.dem.2017     = select.DEM(df.dem.2017.0)
 df.dem.2018     = select.DEM(df.dem.2018.0)
 
-# Bind dataframes together
+
+
+###############################################################################
+####    3. BIND AND SAVE DATAFRAMES    ########################################
+###############################################################################
+
 df.dm       = rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
 df.solar.AT = rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4,
                     df.solar.AT5,df.solar.AT6,df.solar.AT7
@@ -175,8 +202,20 @@ df.wind.AT  = rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
                     df.wind.AT5,df.wind.AT6,df.wind.AT7
                     )
 
+# Save dataframes as '.Rdata' file for easy read-in in R.
+save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
+     file="MOErawdata/output-raw.Rdata"
+     )
 
-### 3.    CLEAN ENVIRONMENT    -----
+# Save dataframes as '.csv' files for use with other software.
+####    TODO: Save dataframes as .csv (mpff)
+
+
+
+###############################################################################
+####    4. CLEAN UP ENVIRONMENT    ############################################
+###############################################################################
+
 rm(list=ls()[! ls() %in% c("df.pun",
                            "df.solar",
                            "df.solar.AT",
@@ -184,8 +223,3 @@ rm(list=ls()[! ls() %in% c("df.pun",
                            "df.wind.AT",
                            "df.dm"
                            )]) 
-
-### 4.    SAVE DATA AS '.Rdata' FILE    -----
-save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
-     file="MOErawdata/output-raw.Rdata"
-     )
