@@ -1,0 +1,17 @@
+Name of Quantlet: MOEinterpolation
+ 
+Published in: Statistical Programming Languages SS2018
+  
+Description: Interpolates values where there are NA's in the input.
+ 
+Keywords: Missing values, NA, interpolation, Wind, Solar, Demand
+ 
+Author: Bruno Puri, Manuel Pfeuffer, Felix Germaine
+
+Submitted:  Fri, June 29 2018 by Felix Germaine
+
+Input: Dataframes with NA's 
+
+Output:  Dataframes without NA's 
+
+
