@@ -14,4 +14,4 @@ Submitted : Fri, June 29 2018 by Manuel Pfeuffer
 
 Datafile : All files in the ''input'' subdirectory.
 
-Output : output-raw.Rdata
+Output : MOEdata_clean.Rdata

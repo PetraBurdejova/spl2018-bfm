@@ -1,3 +1,4 @@
+
 ###############################################################################     
 ####    MOErawdata.R    #######################################################     
 ###############################################################################     
@@ -8,8 +9,8 @@
 #
 # Input:  Data '.csv' files from the 'input' subdirectory.
 #
-# Ouput:  output-<variable_name>.csv    - data in table form
-#         output-raw.Rdata              - data in Rdata form
+# Ouput:  MOEdata_clean_<variable_name>.csv     - data in table form
+#         MOEdata_clean.Rdata                   - data in Rdata form
 #
 ###############################################################################
 
@@ -31,6 +32,7 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 ###############################################################################
 ####    ATTENTION: Working directory is assumed to be the root of the MOE 
 ####    repository, not the MOErawdata Quantlet subdirectory!!!
+
 
 # If needed, set working directory accordingly:
 #setwd("path/to/MOE_repository")
@@ -188,6 +190,7 @@ df.dem.2018     = select.DEM(df.dem.2018.0)
 ####    3. BIND AND SAVE DATAFRAMES    ########################################
 ###############################################################################
 
+
 # Bind dataframes.
 df.dm       = rbind(df.dem.2015,df.dem.2016,df.dem.2017,df.dem.2018)
 df.solar.AT = rbind(df.solar.AT1, df.solar.AT2,df.solar.AT3,df.solar.AT4,
@@ -199,7 +202,7 @@ df.wind.AT  = rbind(df.wind.AT1,df.wind.AT2,df.wind.AT3,df.wind.AT4,
 
 # Save dataframes as '.Rdata' file for easy read-in in R.
 save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
-     file="MOErawdata/output-raw.Rdata"
+     file="MOErawdata/MOEdata_clean.Rdata"
      )
 
 # Save dataframes as '.csv' files for use with other software.
@@ -210,6 +213,7 @@ save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
 ###############################################################################
 ####    4. CLEAN UP ENVIRONMENT    ############################################
 ###############################################################################
+
 
 rm(list=ls()[! ls() %in% c("df.pun",
                            "df.solar",
