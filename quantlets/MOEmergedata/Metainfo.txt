@@ -8,7 +8,7 @@ cleaned by the ''MOErawdata'' Quantlet.'
 
 Keywords : data, read, clean, time, energy market, merge, aggregate
 
-Author : Bruni Puri, Manuel Pfeuffer
+Author : Bruno Puri, Manuel Pfeuffer
 
 See also : 'MOErawdata'
 
