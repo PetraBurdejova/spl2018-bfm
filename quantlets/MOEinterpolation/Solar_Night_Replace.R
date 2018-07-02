@@ -17,58 +17,80 @@ library("xts")
 
 
 Sys.setenv(TZ = "UTC") #Sets system time to "UTC"
-#index(x[2,1]) == "2011-04-01 00:15:00 UTC" other wise Problem with time zones --> Not matching
+#index(x[2,1]) == "2011-04-01 00:15:00 UTC" other wise Problem with time zones --> Not matching otherwise
 
 ##load df solar first 
  
-x = xts(df.solar[,-1], df.solar$TIME)   
-#Converts the data frame into an xts file (it has a date index)
-  
-DataDayOne   = df.solar[1,1] #First day of the data
-#DataDayOne   = index(x)[1]
-NumberOfDays = length(unique(format(df.solar$TIME, "%D")))  #Length of the data
-#NumberOfDays = length(unique(format(index(x), "%D")))
+x = df.solar[1:100,]  
+##From 1:100 untill now, because we don't want the double dates, UTC/CET problem needs to be fixed before
+##To be changed later into simply "df.solar"
 
-SUN = sunrise.set(52.521918, 13.413215,DataDayOne , timezone = "UTC"
-                  , num.days = NumberOfDays )
-
-SUN = matrix(nrow = length(df.solar$TIME), ncol=2)
-
-SUN.xts= xts(SUN, df.solar$TIME)
-
-
-for (Date in index(SUN.xts)) { SUN.xts[Date,1] = sunrise.set(52.521918, 13.413215, format(Date, "%D") , timezone = "UTC"
-                  , num.days = 1 )[1,1]
+Sunrise.DE= function(Date){
+  Location= c(13.413215, 52.521918)  ##Coordinates of Berlin (Length, Width)
+  Sunrise = sunriset(matrix(Location, nrow=1), Date , direction="sunrise", POSIXct.out = TRUE)
+  ##Gives Time of Sunrise for "Date" in a matrix of size 1 * 2
 }
- 
 
-#SUN = matrix(nrow = length(df.solar[,1]), ncol=2)
-
-#for (i in c(1:length(df.solar[,"TIME"]))){
- # SUN[i,1]=sunrise.set(52.521918, 13.413215,df.solar[i,"TIME"] , timezone = "UTC", num.days = 1 )[1,1]
-  #SUN[i,2]=sunrise.set(52.521918, 13.413215,df.solar[i,"TIME"] , timezone = "UTC", num.days = 1 )[1,2]
-#}
+Sunset.DE=function(Date){
+  Location= c( 13.413215, 52.521918) ##Coordinates of Berlin (Length, Width)
+  Sunset = sunriset( matrix(Location, nrow=1), Date , direction="sunset", POSIXct.out = TRUE)
+  ##Gives Time of Sunset for for "Date" in a matrix of size 1 * 2
+}
 
 
-#Generates a data.frame giving the sunrise (1.Column) 
-# and sunset time (2.Column)
+
+for (TSO in names(x[-1])){ #Repeats the following procedure over the 4 colums "FZHertz", "Amprion", "TenneT.TSO", "Transnet.BW"
+print(TSO)
   
-
-df.solar[(is.na(df.solar[,2])==TRUE & ( (df.solar$TIME < SUN[,1]) | (df.solar$TIME > SUN[,2]) ) ), 2] =0
-df.solar[(is.na(df.solar[,3])==TRUE & ( (df.solar$TIME < SUN[,1]) | (df.solar$TIME > SUN[,2]) ) ), 3] =0
-df.solar[(is.na(df.solar[,4])==TRUE & ( (df.solar$TIME < SUN[,1]) | (df.solar$TIME > SUN[,2]) ) ), 4] =0
-df.solar[(is.na(df.solar[,5])==TRUE & ( (df.solar$TIME < SUN[,1]) | (df.solar$TIME > SUN[,2]) ) ), 5] =0
-#Replaces NA's for solar production by 0 if before sunrise or after sunset
-
-#x[(is.na(x[,2])==TRUE & ( (index(x) < SUN[,1]) | (index(x) > SUN[,2]) ) ), 1] =0
-#x[(is.na(x[,3])==TRUE & ( (index(x) < SUN[,1]) | (index(x) > SUN[,2]) ) ), 1] =0
-#x[(is.na(x[,4])==TRUE & ( (index(x) < SUN[,1]) | (index(x) > SUN[,2]) ) ), 1] =0
-#If df.solar are converted to xls in x
-
-
-
-as.data.frame(x)
+if(length(subset(x, is.na(x[,TSO])==TRUE)[,TSO])>0){ 
+#Tests whether the column has no NA's
+#, as this would lead to an error in the loop
   
+x.missing= subset(x, is.na(x[,TSO]))[,c("TIME", TSO)]
+#Selects only the rows of x/df.solar that contain NA's in the column of the index "TSO"
+#--> Was implemented for efficiency, as it would take a significant amount of time 
+#To repeat this procedure over all rows
+
+sunrise.DE.List= lapply(x.missing$TIME, Sunrise.DE) 
+##Applies the above defined function (Sunrise.DE) on the dates of the missing values for the column "TSO"
+##This will give a list containing two elements per calculated function ( 1 per row of x.missing)
+
+sunrise.DE.df = do.call(rbind,sunrise.DE.List) 
+#Transforms the List into a data.frame
+
+
+sunset.DE.List=  lapply(x.missing$TIME, Sunset.DE)
+##Applies the above defined function (Sunset.DE)on the dates of the missing values for the column "TSO"
+##This will give a list containing two elements per calculated function ( 1 per row of x.missing)
+
+
+sunset.DE.df = do.call(rbind,sunset.DE.List) #Transforms the List into a data.frame
+#Transforms the List into a data.frame (easier to handle)
+
+
+x.missing[x.missing$TIME < sunrise.DE.df$time | x.missing$TIME > sunset.DE.df$time, TSO] = as.numeric(0.0)
+#For all values of the df "x.missing", replace NA's by the value 0.0 whenever it is before sunrise or after sunset
+
+
+x1= xts(df.solar, order.by= df.solar$TIME)
+
+x1[x.missing$TIME, TSO]=x.missing[,TSO] ##Problem tritt noch auf wegen verdopplung mancher Zeiten ( wegen Zeitänderung)
+
+
+}else{
+  print("column has no missing values")
+}
+}
+##Convert again into data Frame
+
+x2 = as.data.frame(x1[1:100,])
+
+
+
+
+
+
+
 
 
 
@@ -81,8 +103,7 @@ as.data.frame(x)
   
   
   
-  
-}
+
 
 sunrise.set(52.521918, 13.413215, index(x[,]), timezone = "UTC", num.days = 1)$sunrise
 
