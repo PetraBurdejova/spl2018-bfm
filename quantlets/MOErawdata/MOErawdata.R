@@ -146,13 +146,16 @@ select.ATWIND = function(x){
   #
   # Returns:
   #   y: Corrected wind.AT dataframe
-  y                 = subset(x, select = names(x)[c(1,7)])
+  y                 = subset(x, select = names(x)[c(1,5)])
   names(y)          = c("TIME", "WIND.MW.AT")
-  y$`WIND.MW.AT`    = as.numeric(y$`WIND.MW.AT`)
+  y$`WIND.MW.AT`    = as.factor(sub("[:.:]", "", y$`WIND.MW.AT`))
+  y$`WIND.MW.AT`    = as.numeric(gsub(",", ".", levels
+                                      (y$`WIND.MW.AT`)))[y$`WIND.MW.AT`]
   y$TIME            = dmy_hms(y$TIME, tz = "Europe/Brussels")
   y$TIME            = with_tz(y$TIME, tz = "UTC")  # Convert timezone
   return(y)
 }
+
 
 select.DEM = function(x) {
   # Selects the important variables for the demand data
