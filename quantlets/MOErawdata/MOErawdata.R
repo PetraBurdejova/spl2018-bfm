@@ -112,6 +112,18 @@ df.pun$TIME     = ymd_hm(df.pun$TIME, tz = "UTC")
 df.solar$TIME   = dmy_hm(df.solar$TIME, tz = "Europe/Brussels")
 df.wind$TIME    = dmy_hm(df.wind$TIME, tz = "Europe/Brussels")
 
+# Handle a bug that causes duplicate values when transitioning from CEST to CET.
+fixDlsDups = function(times, fromLast = TRUE){
+    # Searches for duplicate values and subtracts 1 hour. Returns fixed dates.
+    dups        = which(duplicated(times, fromLast=fromLast))
+    times[dups] = times[dups] - dhours(1)
+    return(times)
+}
+
+# Apply subroutine.
+df.solar$TIME   = fixDlsDups(df.solar$TIME)
+df.wind$TIME    = fixDlsDups(df.wind$TIME)
+
 # Convert to UTC.
 df.solar$TIME   = with_tz(df.solar$TIME, tz = "UTC")
 df.wind$TIME    = with_tz(df.wind$TIME, tz = "UTC")
@@ -136,6 +148,7 @@ select.ATSOLAR = function(x){
   names(y)          = c("TIME", "SOLAR.MW.AT")
   y$`SOLAR.MW.AT`   = as.numeric(y$`SOLAR.MW.AT`)
   y$TIME            = dmy_hms(y$TIME, tz = "Europe/Brussels")
+  y$TIME            = fixDlsDups(y$TIME) 
   y$TIME            = with_tz(y$TIME, tz = "UTC")
   return(y)
 }
@@ -154,6 +167,7 @@ select.ATWIND = function(x){
   y$`WIND.MW.AT`    = as.numeric(gsub(",", ".", levels
                                       (y$`WIND.MW.AT`)))[y$`WIND.MW.AT`]
   y$TIME            = dmy_hms(y$TIME, tz = "Europe/Brussels")
+  y$TIME            = fixDlsDups(y$TIME) 
   y$TIME            = with_tz(y$TIME, tz = "UTC")
   return(y)
 }
