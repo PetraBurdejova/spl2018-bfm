@@ -107,11 +107,13 @@ names(df.pun)   = c("TIME", "PUN")
 names(df.solar) = c("TIME", "FzHertz", "Amprion", "TenneT.TSO", "Transnet.BW")
 names(df.wind)  = c("TIME", "FzHertz", "Amprion", "TenneT.TSO", "Transnet.BW")
 
-# Format as POSIXct time in UTC. Beware of different timezones in  raw data!
+# Format as POSIXct. (Beware of differenct timezones in raw data!)
 df.pun$TIME     = ymd_hm(df.pun$TIME, tz = "UTC")
 df.solar$TIME   = dmy_hm(df.solar$TIME, tz = "Europe/Brussels")
-df.solar$TIME   = with_tz(df.solar$TIME, tz = "UTC")
 df.wind$TIME    = dmy_hm(df.wind$TIME, tz = "Europe/Brussels")
+
+# Convert to UTC.
+df.solar$TIME   = with_tz(df.solar$TIME, tz = "UTC")
 df.wind$TIME    = with_tz(df.wind$TIME, tz = "UTC")
 
 
@@ -134,7 +136,7 @@ select.ATSOLAR = function(x){
   names(y)          = c("TIME", "SOLAR.MW.AT")
   y$`SOLAR.MW.AT`   = as.numeric(y$`SOLAR.MW.AT`)
   y$TIME            = dmy_hms(y$TIME, tz = "Europe/Brussels")
-  y$TIME            = with_tz(y$TIME, tz = "UTC")  # Convert timezone
+  y$TIME            = with_tz(y$TIME, tz = "UTC")
   return(y)
 }
 
@@ -152,7 +154,7 @@ select.ATWIND = function(x){
   y$`WIND.MW.AT`    = as.numeric(gsub(",", ".", levels
                                       (y$`WIND.MW.AT`)))[y$`WIND.MW.AT`]
   y$TIME            = dmy_hms(y$TIME, tz = "Europe/Brussels")
-  y$TIME            = with_tz(y$TIME, tz = "UTC")  # Convert timezone
+  y$TIME            = with_tz(y$TIME, tz = "UTC")
   return(y)
 }
 
@@ -171,7 +173,7 @@ select.DEM = function(x) {
   y         = subset(y, select = c("TIME","DEM"))
   y$TIME    = dmy_hm(y$TIME, tz = "UTC")
   if (class(y$DEM) == "factor") {
-    y$DEM   = as.numeric(levels(y$DEM))[y$DEM]
+    y$DEM   = suppressWarnings(as.numeric(levels(y$DEM)))[y$DEM] # suppress NA
     return(y)
   } else {
     y$DEM   = as.numeric(y$DEM)
