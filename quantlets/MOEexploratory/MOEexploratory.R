@@ -1,8 +1,9 @@
 ###############################################################################     
-####    MOEexploratory.R    #####################################################     
+####    MOEexploratory.R    ###################################################    
 ###############################################################################     
 #
-# Loads data set from 'MOEmergedata'. Creates exploratory plots of data 
+# Loads data set from 'MOEmergedata'. 
+# Creates exploratory plots of the variables.
 #
 # Input:  '.Rdata' file from the 'MOEmergedata' Quantlet.
 #
@@ -26,6 +27,7 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 ###############################################################################
 ####    0.  SET WORKING DIRECTORY    ##########################################
 ###############################################################################
+
 ####    ATTENTION: Working directory is assumed to be the root of the MOE 
 ####    repository, not the MOEmergedata Quantlet subdirectory!!!
 
@@ -44,13 +46,13 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 load("MOEmergedata/MOEdata_merge.Rdata")
 
 
-## GRAPHICS -----
-## SUN --
 
-# Sun per Year 
-options(tz="Berlin")
 
-tikz(file = "plot1.tex", width = 5, height = 5, console = T, engine = getOption("tikzDefaultEngine"))
+###############################################################################
+####    2.1.  SOLAR GRAPH      ################################################
+###############################################################################
+
+tikz(file = "solar.tex", width = 5, height = 5)
 
 plot = ggplot(data=df, aes(x=TIME, y=SOLAR)) +  
           geom_point(size=0.5) + 
@@ -62,59 +64,58 @@ plot = ggplot(data=df, aes(x=TIME, y=SOLAR)) +
           labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
         
 print(plot)
+
 dev.off()
 
-options(tikzLatex = )
-?tikz
 
-ggsave("Solar Production", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = 7.5 , height = 5, 
-       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
+###############################################################################
+####    2.2.  WIND GRAPH      #################################################
+###############################################################################
 
+tikz(file = "wind.tex", width = 5, height = 5)
 
+plot = ggplot(data=df, aes(x=`TIME`, y=(`WIND`))) +  
+            geom_point(size=0.5) + 
+            geom_smooth(method="lm", span = 1.5, color="blue", se=T) + 
+            ggtitle(label = "Wind Energy Production per Day", 
+                  subtitle = "German and Austrian Production in MW/h") +
+            xlab(label= " ") +
+            ylab(label = "MW/h")+
+            theme_bw()
+           labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
 
+print(plot)
 
-## WIND --
-
-ggplot(data=df, aes(x=`TIME`, y=(`WIND`))) +  
-  geom_point(size=0.5) + 
-  geom_smooth(method="lm", span = 1.5, color="blue", se=T) + 
- # ggtitle(label = "Wind Energy Production per Day", 
-   #     subtitle = "German and Austrian Production in MW/h") +
-  xlab(label= " ") +
-  ylab(label = "MW/h")+
-  theme_bw()
-  # labs(caption = "(based on data from 'Netztransparenz' and 'APG' ")
-
+dev.off()
 
 
-ggsave("Wind", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
-       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
+###############################################################################
+####    2.3.  PRICE GRAPH      ################################################
+###############################################################################
 
-
-
-
-## PUN --
+tikz(file = "price.tex", width = 5, height = 5)
 
 ggplot(data=df, aes(x=`TIME`, y=`PUN`))  +
   geom_point(size=0.5, color = "black") + 
-  # geom_smooth(method="lm", aes(fill=`TIME`), color = "black")  + 
+ # geom_smooth(method="lm", aes(fill=`TIME`), color = "black")  + 
   geom_smooth(method="lm", color="gold", se=T) +
-  # ggtitle(label = "Day-Ahead Price MW/h") +
+  ggtitle(label = "Day-Ahead Price MW/h") +
   xlab(label= "") +
   ylab(label = "Euro per MW/h ")+
-  theme_bw()
-  # labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
+  theme_bw() +
+  labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
+
+print(plot)
+
+dev.off()
 
 
-ggsave("Price", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
-       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
 
+###############################################################################
+####    2.4.  DEMAND GRAPH      ###############################################
+###############################################################################
 
-
-## DEMAND -- 
+tikz(file = "demand.tex", width = 5, height = 5)
 
 ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +  
   geom_point(size=0.5, color = "black") + 
@@ -131,13 +132,11 @@ ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +
 
 
 
-ggsave("Demand", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
-       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
+###############################################################################
+####    2.5.  PRICE ON RENEWABLES GRAPH      ##################################
+###############################################################################
 
-
-
-## PUN ~ Renewables --   
+tikz(file = "price-renewables.tex", width = 5, height = 5)
 
 ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`+`WIND`))) +  
   #ylim(200,1500) +
@@ -152,12 +151,11 @@ ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`+`WIND`))) +
 
 
 
-ggsave("Price ~Renewable Production", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
-       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
+###############################################################################
+####    2.6.  PRICE ON DEMAND GRAPH      ######################################
+###############################################################################
 
-
-## PUN ~ DEMAND --
+tikz(file = "price-demand.tex", width = 5, height = 5)
 
 ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +  
   # ylim(0,1500) +
@@ -168,25 +166,6 @@ ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
   ylab(label = "Euro per MW/h ")+
   theme_bw()
  #  labs(caption = "(based on data from 'energidataservice - DK' and 'ENTSOE' ")
-
-
-ggsave("Price ~Demand", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = 7.5 , height = 5,  
-       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
-
-
-
-
-
-## tabplot idea
-# dont really get the idea..
-
-install.packages("tabplot")
-library("tabplot")
-library("MASS")
-
-tableplot(df[, -1], colorNA = "red", colorNA_num = "red")
-summary(df)
 
 
 
