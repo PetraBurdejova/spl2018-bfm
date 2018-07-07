@@ -49,7 +49,7 @@ load("MOEmergedata/MOEdata_merge.Rdata")
 
 
 ###############################################################################
-####    2.1.  CREATE PLOTS      ###############################################
+####    2.  CREATE PLOTS      #################################################
 ###############################################################################
 
 
@@ -63,8 +63,6 @@ plot1 = ggplot(data=df ,aes(x=TIME, y=SOLAR)) +
           ylab(label = "MW/h")+
           theme_bw()+
           labs(caption = "(Data from 'Netztransparenz' and 'APG') ")
-          #labs(caption = "German and Austrian Solar Energy Production per Day")+
-          #theme(plot.caption = element_text(hjust=0.5, size=rel(1.2)))
 
 
 # Wind Production plot
@@ -112,11 +110,9 @@ plot4 = ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +
           #ylim(200,1500) +
           geom_point(size=0.5) + 
           geom_smooth(method="lm", aes(fill=`TIME`)) + 
-          # facet_wrap(~year(TIME)) +
-          # geom_smooth(method="loess", color="green", se=FALSE) +
-          # facet_wrap(~year(TIME)) 
-          ggtitle(label = "Demand Day-Ahead forecast ",
-                  subtitle = "Daily MW/h") +
+          ggtitle(label = "Price on Renewables",
+                  subtitle = "Correlation between Price (€)
+                  and Renewbles Production (Daily MW/h") +
           xlab(label = "Renewable Production Day-Ahead MW/h")+
           ylab(label = "Euro per MW/h")+
           theme_bw()
@@ -127,6 +123,9 @@ plot6 = ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
           #ylim(0,1500) +
           geom_point(size=0.5) + 
           geom_smooth(method="lm", aes(fill=`TIME`))+
+          ggtitle(label = "Price on Demand",
+                  subtitle = "Correlation between Price (€)
+                  and Demand (Daily MW/h") +
           #ggtitle(label = "Price and Demand") +
           xlab(label= "Demand in MW/h") +
           ylab(label = "Euro per MW/h ")+
@@ -139,11 +138,14 @@ plot6 = ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
 ###############################################################################
 
 
-# Save plot as LaTex
+# Save variable plot for LaTex
 tikz(file = "MOEex_plots.tex", width = 5, height = 5)
-
 plot_grid(plot1, plot2, plot3, plot4, align= "hv")
+dev.off()
 
+# Save correlation plot for LaTex
+tikz(file = "MOEcorr_plots.tex", width = 5, height = 5)
+plot_grid(plot6, plot5, align= "hv")
 dev.off()
 
 
@@ -161,13 +163,15 @@ rm(list=ls()[! ls() %in% c("df")])
 
 
 ## COMMENT:
+# TODO
+# make y axis more similar with units
+# check why tex is not working on my mac
+
 ### Test ####
 ggplot(data=df ,aes(TIME)) +
   geom_point(aes(y = SOLAR, color = "SOLAR"))+
   geom_point(aes(y = WIND, color = "WIND"))+
   scale_colour_manual(values=c("orange", "blue"))
  
-# TODO
-# make y axis more similar with units
-# check why tex is not working on my mac
+
 
