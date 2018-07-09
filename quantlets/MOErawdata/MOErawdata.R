@@ -19,7 +19,7 @@ rm(list = ls(all = TRUE))
 graphics.off()
 
 # Install and load libraries.
-libraries = c("tidyr", "stringr", "lubridate", "readr")
+libraries = c("tidyr", "lubridate")
 lapply(libraries, function(x) if (!(x %in% installed.packages())) {
     install.packages(x)
 })
