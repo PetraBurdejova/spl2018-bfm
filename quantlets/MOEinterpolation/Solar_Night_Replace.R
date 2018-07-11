@@ -12,6 +12,7 @@
 #
 ###############################################################################
 
+#setwd("C:/Users/PC-FELIX/Documents/GitHub/spl2018-bfm/quantlets")
 library("StreamMetabolism")
 library("xts")
 
@@ -20,10 +21,10 @@ Sys.setenv(TZ = "UTC") #Sets system time to "UTC"
 #index(x[2,1]) == "2011-04-01 00:15:00 UTC" other wise Problem with time zones --> Not matching otherwise
 
 ##load df solar first 
- 
-x = df.solar[1:100,]  
-##From 1:100 untill now, because we don't want the double dates, UTC/CET problem needs to be fixed before
-##To be changed later into simply "df.solar"
+load("MOErawdata/MOEdata_clean.Rdata")
+x = df.solar  
+x1= xts(df.solar[,-1], order.by= df.solar$TIME)
+
 
 Sunrise.DE= function(Date){
   Location= c(13.413215, 52.521918)  ##Coordinates of Berlin (Length, Width)
@@ -39,7 +40,8 @@ Sunset.DE=function(Date){
 
 
 
-for (TSO in names(x[-1])){ #Repeats the following procedure over the 4 colums "FZHertz", "Amprion", "TenneT.TSO", "Transnet.BW"
+for (TSO in names(x[-1])){ #Repeats the following procedure over the 4 colums 
+#"FZHertz", "Amprion", "TenneT.TSO", "Transnet.BW"
 print(TSO)
   
 if(length(subset(x, is.na(x[,TSO])==TRUE)[,TSO])>0){ 
@@ -72,9 +74,9 @@ x.missing[x.missing$TIME < sunrise.DE.df$time | x.missing$TIME > sunset.DE.df$ti
 #For all values of the df "x.missing", replace NA's by the value 0.0 whenever it is before sunrise or after sunset
 
 
-x1= xts(df.solar, order.by= df.solar$TIME)
 
-x1[x.missing$TIME, TSO]=x.missing[,TSO] ##Problem tritt noch auf wegen verdopplung mancher Zeiten ( wegen Zeitänderung)
+
+x1[x.missing$TIME, TSO]=x.missing[,TSO]
 
 
 }else{
@@ -83,7 +85,8 @@ x1[x.missing$TIME, TSO]=x.missing[,TSO] ##Problem tritt noch auf wegen verdopplu
 }
 ##Convert again into data Frame
 
-x2 = as.data.frame(x1[1:100,])
+df.solar_Test = cbind("TIME"=index(x1), as.data.frame(x1))
+
 
 
 
@@ -105,7 +108,7 @@ x2 = as.data.frame(x1[1:100,])
   
 
 
-sunrise.set(52.521918, 13.413215, index(x[,]), timezone = "UTC", num.days = 1)$sunrise
+
 
 
 
