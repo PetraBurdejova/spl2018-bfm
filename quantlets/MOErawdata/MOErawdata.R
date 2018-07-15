@@ -164,7 +164,7 @@ select.ATWIND = function(x){
   y                 = subset(x, select = names(x)[c(1,5)])
   names(y)          = c("TIME", "WIND.MW.AT")
   y$`WIND.MW.AT`    = as.factor(sub("[:.:]", "", y$`WIND.MW.AT`))
-  y$`WIND.MW.AT`    = as.numeric(gsub(",", ".", levels
+  y$`WIND.MW.AT`    = as.numeric(sub(",", ".", levels
                                       (y$`WIND.MW.AT`)))[y$`WIND.MW.AT`]
   y$TIME            = dmy_hms(y$TIME, tz = "Europe/Brussels")
   y$TIME            = fixDlsDups(y$TIME) 
