@@ -1,9 +1,9 @@
 ###############################################################################     
-####   Solar_Interpolation.R    #######################################################     
+####   Solar_Interpolation.R    ###############################################   
 ###############################################################################     
-#
-#This code deals with NA's for Solar electricity production, after the NA's that happen 
-#at night have been replaced by the code of "Solar_Night_Replace.R
+# 
+# This code deals with NA's for Solar electricity production, after the NA's 
+# that happen at night have been replaced by the code of "Solar_Night_Replace.R
 # 
 #
 # Input: "df.solar_step1" with Na's
@@ -19,138 +19,148 @@ library("xts")
 Sys.setenv(TZ = "UTC") #Sets system time to "UTC"
 
 
+
+
+###############################################################################
+#### Part 0. : Load data
+###############################################################################
+
+load("MOEinterpolation/MOEsolar_xts.Rdata")
 load("MOErawdata/MOEdata_clean.Rdata")
 
-##################################################################################
-#### Part 1. : Interpolating values for NA's using an average of previous and next
-####           value. Restricting on a certain amount of maximal consecutively NA's
-###################################################################################
+
+df.dm.xts      = xts(df.dm[,-1], order.by = df.dm$TIME)
+xts.dm         = subset(df.dm.xts, index(df.dm.xts)< "2018-06-29 00:00:00" )
 
 
-#################################################################################
-####  1.1 Interpolate data of df.solar  ########################################
-################################################################################
-
-df.solar.xts_temp=df.solar.xts ##df.solar.xts_temp --> to be changed by df.solar.xts
 
 
-for (TSO in names(df.solar.xts)){
-df.solar.xts_temp[,TSO] = na.approx(df.solar.xts[,TSO],na.rm=TRUE, maxgap=4)
+###############################################################################
+#### Part 1. : Interpolating values for NA's using an average of previous
+####           and next value. Restricting on a certain amount of maximal 
+####           consecutive NA's
+###############################################################################
 
+
+###############################################################################
+####  1.1 Interpolate data of df.solar  #######################################
+###############################################################################
+
+xts.solar = na.approx(df.solar.xts,na.rm=TRUE, maxgap=4)
+
+
+###############################################################################
+#### 1.2 Interpolate data for df.dm  ##########################################
+###############################################################################
+
+xts.dm = na.approx(xts.dm ,na.rm=TRUE, maxgap=4)
+
+  
+###############################################################################
+#### Part 2. : For values with strong seasonal variations within the day,
+####           the week and the year (solar production and demand) n average 
+####           of values at the same hour  will be used
+###############################################################################
+
+
+###############################################################################
+####  2.1 Interpolate data of df.solar  #######################################
+###############################################################################
+
+HM = function(Date){
+  format(Date, "%H:%M")
 }
 
 
-#summary(df.solar.xts_temp)
-
-#summary(df.solar.xts)
-
-
-###################################################################################
-#### 1.2 Interpolate data for df.dm  ###############################################
-###################################################################################
+Begin    = as.POSIXct("2011-03-31 00:00:00")
+End      = as.POSIXct("2011-03-31 23:45:00")
+quarters = seq(Begin, End, length.out=96)
 
 
-df.dm.xts= xts(df.dm[,-1], order.by=df.dm$TIME )
-df.dm.xts_temp = df.dm.xts
+quarters.day = HM(quarters)
+
+solar.quarters.list = list()
+
+# Find solution for leading and trailing NA's --> Delete at the end????
 
 
-
-
-df.dm.xts_temp = na.approx(df.dm.xts,na.rm=TRUE, maxgap=4)
+for (quarter in quarters.day) {
+# This loop splits up the orginal xts into xts files for every quarter hour. 
+# (One xts for all data for time "00:00", one for "00:15" etc...)
+# This is done so that missing values can be interpolated on data for the
+# same quarter hour.
   
-
-#summary(df.dm.xts_temp)
-
-#summary(df.dm.xts)
-
-
-####################################################################################???
-####1.3 Interpolate data for df.dm  ################################################"
-#####################################################################################
-
-
-df.wind.xts= xts(df.wind[,-1], order.by=df.wind$TIME )
-df.wind.xts_temp = df.wind.xts
-
-for (TSO in names(df.wind.xts)){
-  df.wind.xts_temp[,TSO] = na.approx(df.wind.xts[,TSO],na.rm=TRUE, maxgap=200)
+  
+  solar.quarters.list[[quarter]] = xts.solar[HM(index(xts.solar)) == quarter]
+  #splits the solar data up into data by quarter-hours ( 1 xts per quarter)
+  
+  interpolated.values = na.approx(solar.quarters.list[[quarter]],
+                                  na.rm = FALSE,
+                                  maxgap = 2)
+  # Interpolates NA's by Calculating the mean of the previous and the next
+  # hour-quarterly solar generation value
+  # ie: if there is the solar generation missing for "2011-03-31 08:00:00"
+  # it averages the values for "2011-03-30 08:00:00" 
+  # and for "2011-04-01 08:00:00"
+  
+  
+  xts.solar[index(solar.quarters.list[[quarter]]),] = interpolated.values
+  #replaces the original data by the interpolated one.
+  
+  # print(summary(solar.quarters.list[[quarter]]))
+  # print(summary(na.approx(solar.quarters.list[[quarter]],
+  # na.rm=FALSE,
+  # maxgap=4)))
   
 }
 
+###############################################################################
+####  2.2 Interpolate data for demand  ########################################
+###############################################################################
 
+plot(xts.dm [
+  index(xts.dm) > "2018-03-01 00:00:00" & 
+  index(xts.dm) < "2018-04-01 00:00:00"])
+# Plot to illustrate why we average  according to the quarters and the days of 
+# the week
 
-summary(df.wind.xts_temp)
+dm.day.list = list()
+day.week = c(1,2,3,4,5,6,7)
 
-summary(df.wind.xts)
-
-
-#######################################################################################################
-
-
-#######################################################################################################
-#### Part 2. : For values with strong seasonal variations within the day, the week and the year
-####          (solar production and demand) n average of values at the same hour one week before and week after will be used
-###################################################################################
-
-
-#################################################################################
-####  2.1 Interpolate data of df.solar  ########################################
-################################################################################
-
-df.solar.xts_temp= df.solar.xts
-
-quarters = seq(as.POSIXct("2011-03-31 00:00:00"), as.POSIXct("2011-03-31 23:45:00"), length.out=96)
-quarters.of.the.day = format(quarters, "%H:%M")
-
-df.solar.by.quartes.list = list()
-
-
-##Test1
-
-
-for (quarter in quarters.of.the.day ) {
-  df.solar.by.quartes.list[[quarter]]= df.solar.xts_temp[format(index(df.solar.xts_temp), "%H:%M")==quarter]
-  
-  #Length=length(df.solar.by.quartes.list[[quarter]][,1])
-  
-  
-  
-  df.solar.xts_temp[index(df.solar.by.quartes.list[[quarter]])]= na.approx(df.solar.by.quartes.list[[quarter]], na.rm=FALSE, maxgap=1000)
- 
-}
-
-##Test2
-
-df.solar.xts.temp= df.solar.xts
-
-for (quarter in quarters.of.the.day ) {
-  df.solar.by.quartes.list[[quarter]]= df.solar.xts_temp[format(index(df.solar.xts_temp), "%H:%M")==quarter]
-  #Have a look at this xts method: https://campus.datacamp.com/courses/manipulating-time-series-data-in-r-with-xts-zoo/apply-and-aggregate-by-time?ex=3
-  #It might be better
-  #Length=length(df.solar.by.quartes.list[[quarter]][,1])
-  
-
-    df.solar.xts.temp[index(df.solar.by.quartes.list[[quarter]])]= na.approx(df.solar.by.quartes.list[[quarter]], na.rm=FALSE, maxgap=1000)
+WeekDay = function(Date){
+  as.POSIXlt(Date)$wday
 }
 
 
-# df.solar.by.quartes.list[[quarter]][, TSO]
-df.solar.xts_temp
-df.solar.by.quartes.list
+for (Day in day.week){
+# This double loop splits up the orginal xts into xts files for every quarter 
+# hour and day of the week.(One xts for all data for time "00:00" on Monday, 
+# one for "00:00" on tuesday etc...)This is done so that missing values can be
+# interpolated on data for the same time and the same day of the week.
+  
+  dm.day.list[[Day]]=list()
+  #defining the nested list
+  
+  for (quarter in quarters.day ) {
+  
+    dm.day.list[[Day]][[quarter]]= xts.dm[HM(index(xts.dm)) == quarter 
+                                          &
+                                          WeekDay(index(xts.dm)) == Day-1]
+    
+     # creates a new xts for each quarter hour for each day of the week
+    
+    
+    interpolated.values = na.approx(dm.day.list[[Day]][[quarter]], 
+                                    na.rm=FALSE,
+                                    maxgap=2)
+    # for every such xts the NA's are interpolated. 
+    # ie: a NA on Monday 25th of March at 12:00 is interpolated by the demand 
+    # values on Monday the 18th of march at 12:00
+    # and Monday the 1st of April at 12:00
 
-
-
-df.solar.by.quartes.list[["07:45"]]= df.solar.xts_temp[format(index(df.solar.xts_temp), "%H:%M")== "07:45"]
-df.solar.xts.temp[index(df.solar.by.quartes.list[["07:45"]])] = na.approx(df.solar.by.quartes.list[["07:45"]],na.rm=TRUE, maxgap=2)
-summary(na.approx(df.solar.xts_temp,na.rm=TRUE, maxgap=2))
-
-
-Test =  df.solar.xts.temp[24756:24840,]
-na.approx(Test, na.rm=FALSE, maxgap=1000)
-
-na.approx(df.solar.by.quartes.list[["07:45"]][1885:1995,],na.rm=TRUE, maxgap=2)
-
-which(is.na(df.solar.by.quartes.list[["07:45"]][,4]))
-which(is.na(df.solar.by.quartes.list[["07:45"]][,2]))
-
-df.solar.xts.temp[index(df.solar.by.quartes.list[["07:45"]])]
+  
+    xts.dm[index(dm.day.list[[Day]][[quarter]])] = interpolated.values
+    #all values of the original xts file get replaced by the interpolated ones 
+  }
+  
+}
