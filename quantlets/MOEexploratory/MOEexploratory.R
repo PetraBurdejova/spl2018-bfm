@@ -139,12 +139,12 @@ plot6 = ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
 
 
 # Save variable plot for LaTex
-tikz(file = "MOEex_plots.tex", width = 5, height = 5)
+tikz(file = "MOEexploratory/MOEex_plots.tex", width = 5, height = 5)
 plot_grid(plot1, plot2, plot3, plot4, align= "hv")
 dev.off()
 
 # Save correlation plot for LaTex
-tikz(file = "MOEcorr_plots.tex", width = 5, height = 5)
+tikz(file = "MOEexploratory/MOEcorr_plots.tex", width = 5, height = 5)
 plot_grid(plot6, plot5, align= "hv")
 dev.off()
 
