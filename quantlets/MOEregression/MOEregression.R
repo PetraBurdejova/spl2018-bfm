@@ -1,76 +1,79 @@
-library("astsa")
-library("xts")
-library("dyn") #this package includes extensions to time series applications for basic commands
-library("tseries")
-library("forecast")
-library("prais")
-library("lmtest")
 
-library("nlme")
+###############################################################################
+####  ####################################
+###############################################################################
 
 
+library("astsa") # acf2
+library("xts") # xts
+library("tseries") #adf.test
+library("prais") # prais winsten regression
+library("lmtest") #dwtest
 
-#################################################################################
 
+# library("dyn") ##?
+# library("nlme") #??
+# library("forecast") ##?
 
-###Temporary solution: Loading the saved DF
+###############################################################################
+####   Loading and preparing the data #########################################
+###############################################################################
+
 
 source("MOEmergedata/MOEmergedata.R")
+# Loads the final df with price, demand, solar generation and wind generation
 
-mydata <- df
+xts.mydata = xts(df[, -1], order.by=df$TIME)
+# create an xts file with df data
 
-mydata <- xts(mydata[, -1], order.by=df$TIME)
+xts.mydata[,"WIND"] = na.approx(xts.mydata[,"WIND"], na.rm=TRUE, maxgap=3)
+# Interpolate missing values for Wind, on a daily basis
 
-###Add the dummy variable matrix:
+source("MOEtimedummies/MOEtimedummies.R")
+# Loads the function YMDDummy which adds dummy Variables for the year,
+# the month and the day
 
-source("regression/generate_dummies.R")
-mydata.xts<- YMDDummy(mydata)
+xts.mydata = YMDDummy(xts.mydata)
+# adds the dummy matrix for Year, Month and day of the week to the data
 
-##convert to ts format for regression
-
-mydata.ts <- as.ts(mydata.xts)
-
-
-###
+ts.mydata <- as.ts(xts.mydata)
+# convert to ts format for regression
 
 
-##Tests for Stationarity: Augmented Dickey FUller test:
-adf.test(mydata.ts[, 1], alternative = "stationary", k = trunc((length(mydata.ts[, 1])-1)^(1/3)))
+###############################################################################
+####   Part 1. Tests for Stationarity: Augmented Dickey FUller test:  #########
+###############################################################################
 
-adf.test(mydata.ts[, 2], alternative = "stationary", k = trunc((length(mydata.ts[, 2])-1)^(1/3)))
-adf.test(mydata.ts[,3], alternative = "stationary", k = trunc((length(mydata.ts[, 3])-1)^(1/3)))
-adf.test(mydata.ts[,4], alternative = "stationary", k = trunc((length(mydata.ts[, 4])-1)^(1/3)))
+for (Column in 1:4) {
+ print( adf.test(ts.mydata[, Column], alternative = "stationary"))
+}
 
 
 ## Trending 
+# detr.PUN <- tslm(PUN ~ trend, ts.mydata)
+# detr.DEM <- tslm(DEM ~ trend, ts.mydata)
+# detr.SOLAR <- tslm(SOLAR ~ trend, ts.mydata)
+# detr.WIND <- tslm(WIND ~ trend, ts.mydata)
 
 
-detr.PUN <- tslm(PUN ~ trend, mydata.ts)
-detr.DEM <- tslm(mydata.ts[,2] ~ trend, mydata.ts)
-detr.SOLAR <- tslm(mydata.ts[,3]~ trend, mydata.ts)
-detr.WIND <- tslm(mydata.ts[,4]~ trend, mydata.ts)
+###############################################################################
+####   Part 2. Perform a basic OLS on the data, in order to look at ###########
+####           the autocorrelation structure                        ###########
+###############################################################################
 
 
-###OLS 1 
+OLS <- tslm(PUN ~ trend + ts.mydata[,-1], ts.mydata)
+##summary(OLS)$r.squared 
+##summary(OLS)$adj.r.squared 
 
+dwtest(OLS)
+# perform the durbin watson test in order to check for autocorrelation of 
+# of the disturbances.
 
-OLS1 <- tslm(PUN ~ mydata.ts[,-1], mydata.ts)
-
-summary(OLS1)$r.squared 
-summary(OLS1)$adj.r.squared 
-
-#### Test for autocorrelation of disturbances:
-
-dwtest(OLS1)
-
-
-##ACF and PACF
-
- 
-
-jpeg('regression/PACF_OLS.jpg')
-acf2(OLS1$residuals)
+jpeg('MOEregression/PACF_OLS.jpg')
+acf2(OLS$residuals)
 dev.off()
+# generates a jpeg file of a plot of the PACF and the ACF
 
 ##AR and MA signatures: If the PACF displays a sharp cutoff while the ACF decays more slowly 
 ##(i.e., has significant spikes at higher lags), we say that the stationarized series displays an "AR signature," 
@@ -78,11 +81,15 @@ dev.off()
 
 
 
-##Prais winsten generalised least squares regression
+###############################################################################
+####   Part 2. Perform a basic OLS on the data, in order to look at ###########
+####           the autocorrelation structure                        ###########
+###############################################################################
 
-Prais.winsten.regression <- prais.winsten(PUN ~ ., mydata.ts, iter = 50, rho = 0, tol = 1e-08)
+Prais.winsten.regression <- prais.winsten(PUN ~ .,ts.mydata,iter = 50,rho = 0, tol = 1e-08)
+# performs the Prais winsten generalised least squares regression 
+# ( modelling the distrubances with an AR(1) process )
 
-###Prais winsten function with modified output (copy paste of the original function with "return" changed)
 
 Prais.winsten.regression2 =function (formula, data, iter = 50, rho = 0, tol = 1e-08) 
 {
@@ -147,30 +154,21 @@ Prais.winsten.regression2 =function (formula, data, iter = 50, rho = 0, tol = 1e
   results <- list(s, r)
   return(lm)
 }
-
-###Tests for autocorrelation again
-
-test <- Prais.winsten.regression2(PUN ~ ., mydata.ts, iter = 50, rho = 0, tol = 1e-08)
-
-dwtest(test)
-dwtest(Prais.winsten.regression)
+# Prais winsten function with modified output (copy paste of the original
+# function with "return" changed)
 
 
 
-jpeg('regression/PACF_PraisWinsten.jpg')
-acf2(test$residuals)
+PWReg2 = Prais.winsten.regression2(PUN ~ ., ts.mydata, rho=0)
+
+dwtest(PWReg2)
+
+# Durbin Watson Test for autocorrelation
+
+jpeg('MOEregression/PACF_PraisWinsten.jpg')
+acf2(PWReg2$residuals)
 dev.off()
-
-
-####TEST WITH  gls
- 
-
-
-##mod.gls2 <- gls(PUN ~ mydata.ts[,-1] , data=mydata.ts, correlation=corARMA(p=2), method="ML")
-##summary(mod.gls2)
-
-##acf2(residuals(mod.gls2))
-  
+# generates a jpeg file of the plots of the ACF and the PACF
 
 
 
