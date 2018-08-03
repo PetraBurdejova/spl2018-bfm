@@ -107,10 +107,7 @@ for (TSO in names(df.solar[-1])){
     sunset.DE.df = do.call(rbind,sunset.DE.List) 
     # Transforms the List into a data.frame (easier to handle)
     
-    Missings[Missings$TIME < sunrise.DE.df$time | 
-             Missings$TIME > sunset.DE.df$time,
-             TSO] 
-    = as.numeric(0.0)
+    Missings[Missings$TIME < sunrise.DE.df$time | Missings$TIME > sunset.DE.df$time, TSO] = as.numeric(0.0)
     # For all values of the df "Nissings", replace NA's by the value 0.0 whenever 
     # it is before sunrise or after sunset
     
@@ -267,9 +264,10 @@ colnames(dm.temp)  = "DEM"
 df.dm$DEM          = dm.temp[ , 1]
 
 solar.temp         = as.data.frame(xts.solar) 
+ColumnNamesSolar   = colnames(df.solar)
 df.solar           = cbind(df.solar[, 1], solar.temp)
 rownames(df.solar) = c()
-colnames(df.solar) = colnames(df.solar)
+colnames(df.solar) = ColumnNamesSolar
 
 
 ###############################################################################
