@@ -17,7 +17,7 @@ rm(list = ls(all = TRUE))
 graphics.off()
 
 # Install and load libraries.
-libraries = c("ggplot2", "tikzDevice", "cowplot")
+libraries = c("ggplot2", "tikzDevice", "gridExtra", "cowplot", "tidyr", "dplyr")
 lapply(libraries, function(x) if (!(x %in% installed.packages())) {
   install.packages(x)
 })
@@ -46,6 +46,9 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 # Grab data from 'MOEmergedata' Quantlet
 load("MOEmergedata/MOEdata_merge.Rdata")
 
+# Create tidy datasets
+tidy.df = df %>% gather(key = VAR, value = PWR, 3:ncol(df))
+tidy.df = tidy.df %>% gather(key = LAB, value = PUN, 2)
 
 
 ###############################################################################
@@ -53,57 +56,32 @@ load("MOEmergedata/MOEdata_merge.Rdata")
 ###############################################################################
 
 
-# Solar Production plot
-plot1 = ggplot(data=df ,aes(x=TIME, y=SOLAR)) +  
-          geom_point(size=0.5) + 
-          geom_smooth(method="loess", span = 0.25, color="orange", se=FALSE) + 
-          ggtitle(label = "Solar Energy Production per Day", 
-                 subtitle = "German and Austrian Production in MW/h")+
-          xlab(label= " ") +
-          ylab(label = "MW/h")+
-          theme_bw()+
-          labs(caption = "(Data from 'Netztransparenz' and 'APG') ")
+###############################################################################
+####    2.1 EXPLORATORY PLOT    ###############################################
+
+plot_pwr = ggplot(data=tidy.df, aes(x = TIME, y = PWR)) +
+    geom_point(size = 0.5) +
+    ggtitle(label = "The German and Austrian Energy Market",
+            subtitle = "Selected Day-Ahead Variables, 2015--2018") +
+    xlab(label="") +
+    ylab(label = "Power in MWh") +
+    theme_bw() +
+    facet_grid(VAR ~ ., scales = "free")
+
+plot_pun = ggplot(data=tidy.df, aes(x = TIME, y = PUN)) +
+    geom_point(size = 0.5) +
+    labs(x = "", y = "Price in Euro/MWh") +
+    #labs(caption = "(Data from 'Netztransparenz', 'APG',\\ 'energiedataservice - DK' and 'ENTSOE')") +
+    theme_bw() +
+    facet_grid(LAB ~ ., scales = "free")
+
+plot_exp = plot_grid(plot_pwr, plot_pun, align = "v", nrow = 2,
+                     rel_heights = c(1, 0.39)
+                     )
 
 
-# Wind Production plot
-plot2 = ggplot(data=df, aes(x=`TIME`, y=(`WIND`))) +  
-          geom_point(size=0.5) + 
-          geom_smooth(method="lm", span = 1.5, color="blue", se=T) + 
-          ggtitle(label = "Wind Energy Production per Day", 
-                subtitle = "German and Austrian Production in MW/h") +
-          xlab(label= " ") +
-          ylab(label = "MW/h")+
-           theme_bw()+
-          labs(caption = "(Data from 'Netztransparenz' and 'APG')")
-
-
-# Price per MW/h plot
-plot3 = ggplot(data=df, aes(x=`TIME`, y=`PUN`)) + 
-          geom_point(size=0.5, color = "black") + 
-          #geom_smooth(method="lm", aes(fill=`TIME`), color = "black")  + 
-          geom_smooth(method="lm", color="gold", se=T) +
-          ggtitle(label = "Price Day-Ahead",
-                  subtitle = "Euro per MW/h") +
-          xlab(label= "") +
-          ylab(label = "Euro per MW/h ")+
-           theme_bw() +
-          labs(caption = "(Data from 'energidataservice - DK' and 'ENTSOE')")
-
-
-# Demand plot
-plot4 = ggplot(data=df, aes(x=`TIME`, y=(`DEM`))) +  
-           geom_point(size=0.5, color = "black") + 
-          # geom_smooth(method="lm", aes(fill=`TIME`)) +
-          # facet_wrap(~year(TIME+365*0.5)) +
-          geom_smooth(method="loess", span = 0.3, color="blue", se=FALSE) +
-          #ylim(3.5e+06, 7.5e+06) +
-          ggtitle(label = "Demand Day-Ahead forecast ",
-                 subtitle = "Daily MW/h") +
-          xlab(label= " ") +
-          ylab(label = "MW/h")+
-          theme_bw()+
-          labs(caption = "(Data from 'energidataservice - DK' and 'ENTSOE')")
-
+###############################################################################
+####    2.2 CORRELATION PLOT    ###############################################
 
 # Price on renewables plot
  plot5 = ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`+`WIND`))) +  
@@ -138,9 +116,8 @@ plot6 = ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
 ###############################################################################
 
 
-# Save variable plot for LaTex
-tikz(file = "MOEexploratory/MOEexpl_plots.tex", width = 5, height = 5)
-plot_grid(plot1, plot2, plot3, plot4, align= "hv")
+tikz(file = "MOEexploratory/MOEplot_expl.tex", width = 6, height = 8)
+plot(plot_exp)
 dev.off()
 
 # Save correlation plot for LaTex
@@ -156,22 +133,4 @@ dev.off()
 
 
 # Remove everything except for "df" from environment.
-#rm(list=ls()[! ls() %in% c("df")]) 
-
-
-
-
-
-## COMMENT:
-# TODO
-# make y axis more similar with units
-# check why tex is not working on my mac
-
-### Test ####
-ggplot(data=df ,aes(TIME)) +
-  geom_point(aes(y = SOLAR, color = "SOLAR"))+
-  geom_point(aes(y = WIND, color = "WIND"))+
-  scale_colour_manual(values=c("orange", "blue"))
- 
-
-
+#rm(list=ls()[! ls() %in% c("df")])
