@@ -6,7 +6,7 @@
 # Loads cleaned data set from 'MOErawdata'. Matches the timeframes and 
 # aggregates hourly into daily values. 
 #
-# Input:  '.Rdata' file from the 'MOErawdata' Quantlet.
+# Input:  '.Rdata' file from the 'MOEinterpolation' Quantlet.
 #
 # Ouput:  MOEdata_merge.csv     - data in table form
 #         MOEdata_merge.Rdata   - data in Rdata form
@@ -43,8 +43,8 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 ###############################################################################
 
 
-# Grab data from 'MOErawdata' Quantlet
-load("MOErawdata/MOEdata_clean.Rdata")
+# Grab data from 'MOEMOEinterpolation' Quantlet
+load("MOEinterpolation/MOEinterpolData.Rdata")
 
 
 

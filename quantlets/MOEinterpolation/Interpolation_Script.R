@@ -1,0 +1,295 @@
+###############################################################################     
+####   Data_Interpolation.R    ###############################################   
+###############################################################################     
+# 
+# This code deals with NA's for Solar electricity production 
+# and electrical demand. 
+# The missing values in the wind generation data are not handled here, as they 
+# they will be handled on a daily basis in a later step.
+# 
+#
+# Input: 'Rdata' file from the quantlet "MOErawdata"
+#
+# Ouput: - 'Rdata' file with interpolated values for solar generation and demand
+#   
+#
+###############################################################################
+
+##LEFT TODO ####
+## Graph for solar generation and demand ( that enables to see data on a daily basis)
+## Handle leading and trailing NA's --> Just cutting off?
+
+
+
+#setwd("C:/Users/PC-FELIX/Documents/GitHub/spl2018-bfm/quantlets")
+
+# Install and load libraries.
+libraries = c("xts", "StreamMetabolism")
+lapply(libraries, function(x) if (!(x %in% installed.packages())) {
+  install.packages(x)
+})
+lapply(libraries, library, quietly = TRUE, character.only = TRUE)
+
+# Setting default time to "UTC"
+Sys.setenv(TZ = "UTC") 
+
+###############################################################################
+#### Part 0. : Load data
+###############################################################################
+
+load("MOErawdata/MOEdata_clean.Rdata")
+
+Cut    = "2018-06-29 00:00:00"  #cut off all trailing NA's
+df.dm  = subset(df.dm, df.dm[, "TIME"]< Cut)
+xts.dm = xts(df.dm[,-1], order.by = df.dm$TIME)
+
+###############################################################################
+#### Part 1. : This part replaces Solar missing values that occur at night by
+####           the value 0. It is only applicable to solar energy production.
+###############################################################################
+
+xts.solar = xts(df.solar[,-1], order.by= df.solar$TIME)
+
+
+Sunrise.DE = function(Date){
+  
+  Location = c(13.413215, 52.521918)  ##Coordinates of Berlin (Length, Width)
+  Sunrise  = sunriset(matrix(Location, nrow=1),
+                     Date , 
+                     direction="sunrise", 
+                     POSIXct.out = TRUE)
+  # Gives Time of Sunrise for "Date" in a matrix of size 1 * 2
+}
+
+
+Sunset.DE = function(Date){
+  
+  Location = c( 13.413215, 52.521918) ##Coordinates of Berlin (Length, Width)
+  Sunset = sunriset( matrix(Location, nrow=1),
+                     Date ,
+                     direction="sunset",
+                     POSIXct.out = TRUE)
+  # Gives Time of Sunset for for "Date" in a matrix of size 1 * 2
+}
+
+
+
+for (TSO in names(df.solar[-1])){ 
+  # Repeats the following procedure over the 4 colums 
+  # FZHertz", "Amprion", "TenneT.TSO", "Transnet.BW"
+ 
+  
+  if (length(subset(df.solar, is.na(df.solar[,TSO]) == TRUE)[,TSO])>0) { 
+    # Tests whether the column has no NA's
+    # as this would lead to an error in the loop
+    
+    Missings = subset(df.solar, is.na(df.solar[,TSO]))[,c("TIME", TSO)]
+    # Selects only the rows of df.solar that contain NA's in the column of 
+    # the index "TSO"
+    # Was implemented for efficiency, as it would take a significant amount 
+    # of time to repeat this procedure over all rows
+     
+    sunrise.DE.List = lapply(Missings$TIME, Sunrise.DE) 
+    # Applies the above defined function (Sunrise.DE) on the dates of the 
+    # missing values for the column "TSO"
+    # This will give a list containing two elements per calculated function
+    # ( 1 per row of x.missing)
+    
+    sunrise.DE.df = do.call(rbind,sunrise.DE.List) 
+    # Transforms the List into a data.frame
+    
+    sunset.DE.List = lapply(Missings$TIME, Sunset.DE)
+    # Applies the above defined function (Sunset.DE)on the dates of the 
+    # missing values for the column "TSO"
+    # This will give a list containing two elements per calculated 
+    # function ( 1 per row of x.missing)
+    
+    sunset.DE.df = do.call(rbind,sunset.DE.List) 
+    # Transforms the List into a data.frame (easier to handle)
+    
+    Missings[Missings$TIME < sunrise.DE.df$time | Missings$TIME > sunset.DE.df$time, TSO] = as.numeric(0.0)
+    # For all values of the df "Nissings", replace NA's by the value 0.0 whenever 
+    # it is before sunrise or after sunset
+    
+    
+    xts.solar[Missings$TIME, TSO]=Missings[,TSO]
+    # replaces missing solar values at night by 0 in the xts file containing 
+    # all solar data
+    
+    
+  }else{
+    print("column has no missing values")
+  }
+}
+
+
+###############################################################################
+#### Part 2. : Interpolating values for NA's using an average of previous
+####           and next value. Restricting on a certain amount of maximal 
+####           consecutive NA's
+###############################################################################
+
+
+###############################################################################
+####  2.1 Interpolate data of df.solar  #######################################
+###############################################################################
+
+xts.solar = na.approx(xts.solar,na.rm=TRUE, maxgap=4)
+
+
+###############################################################################
+#### 2.2 Interpolate data for df.dm  ##########################################
+###############################################################################
+
+xts.dm = na.approx(xts.dm ,na.rm=TRUE, maxgap=4)
+
+  
+###############################################################################
+#### Part 3. : For values with strong seasonal variations within the day,
+####           the week and the year (solar production and demand) n average 
+####           of values at the same hour  will be used
+###############################################################################
+
+
+###############################################################################
+####  3.1 Interpolate data of df.solar  #######################################
+###############################################################################
+
+HM = function(Date){
+  format(Date, "%H:%M")
+}
+
+
+Begin    = as.POSIXct("2011-03-31 00:00:00")
+End      = as.POSIXct("2011-03-31 23:45:00")
+quarters = seq(Begin, End, length.out=96)
+
+
+quarters.day = HM(quarters)
+
+solar.quarters.list = list()
+
+for (quarter in quarters.day) {
+# This loop splits up the orginal xts into xts files for every quarter hour. 
+# (One xts for all data for time "00:00", one for "00:15" etc...)
+# This is done so that missing values can be interpolated on data for the
+# same quarter hour.
+  
+  
+  solar.quarters.list[[quarter]] = xts.solar[HM(index(xts.solar)) == quarter]
+  #splits the solar data up into data by quarter-hours ( 1 xts per quarter)
+  
+  interpolated.values = na.approx(solar.quarters.list[[quarter]],
+                                  na.rm = FALSE,
+                                  maxgap = 2)
+  # Interpolates NA's by Calculating the mean of the previous and the next
+  # hour-quarterly solar generation value
+  # ie: if there is the solar generation missing for "2011-03-31 08:00:00"
+  # it averages the values for "2011-03-30 08:00:00" 
+  # and for "2011-04-01 08:00:00"
+  
+  
+  xts.solar[index(solar.quarters.list[[quarter]]),] = interpolated.values
+  #replaces the original data by the interpolated one.
+  
+  # print(summary(solar.quarters.list[[quarter]]))
+  # print(summary(na.approx(solar.quarters.list[[quarter]],
+  # na.rm=FALSE,
+  # maxgap=4)))
+  
+}
+
+###############################################################################
+####  3.2 Interpolate data for demand  ########################################
+###############################################################################
+
+plot(xts.dm [
+  index(xts.dm) > "2018-03-01 00:00:00" & 
+  index(xts.dm) < "2018-04-01 00:00:00"])
+# Plot to illustrate why we average  according to the quarters and the days of 
+# the week
+
+dm.day.list = list()
+day.week = c(1,2,3,4,5,6,7)
+
+WeekDay = function(Date){
+  as.POSIXlt(Date)$wday
+}
+
+
+for (Day in day.week){
+# This double loop splits up the orginal xts into xts files for every quarter 
+# hour and day of the week.(One xts for all data for time "00:00" on Monday, 
+# one for "00:00" on tuesday etc...)This is done so that missing values can be
+# interpolated on data for the same time and the same day of the week.
+  
+  dm.day.list[[Day]]=list()
+  #defining the nested list
+  
+  for (quarter in quarters.day ) {
+  
+    dm.day.list[[Day]][[quarter]]= xts.dm[HM(index(xts.dm)) == quarter &
+                                          WeekDay(index(xts.dm)) == Day-1]
+     # creates a new xts for each quarter hour for each day of the week
+    
+    
+    interpolated.values = na.approx(dm.day.list[[Day]][[quarter]], 
+                                    na.rm=FALSE,
+                                    maxgap=2)
+    # for every such xts the NA's are interpolated. 
+    # ie: a NA on Monday 25th of March at 12:00 is interpolated by the demand 
+    # values on Monday the 18th of march at 12:00
+    # and Monday the 1st of April at 12:00
+
+  
+    xts.dm[index(dm.day.list[[Day]][[quarter]])] = interpolated.values
+    #all values of the original xts file get replaced by the interpolated ones 
+  }
+  
+}
+
+###############################################################################
+####  4 Converting xls back to df & cleaning up environment  ##################
+###############################################################################
+
+ 
+
+###############################################################################
+####  4.1 Converting xls data to dataframe and ################################
+####      replacing data in df.dm and df.solar ################################
+###############################################################################
+
+dm.temp            = as.data.frame(xts.dm)
+colnames(dm.temp)  = "DEM"
+df.dm$DEM          = dm.temp[ , 1]
+
+solar.temp         = as.data.frame(xts.solar) 
+ColumnNamesSolar   = colnames(df.solar)
+df.solar           = cbind(df.solar[, 1], solar.temp)
+rownames(df.solar) = c()
+colnames(df.solar) = ColumnNamesSolar
+
+
+###############################################################################
+####  4.2 Saving Date and Cleaning up environment #############################
+###############################################################################
+
+
+save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
+     file="MOEinterpolation/MOEinterpolData.Rdata"
+)
+
+
+
+rm(list=ls()[! ls() %in% c("df.pun",
+                           "df.solar",
+                           "df.solar.AT",
+                           "df.wind", 
+                           "df.wind.AT",
+                           "df.dm"
+)]) 
+
+
+
+
+
