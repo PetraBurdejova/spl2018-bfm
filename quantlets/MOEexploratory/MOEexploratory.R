@@ -139,7 +139,7 @@ plot6 = ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +
 
 
 # Save variable plot for LaTex
-tikz(file = "MOEexploratory/MOEex_plots.tex", width = 5, height = 5)
+tikz(file = "MOEexploratory/MOEexpl_plots.tex", width = 5, height = 5)
 plot_grid(plot1, plot2, plot3, plot4, align= "hv")
 dev.off()
 
@@ -156,7 +156,7 @@ dev.off()
 
 
 # Remove everything except for "df" from environment.
-rm(list=ls()[! ls() %in% c("df")]) 
+#rm(list=ls()[! ls() %in% c("df")]) 
 
 
 
