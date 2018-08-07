@@ -88,30 +88,28 @@ plot_exp = plot_grid(plot_pwr, plot_pun, align = "v", nrow = 2,
 ####    2.2 CORRELATION PLOT    ###############################################
 
 # Price on renewables plot
- plot5 = ggplot(data=df, aes(y=PRICE, x=(`SOLAR`+`WIND`))) +  
-          #ylim(200,1500) +
-          geom_point(size=0.5) + 
-          geom_smooth(method="lm", aes(fill=`TIME`)) + 
-          ggtitle(label = "Price on Renewables",
-                  subtitle = "Correlation between Price (€)
-                  and Renewbles Production (Daily MW/h") +
-          xlab(label = "Renewable Production Day-Ahead MW/h")+
-          ylab(label = "Euro per MW/h")+
-          theme_bw()
+plot_pr_rn = ggplot(data= tidy.df[tidy.df$VAR != "DEMAND", ], aes(y = PRICE, x = ENERGY)) +
+        geom_point(size=0.5) +
+        geom_smooth(method="lm", aes(fill= TIME), fullrange = T, color = "blue") +
+        ggtitle(label = "Co-movements on the Energy Market 2015--2018",
+                subtitle = "Selected Day-Ahead Variables") +
+        xlab(label = "") +
+        ylab(label = "Price in Euro/MWh") +
+        facet_grid(VAR ~., scales = "free") +
+        theme_bw() 
 
- 
- # Price on demand plot
-plot6 = ggplot(data=df, aes(y=PRICE, x=(DEMAND))) +  
-          #ylim(0,1500) +
-          geom_point(size=0.5) + 
-          geom_smooth(method="lm", aes(fill=`TIME`))+
-          ggtitle(label = "Price on Demand",
-                  subtitle = "Correlation between Price (€)
-                  and Demand (Daily MW/h") +
-          #ggtitle(label = "Price and Demand") +
-          xlab(label= "Demand in MW/h") +
-          ylab(label = "Euro per MW/h ")+
-          theme_bw()
+# Price on demand plot
+plot_pr_de = ggplot(data= tidy.df[tidy.df$VAR == "DEMAND", ], aes(y = PRICE, x = ENERGY)) +
+        geom_point(size=0.5) +
+        geom_smooth(method="lm", aes(fill=`TIME`),fullrange = T, color = "blue") +
+        xlab(label = "Energy in MWh") +
+        ylab(label = "Price in Euro/MWh") +
+        theme_bw() +
+        facet_grid(VAR ~., scales = "free")
+
+# Combination plot
+plot_corr = plot_grid(plot_pr_rn, plot_pr_de, align = "v", nrow = 2,
+                                          rel_heights = c(0.7, 0.4))
 
 
 
@@ -126,7 +124,7 @@ dev.off()
 
 # Save correlation plot for LaTex
 tikz(file = "MOEexploratory/MOEcorr_plots.tex", width = 5, height = 5)
-plot_grid(plot6, plot5, align= "hv")
+plot_grid(plot_corr)
 dev.off()
 
 
