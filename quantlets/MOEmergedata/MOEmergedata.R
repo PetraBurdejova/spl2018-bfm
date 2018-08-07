@@ -182,7 +182,7 @@ df = df[ -c(3,5,7) ]
 save(df, file="MOEmergedata/MOEdata_merge.Rdata")
 
 # Save dataframe as '.csv' files for use with other software.
-####    TODO: Save dataframe as .csv
+write.csv(df, file="MOEmergedata/MOEdata_merge.csv")
 
 
 

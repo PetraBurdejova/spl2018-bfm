@@ -234,8 +234,16 @@ save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
      )
 
 # Save dataframes as '.csv' files for use with other software.
-####    TODO: Save dataframes as .csv
+df.list     = list(df.pun, df.solar, df.solar.AT, 
+               df.wind, df.wind.AT, df.dm)
 
+df.names   = c("df_pun.csv", "df_solar.csv", "df_solar_AT.csv",
+                 "df_wind.csv", "df_wind_AT.csv", "df_dm.csv")
+
+lapply(1:length(df.list), 
+       function(i) write.csv((df.list[i]), 
+                             file = paste0("MOErawdata/MOEdata_clean_csv/", 
+                                           df.names[i])))
 
 
 ###############################################################################
