@@ -49,6 +49,7 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 #   Delim:      ,
 #   Decimal:    .
 #   Enclosed:   none
+#   Header:     TRUE
 df.pun.0        =  read.csv("MOErawdata/inputs/price_elspot.csv")
 
 # READ DEMAND DATA:
@@ -56,6 +57,7 @@ df.pun.0        =  read.csv("MOErawdata/inputs/price_elspot.csv")
 #   Delim:      ,
 #   Decimal:    none
 #   Enclosed:   ""
+#   Header:     TRUE
 df.dem.2015.0   = read.csv("MOErawdata/inputs/demand_2015_entsoe.csv")
 df.dem.2016.0   = read.csv("MOErawdata/inputs/demand_2016_entsoe.csv")
 df.dem.2017.0   = read.csv("MOErawdata/inputs/demand_2017_entsoe.csv")
@@ -66,6 +68,7 @@ df.dem.2018.0   = read.csv("MOErawdata/inputs/demand_2018_entsoe.csv")
 #   Delim:      ;
 #   Decimal:    ,
 #   Enclosed:   ""
+#   Header:     TRUE
 df.solar.D      =  read.csv2("MOErawdata/inputs/solar_DE_netztransp.csv")
 df.wind.D       =  read.csv2("MOErawdata/inputs/wind_DE_netztransp.csv")
 
@@ -112,7 +115,7 @@ df.pun$TIME     = ymd_hm(df.pun$TIME, tz = "UTC")
 df.solar$TIME   = dmy_hm(df.solar$TIME, tz = "Europe/Brussels")
 df.wind$TIME    = dmy_hm(df.wind$TIME, tz = "Europe/Brussels")
 
-# Handle a bug that causes duplicate values when transitioning from CEST to CET.
+# Handle a bug that creates duplicate values when daylight saving time changes.
 fixDlsDups = function(times, fromLast = TRUE){
     # Searches for duplicate values and subtracts 1 hour. Returns fixed dates.
     dups        = which(duplicated(times, fromLast=fromLast))
@@ -137,7 +140,7 @@ df.wind$TIME    = with_tz(df.wind$TIME, tz = "UTC")
 ####    DEFINE SUBROUTINES    #################################################
 
 select.ATSOLAR = function(x){
-  # Selects the important variables for the ren.AT data
+  # Selects and cleans the important variables for the ren.AT data
   #
   # Args:
   #   x: Imported raw dataframe
@@ -154,7 +157,7 @@ select.ATSOLAR = function(x){
 }
 
 select.ATWIND = function(x){
-  # Selects the important variables for the ren.AT data
+  # Selects and cleans the important variables for the ren.AT data
   #
   # Args:
   #   x: Imported raw dataframe
@@ -246,4 +249,4 @@ rm(list=ls()[! ls() %in% c("df.pun",
                            "df.wind", 
                            "df.wind.AT",
                            "df.dm"
-                           )]) 
+                           )])
