@@ -17,7 +17,7 @@ rm(list = ls(all = TRUE))
 graphics.off()
 
 # Install and load libraries.
-libraries = c("ggplot2", "tikzDevice", "gridExtra", "cowplot", "tidyr", "dplyr")
+libraries = c("tidyr", "dplyr", "ggplot2", "tikzDevice", "cowplot", "scales")
 lapply(libraries, function(x) if (!(x %in% installed.packages())) {
   install.packages(x)
 })
@@ -46,9 +46,12 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 # Grab data from 'MOEmergedata' Quantlet
 load("MOEmergedata/MOEdata_merge.Rdata")
 
+# Change variable names for better representation
+names(df) <- c("TIME", "PRICE", "DEMAND", "SOLAR", "WIND")
+
 # Create tidy datasets
-tidy.df = df %>% gather(key = VAR, value = PWR, 3:ncol(df))
-tidy.df = tidy.df %>% gather(key = LAB, value = PUN, 2)
+tidy.df = df %>% gather(key = VAR, value = ENERGY, 3:ncol(df))
+tidy.df = tidy.df %>% gather(key = LAB, value = PRICE, 2)
 
 
 ###############################################################################
@@ -59,19 +62,20 @@ tidy.df = tidy.df %>% gather(key = LAB, value = PUN, 2)
 ###############################################################################
 ####    2.1 EXPLORATORY PLOT    ###############################################
 
-plot_pwr = ggplot(data=tidy.df, aes(x = TIME, y = PWR)) +
+plot_pwr = ggplot(data=tidy.df, aes(x = TIME, y = ENERGY)) +
     geom_point(size = 0.5) +
     ggtitle(label = "The German and Austrian Energy Market",
             subtitle = "Selected Day-Ahead Variables, 2015--2018") +
     xlab(label="") +
-    ylab(label = "Power in MWh") +
+    ylab(label = "Energy in MWh") +
+    scale_y_continuous(label = comma) +
     theme_bw() +
     facet_grid(VAR ~ ., scales = "free")
 
-plot_pun = ggplot(data=tidy.df, aes(x = TIME, y = PUN)) +
+plot_pun = ggplot(data=tidy.df, aes(x = TIME, y = PRICE)) +
     geom_point(size = 0.5) +
     labs(x = "", y = "Price in Euro/MWh") +
-    #labs(caption = "(Data from 'Netztransparenz', 'APG',\\ 'energiedataservice - DK' and 'ENTSOE')") +
+    scale_y_continuous(label = comma) +
     theme_bw() +
     facet_grid(LAB ~ ., scales = "free")
 
@@ -84,7 +88,7 @@ plot_exp = plot_grid(plot_pwr, plot_pun, align = "v", nrow = 2,
 ####    2.2 CORRELATION PLOT    ###############################################
 
 # Price on renewables plot
- plot5 = ggplot(data=df, aes(y=`PUN`, x=(`SOLAR`+`WIND`))) +  
+ plot5 = ggplot(data=df, aes(y=PRICE, x=(`SOLAR`+`WIND`))) +  
           #ylim(200,1500) +
           geom_point(size=0.5) + 
           geom_smooth(method="lm", aes(fill=`TIME`)) + 
@@ -97,7 +101,7 @@ plot_exp = plot_grid(plot_pwr, plot_pun, align = "v", nrow = 2,
 
  
  # Price on demand plot
-plot6 = ggplot(data=df, aes(y=`PUN`, x=(`DEM`))) +  
+plot6 = ggplot(data=df, aes(y=PRICE, x=(DEMAND))) +  
           #ylim(0,1500) +
           geom_point(size=0.5) + 
           geom_smooth(method="lm", aes(fill=`TIME`))+
