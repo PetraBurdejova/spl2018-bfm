@@ -1,0 +1,15 @@
+% latex table generated in R 3.5.0 by xtable 1.8-2 package
+% Wed Aug  8 16:28:43 2018
+\begin{table}[ht]
+\centering
+\begin{tabular}{rrr}
+  \hline
+ & A. Dickey Fuller & Philipps-perron \\ 
+  \hline
+El. Price & 0.01 & 0.01 \\ 
+  El. Demand & 0.01 & 0.01 \\ 
+  Solar Gen. & 0.32 & 0.01 \\ 
+  Wind Gen. & 0.01 & 0.01 \\ 
+   \hline
+\end{tabular}
+\end{table}
