@@ -128,7 +128,7 @@ dev.off()
 
 # Save correlation plot as .tex file
 tikz(file = "MOEexploratory/MOEplot_corr.tex", width = 6, height = 8)
-plot_grid(plot_corr)
+plot(plot_corr)
 dev.off()
 
 
