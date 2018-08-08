@@ -6,7 +6,7 @@
 # Loads cleaned data set from 'MOErawdata'. Matches the timeframes and 
 # aggregates hourly into daily values. 
 #
-# Input:  '.Rdata' file from the 'MOEinterpolation' Quantlet.
+# Input:  'MOEdata_interp.Rdata' file from the 'MOEinterpolation' Quantlet.
 #
 # Ouput:  MOEdata_merge.csv     - data in table form
 #         MOEdata_merge.Rdata   - data in Rdata form
@@ -43,55 +43,13 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 ###############################################################################
 
 
-# Grab data from 'MOEMOEinterpolation' Quantlet
-load("MOEinterpolation/MOEinterpolData.Rdata")
+# Grab data from 'MOEinterpolation' Quantlet
+load("MOEinterpolation/MOEdata_interp.Rdata")
 
 
 
 ###############################################################################
-####    2.  MATCH TIMEFRAMES      #############################################
-###############################################################################
-
-
-###############################################################################
-####    DEFINE SUBROUTINES    #################################################
-
-time.FRAME = function(x) {
-    # Chooses Time frame for all variables
-    #
-    # Args:
-    #   x: Imported dataframe
-    #
-    # Returns:
-    #   y: Dataframe with right time frame
-    #
-    # TODO: Adjust timeframe dynamically.
-    #
-    start.d     = ymd_hm("2015-01-01 00:00")
-    stop.d      = ymd_hm("2017-12-31 23:00")
-    ind.start   = which(x$TIME == start.d)
-    ind.stop    = which(x$TIME == stop.d)
-    ind         = (ind.start: ind.stop)
-    y           = x[ind, ]
-    return(y)
-}
-
-
-###############################################################################
-####    APPLY SUBROUTINES    ##################################################
-
-# Match timeframes.
-df.dm       = time.FRAME(df.dm)
-df.pun      = time.FRAME(df.pun)
-df.solar    = time.FRAME(df.solar)
-df.wind     = time.FRAME(df.wind)
-df.solar.AT = time.FRAME(df.solar.AT)
-df.wind.AT  = time.FRAME(df.wind.AT)
-
-
-
-###############################################################################
-####    3.  CALCULATE DAILY VALUES    #########################################
+####    2.  CALCULATE DAILY VALUES    #########################################
 ###############################################################################
 
 
@@ -151,7 +109,7 @@ df.wind.AT$TIME       = ymd(df.wind.AT$TIME)
 
 
 ###############################################################################
-####    4.  AGGREGATE 'DE' AND 'AT' DATA    ###################################
+####    3.  AGGREGATE 'DE' AND 'AT' DATA    ###################################
 ###############################################################################
 
 
@@ -170,7 +128,7 @@ df.wind[,-1]    = df.wind[,-1] + df.wind.AT[,-1]
 
 
 ###############################################################################
-####    5.  BIND AND SAVE DATAFRAME    ########################################
+####    4.  BIND AND SAVE DATAFRAME    ########################################
 ###############################################################################
 
 
@@ -187,7 +145,7 @@ write.csv(df, file="MOEmergedata/MOEdata_merge.csv")
 
 
 ###############################################################################
-####    4. CLEAN UP ENVIRONMENT    ############################################
+####    5. CLEAN UP ENVIRONMENT    ############################################
 ###############################################################################
 
 

@@ -1,5 +1,6 @@
+
 ###############################################################################     
-####   Data_Interpolation.R    ###############################################   
+####   Data_Interpolation.R    ################################################   
 ###############################################################################     
 # 
 # This code deals with NA's for Solar electricity production 
@@ -8,20 +9,22 @@
 # they will be handled on a daily basis in a later step.
 # 
 #
-# Input: 'Rdata' file from the quantlet "MOErawdata"
+# Input: 'MOEdata_clean.Rdata' from the 'MOErawdata' Quantlet.
 #
-# Ouput: - 'Rdata' file with interpolated values for solar generation and demand
+# Ouput:  MOEdata_interp.csv     - data in table form
+#         MOEdata_interp.Rdata   - data in Rdata form
 #   
+#
+# TODO:   - Graph for solar generation and demand ( that enables to see data on
+#           a daily basis).
+#         - Handle leading and trailing NA's --> Just cutting off?
 #
 ###############################################################################
 
-##LEFT TODO ####
-## Graph for solar generation and demand ( that enables to see data on a daily basis)
-## Handle leading and trailing NA's --> Just cutting off?
 
-
-
-#setwd("C:/Users/PC-FELIX/Documents/GitHub/spl2018-bfm/quantlets")
+# Clear all variables.
+rm(list = ls(all = TRUE))
+graphics.off()
 
 # Install and load libraries.
 libraries = c("xts", "StreamMetabolism")
@@ -30,49 +33,121 @@ lapply(libraries, function(x) if (!(x %in% installed.packages())) {
 })
 lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 
-# Setting default time to "UTC"
+# Set default time to "UTC"
 Sys.setenv(TZ = "UTC") 
 
+
+
 ###############################################################################
-#### Part 0. : Load data
+####    0.  SET WORKING DIRECTORY    ##########################################
+###############################################################################
+
+####    ATTENTION: Working directory is assumed to be the root of the MOE 
+####    repository, not the MOEmergedata Quantlet subdirectory!!!
+
+
+# If needed, set working directory accordingly:
+#setwd("path/to/MOE_repository")
+
+
+
+###############################################################################
+####    1.  LOAD CLEAN DATA    ################################################
 ###############################################################################
 
 load("MOErawdata/MOEdata_clean.Rdata")
 
-Cut    = "2018-06-29 00:00:00"  #cut off all trailing NA's
-df.dm  = subset(df.dm, df.dm[, "TIME"]< Cut)
+
+
+###############################################################################
+####    2.  MATCH TIMEFRAMES    ###############################################
+###############################################################################
+
+
+###############################################################################
+####    DEFINE SUBROUTINES    #################################################
+
+time.FRAME = function(x) {
+    # Chooses Time frame for all variables
+    #
+    # Args:
+    #   x: Imported dataframe
+    #
+    # Returns:
+    #   y: Dataframe with right time frame
+    #
+    # TODO: Adjust timeframe dynamically.
+    #
+    start.d     = ymd_hm("2015-01-01 00:00")
+    stop.d      = ymd_hm("2017-12-31 23:00")
+    ind.start   = which(x$TIME == start.d)
+    ind.stop    = which(x$TIME == stop.d)
+    ind         = (ind.start: ind.stop)
+    y           = x[ind, ]
+    return(y)
+}
+
+
+###############################################################################
+####    APPLY SUBROUTINES    ##################################################
+
+# Match timeframes.
+df.dm       = time.FRAME(df.dm)
+df.pun      = time.FRAME(df.pun)
+df.solar    = time.FRAME(df.solar)
+df.wind     = time.FRAME(df.wind)
+df.solar.AT = time.FRAME(df.solar.AT)
+df.wind.AT  = time.FRAME(df.wind.AT)
+
+
+
+
+###############################################################################
+####    3.  CONVERT DATAFRAMES TO XTS FORMAT    ###############################
+###############################################################################
+
+
 xts.dm = xts(df.dm[,-1], order.by = df.dm$TIME)
-
-###############################################################################
-#### Part 1. : This part replaces Solar missing values that occur at night by
-####           the value 0. It is only applicable to solar energy production.
-###############################################################################
-
 xts.solar = xts(df.solar[,-1], order.by= df.solar$TIME)
 
 
+
+###############################################################################
+####    4.  INTERPOLATE MISSING VALUES    #####################################
+###############################################################################
+
+
+###############################################################################
+####    4a. ONLY SOLAR: REPLACE NIGHTTIME NA's WITH 0
+###############################################################################
+
+
+###############################################################################
+####    DEFINE SUBROUTINES    #################################################
+
 Sunrise.DE = function(Date){
-  
+  # Gives Time of Sunrise for "Date" in a matrix of size 1 * 2
+
   Location = c(13.413215, 52.521918)  ##Coordinates of Berlin (Length, Width)
   Sunrise  = sunriset(matrix(Location, nrow=1),
                      Date , 
                      direction="sunrise", 
                      POSIXct.out = TRUE)
-  # Gives Time of Sunrise for "Date" in a matrix of size 1 * 2
 }
 
-
 Sunset.DE = function(Date){
+  # Gives Time of Sunset for for "Date" in a matrix of size 1 * 2
   
   Location = c( 13.413215, 52.521918) ##Coordinates of Berlin (Length, Width)
   Sunset = sunriset( matrix(Location, nrow=1),
                      Date ,
                      direction="sunset",
                      POSIXct.out = TRUE)
-  # Gives Time of Sunset for for "Date" in a matrix of size 1 * 2
 }
 
 
+###############################################################################
+####    APPLY SUBROUTINES    ##################################################
 
 for (TSO in names(df.solar[-1])){ 
   # Repeats the following procedure over the 4 colums 
@@ -124,31 +199,22 @@ for (TSO in names(df.solar[-1])){
 
 
 ###############################################################################
-#### Part 2. : Interpolating values for NA's using an average of previous
-####           and next value. Restricting on a certain amount of maximal 
-####           consecutive NA's
+####    4b. NEAREST NEIGHBOUR INTERPOLATION
 ###############################################################################
 
 
-###############################################################################
-####  2.1 Interpolate data of df.solar  #######################################
-###############################################################################
-
+# Only applies for up to 4 consecutive NA's.
 xts.solar = na.approx(xts.solar,na.rm=TRUE, maxgap=4)
-
-
-###############################################################################
-#### 2.2 Interpolate data for df.dm  ##########################################
-###############################################################################
-
 xts.dm = na.approx(xts.dm ,na.rm=TRUE, maxgap=4)
 
   
 ###############################################################################
-#### Part 3. : For values with strong seasonal variations within the day,
+####    4c. SEASONAL TREND INTERPOLATION    ###################################
+###############################################################################
+
+####           For values with strong seasonal variations within the day,
 ####           the week and the year (solar production and demand) n average 
 ####           of values at the same hour  will be used
-###############################################################################
 
 
 ###############################################################################
@@ -248,16 +314,12 @@ for (Day in day.week){
   
 }
 
-###############################################################################
-####  4 Converting xls back to df & cleaning up environment  ##################
-###############################################################################
 
- 
 
 ###############################################################################
-####  4.1 Converting xls data to dataframe and ################################
-####      replacing data in df.dm and df.solar ################################
+####    5. CONVERT BACK TO DATAFRAMES AND SAVE    #############################
 ###############################################################################
+
 
 dm.temp            = as.data.frame(xts.dm)
 colnames(dm.temp)  = "DEM"
@@ -269,16 +331,15 @@ df.solar           = cbind(df.solar[, 1], solar.temp)
 rownames(df.solar) = c()
 colnames(df.solar) = ColumnNamesSolar
 
-
-###############################################################################
-####  4.2 Saving Date and Cleaning up environment #############################
-###############################################################################
-
-
 save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
-     file="MOEinterpolation/MOEinterpolData.Rdata"
+     file="MOEinterpolation/MOEdata_interp.Rdata"
 )
 
+
+
+###############################################################################
+####    6. CLEAN UP ENVIRONMENT    ############################################
+###############################################################################
 
 
 rm(list=ls()[! ls() %in% c("df.pun",
@@ -288,8 +349,6 @@ rm(list=ls()[! ls() %in% c("df.pun",
                            "df.wind.AT",
                            "df.dm"
 )]) 
-
-
 
 
 
