@@ -151,9 +151,8 @@ Sunset.DE = function(Date){
 
 for (TSO in names(df.solar[-1])){ 
   # Repeats the following procedure over the 4 colums 
-  # FZHertz", "Amprion", "TenneT.TSO", "Transnet.BW"
+  # FZHertz", "Amprion", "TenneT.TSO", "Transnet.BW" 
  
-  
   if (length(subset(df.solar, is.na(df.solar[,TSO]) == TRUE)[,TSO])>0) { 
     # Tests whether the column has no NA's
     # as this would lead to an error in the loop
@@ -185,13 +184,11 @@ for (TSO in names(df.solar[-1])){
     Missings[Missings$TIME < sunrise.DE.df$time | Missings$TIME > sunset.DE.df$time, TSO] = as.numeric(0.0)
     # For all values of the df "Nissings", replace NA's by the value 0.0 whenever 
     # it is before sunrise or after sunset
-    
-    
+     
     xts.solar[Missings$TIME, TSO]=Missings[,TSO]
     # replaces missing solar values at night by 0 in the xts file containing 
     # all solar data
-    
-    
+     
   }
 }
 
@@ -207,30 +204,29 @@ xts.dm = na.approx(xts.dm ,na.rm=TRUE, maxgap=4)
 
   
 ###############################################################################
-####    4c. SEASONAL TREND INTERPOLATION    ###################################
+####    4c. TREND INTERPOLATION    ############################################
 ###############################################################################
 
-####           For values with strong seasonal variations within the day,
-####           the week and the year (solar production and demand) n average 
-####           of values at the same hour  will be used
+####    For values with strong seasonal variations within the day,
+####    the week and the year (solar production and demand) we
+####    interpolate by averaging between neighbouring days.
 
 
 ###############################################################################
-####  3.1 Interpolate data of df.solar  #######################################
-###############################################################################
+####    INTERPOLATE SOLAR BY DAILY TREND    ###################################
 
+# Build vector of quater-hours.
 HM = function(Date){
   format(Date, "%H:%M")
 }
-
 
 Begin    = as.POSIXct("2011-03-31 00:00:00")
 End      = as.POSIXct("2011-03-31 23:45:00")
 quarters = seq(Begin, End, length.out=96)
 
-
 quarters.day = HM(quarters)
 
+# Interpolate SOLAR NA's by same hour values of neighbouring days.
 solar.quarters.list = list()
 
 for (quarter in quarters.day) {
@@ -263,11 +259,11 @@ for (quarter in quarters.day) {
   
 }
 
-###############################################################################
-####  3.2 Interpolate data for demand  ########################################
-###############################################################################
 
+###############################################################################
+####    INTERPOLATE DEMAND BY DAILY AND WEEKLY TREND    #######################
 
+# Build vector of days.
 dm.day.list = list()
 day.week = c(1,2,3,4,5,6,7)
 
