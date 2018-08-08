@@ -192,8 +192,6 @@ for (TSO in names(df.solar[-1])){
     # all solar data
     
     
-  }else{
-    print("column has no missing values")
   }
 }
 
@@ -269,11 +267,6 @@ for (quarter in quarters.day) {
 ####  3.2 Interpolate data for demand  ########################################
 ###############################################################################
 
-plot(xts.dm [
-  index(xts.dm) > "2018-03-01 00:00:00" & 
-  index(xts.dm) < "2018-04-01 00:00:00"])
-# Plot to illustrate why we average  according to the quarters and the days of 
-# the week
 
 dm.day.list = list()
 day.week = c(1,2,3,4,5,6,7)
