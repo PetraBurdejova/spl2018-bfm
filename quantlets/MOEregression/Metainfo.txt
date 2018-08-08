@@ -1,16 +1,23 @@
 
-Name of Quantlet : MOErawdata
+Name of Quantlet : MOEregression
 
 Published in : Statistical Programming Languages SS2018
 
-Description : Saves a cleaned version of raw energy market data.
+Description : Performs an OLS regression and a Prais-Winsten regression, while testing for 
+              Stationarity of the variables, heteroscedasticity, autocorrelation of the error terms
+              
+Keywords : OLS, Prais-Winsten, AR(1), ACF, PACF, autocorrelation, philipps-perron, durbin-watson, breusch-pagan
 
-Keywords : data, clean
-
-Author : Bruni Puri
+Author : Felix Germaine
 
 Datafile : 
 
-Input : 
+Input : MOEmergedata/MOEmergedata.R 
 
-Output :
+Output : MOEregression/OLS_ADFandPPTEST
+         MOEregression/OLS_DWandBPTEST
+         MOEregression/PACF_OLS.jpg
+         MOEregression/PACF_PraisWinsten.jpg
+         MOEregression/PraisWinstenRegCoefficients
+         MOEregression/PraisWinstenGoFDW
+         
