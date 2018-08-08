@@ -27,7 +27,7 @@ rm(list = ls(all = TRUE))
 graphics.off()
 
 # Install and load libraries.
-libraries = c("xts", "StreamMetabolism")
+libraries = c("xts", "StreamMetabolism", "lubridate")
 lapply(libraries, function(x) if (!(x %in% installed.packages())) {
   install.packages(x)
 })
