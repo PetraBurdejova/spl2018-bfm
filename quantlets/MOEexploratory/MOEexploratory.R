@@ -7,7 +7,10 @@
 #
 # Input:  '.Rdata' file from the 'MOEmergedata' Quantlet.
 #
-# Ouput:  MOEex_plots.tex       - plots in .tex format
+# Ouput:  MOEplot_expl.tex       - plot in .tex format
+#         MOEplot_expl.pdf       - plot in .pdf format
+#         MOEplot_corr.tex       - plot in .tex format
+#         MOEplot_corr.pdf       - plot in .pdf format
 #
 ###############################################################################
 
@@ -16,7 +19,7 @@ rm(list = ls(all = TRUE))
 graphics.off()
 
 # Install and load libraries.
-libraries = c("tidyr", "dplyr", "ggplot2", "tikzDevice", "cowplot", "scales")
+libraries = c("tidyr", "ggplot2", "tikzDevice", "cowplot", "scales")
 lapply(libraries, function(x) if (!(x %in% installed.packages())) {
   install.packages(x)
 })
@@ -131,11 +134,20 @@ tikz(file = "MOEexploratory/MOEplot_corr.tex", width = 6, height = 8)
 plot(plot_corr)
 dev.off()
 
+# Save explorative plot as .pdf file
+pdf("MOEexploratory/MOEplot_expl.pdf")
+plot(plot_exp)
+dev.off()
+
+# Save correlation plot as .pdf file
+pdf("MOEexploratory/MOEplot_corr.pdf")
+plot(plot_corr)
+dev.off()
 
 ###############################################################################
 ####    4. CLEAN UP ENVIRONMENT    ############################################
 ###############################################################################
 
 # Remove everything except for "df" from environment.
-#rm(list=ls()[! ls() %in% c("df")])
+rm(list=ls()[! ls() %in% c("df")])
 
