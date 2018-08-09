@@ -135,7 +135,7 @@ Table1 = data.frame(Results.ADF, Results.PP)
 colnames(Table1) = c("A. Dickey Fuller", "Philipps-perron")
 rownames(Table1) = c("El. Price","El. Demand", "Solar Gen.", "Wind Gen.")
 TABLE1 = xtable(Table1)
-print.xtable(TABLE1, type="latex", file="MOEregression/ADFandPPTEST")
+print.xtable(TABLE1, type="latex", file="MOEregression/ADFandPPTEST.tex")
 
 
 ###############################################################################
@@ -168,7 +168,7 @@ Table2 = data.frame(DWTEST.OLS$p.value,BPTEST.OLS$p.value)
 colnames(Table2) = c("Durbin-Watson", "Breusch-Pagan")
 row.names(Table2) = "p-value"
 TABLE2 = xtable(Table2)
-print.xtable(TABLE2, type="latex", file="MOEregression/OLS_DWandBPTEST")
+print.xtable(TABLE2, type="latex", file="MOEregression/OLS_DWandBPTEST.tex")
 
 
 # Generate jpeg file with PACF and ACF of OLS
@@ -189,7 +189,7 @@ PWReg = prais.winsten(PUN ~ .,ts.mydata,iter = 50,rho = 0, tol = 1e-08)
 
 # Generate a jpeg for ACF and PACF of PW regression
 jpeg('MOEregression/PACF_PraisWinsten.jpg')
-acf2(PWReg[[1]]$residuals, main="Prais-Winsten residuals")
+acf2(PWReg[[1]]$residuals, main="Prais-Winsten residuals.tex")
 dev.off()
 
 # Arrange results into LaTeX table
@@ -215,7 +215,7 @@ TABLE3 = xtable(Table3,
                 digits=2)
 
 print.xtable(TABLE3, type ="latex",
-             file = "MOEregression/PraisWinstenRegCoefficients")
+             file = "MOEregression/PraisWinstenRegCoefficients.tex")
 
 
 ###############################################################################
@@ -240,7 +240,7 @@ TABLE4 = xtable(Table4,
 
 print.xtable(TABLE4, 
              type="latex",
-             file="MOEregression/PraisWinstenGoFDW", 
+             file="MOEregression/PraisWinstenGoFDW.tex", 
              sanitize.text.function=function(x){x})
 
 
