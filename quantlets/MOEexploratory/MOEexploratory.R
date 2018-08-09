@@ -65,7 +65,7 @@ tidy.df = tidy.df %>% gather(key = LAB, value = PRICE, 2)
 plot_pwr = ggplot(data=tidy.df, aes(x = TIME, y = ENERGY)) +
     geom_point(size = 0.5) +
     ggtitle(label = "The German and Austrian Energy Market",
-            subtitle = "Selected Day-Ahead Variables, 2015--2018") +
+            subtitle = "Selected Day-Ahead Variables, 2015--2017") +
     xlab(label="") +
     ylab(label = "Energy in MWh") +
     scale_y_continuous(label = comma) +
@@ -96,7 +96,7 @@ plot_pr_rn = ggplot(data= tidy.df[tidy.df$VAR != "DEMAND", ],
                     aes(y = PRICE, x = ENERGY)) +
         geom_point(size=0.5) +
         geom_smooth(method="lm", aes(fill= TIME), fullrange = T) +
-        ggtitle(label = "Co-movements on the Energy Market 2015--2018",
+        ggtitle(label = "Co-movements on the Energy Market 2015--2017",
                 subtitle = "Selected Day-Ahead Variables") +
         xlab(label = "") +
         ylab(label = "Price in Euro/MWh") +

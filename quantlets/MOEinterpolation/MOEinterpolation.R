@@ -13,10 +13,6 @@
 #
 # Ouput:  MOEdata_interp_csv/<variable>.csv     - data in table form
 #         MOEdata_interp.Rdata                  - data in Rdata form
-#   
-#
-# TODO:   - Graph for solar generation and demand ( that enables to see data on
-#           a daily basis).
 #
 ###############################################################################
 
