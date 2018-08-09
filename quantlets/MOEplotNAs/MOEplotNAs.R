@@ -17,7 +17,7 @@ rm(list = ls(all = TRUE))
 graphics.off()
 
 # Install and load libraries.
-libraries = c("ggplot2", "tikzDevice", "scales")
+libraries = c("ggplot2", "tikzDevice", "scales", "lubridate")
 lapply(libraries, function(x) if (!(x %in% installed.packages())) {
     install.packages(x)
 })
@@ -103,6 +103,9 @@ DiagMissingValues <- function(df, dlevel = 0) {
 ###############################################################################
 
 
+###############################################################################
+####    CREATE DATASET
+
 df.na.dm            = data.frame(DiagMissingValues(df.dm), "DEMAND")
 names(df.na.dm)     = c("TIME", "SOURCE")
 
@@ -114,14 +117,33 @@ names(df.na.wind)   = c("TIME", "SOURCE")
 
 df.na.raw           = rbind(df.na.dm,df.na.solar,df.na.wind)
 
+# Create new column for faceting by YEAR
+df.na.raw$YEAR  = format(df.na.raw$TIME, "%Y")
 
-plot_na = ggplot(df.na.raw) +
-    geom_histogram(aes(x=TIME, col=SOURCE, fill=SOURCE),
-                   alpha = 0.8, binwidth = 24*3600) +
+# Define year vector for relevant years
+years = c("2015", "2016", "2017")
+
+# Remove irrelevant years
+df.na.raw = df.na.raw[df.na.raw$YEAR %in% years,]
+
+# Change year to dummy year
+year(df.na.raw$TIME)    = 2015
+
+
+###############################################################################
+####    CREATE NA PLOT
+
+plot_na = ggplot(df.na.raw, aes(x = TIME)) +
+    geom_histogram(aes(fill = SOURCE), alpha = 0.8, binwidth = 24*3600,
+                   position = "stack") +
     labs(x = "Date", y = "NAs per day") +
-    scale_x_datetime(limits=c(as.POSIXct('2015-01-01 00:00:00'),
-                              as.POSIXct('2018-01-01 00:00:00'))) +
-    ggtitle(label = "Missing Values in the Dataset")
+    ggtitle(label = "Missing Values in the Dataset") +
+    scale_x_datetime(limits = c(as.POSIXct('2015-01-01 00:00:00'),
+                                as.POSIXct('2015-12-31 23:45:00')),
+                     labels = date_format("%b"),
+                     expand = c(0,0)) +
+    facet_grid(YEAR ~ .)
+    
 
 ###############################################################################
 ####    4.  SAVE PLOTS AS TEX FILE      #######################################
@@ -129,12 +151,12 @@ plot_na = ggplot(df.na.raw) +
 
 
 # Save explorative plot as .tex file
-tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 8, height = 3)
+tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 8, height = 4)
 plot(plot_na)
 dev.off()
 
 # Save explorative plot as .pdf file
-pdf("MOEplotNAs/MOEplot_na.pdf", width = 8, height = 3)
+pdf("MOEplotNAs/MOEplot_na.pdf", width = 8, height = 4)
 plot(plot_na)
 dev.off()
 
@@ -151,6 +173,8 @@ rm(list=ls()[! ls() %in% c("df.pun",
                            "df.wind", 
                            "df.wind.AT",
                            "df.dm",
+                           "plot_na",
+                           "df.na.raw",
                            "plot_na"
                            )])
 
