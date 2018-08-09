@@ -17,7 +17,7 @@ rm(list = ls(all = TRUE))
 graphics.off()
 
 # Install and load libraries.
-libraries = c("ggplot2", "tikzDevice")
+libraries = c("ggplot2", "tikzDevice", "scales")
 lapply(libraries, function(x) if (!(x %in% installed.packages())) {
     install.packages(x)
 })
@@ -119,6 +119,8 @@ plot_na = ggplot(df.na.raw) +
     geom_histogram(aes(x=TIME, col=SOURCE, fill=SOURCE),
                    alpha = 0.8, binwidth = 24*3600) +
     labs(x = "Date", y = "NAs per day") +
+    scale_x_datetime(limits=c(as.POSIXct('2015-01-01 00:00:00'),
+                              as.POSIXct('2018-01-01 00:00:00'))) +
     ggtitle(label = "Missing Values in the Dataset")
 
 ###############################################################################
@@ -127,12 +129,12 @@ plot_na = ggplot(df.na.raw) +
 
 
 # Save explorative plot as .tex file
-tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 6, height = 8)
+tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 6, height = 2.5)
 plot(plot_na)
 dev.off()
 
 # Save explorative plot as .pdf file
-pdf("MOEplotNAs/MOEplot_na.pdf")
+pdf("MOEplotNAs/MOEplot_na.pdf", width = 6, height = 2.5)
 plot(plot_na)
 dev.off()
 
