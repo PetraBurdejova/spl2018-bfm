@@ -1,6 +1,6 @@
 
 ###############################################################################     
-####   Data_Interpolation.R    ################################################   
+####    MOEinterpolation.R    ###ä#############################################   
 ###############################################################################     
 # 
 # This code deals with NA's for Solar electricity production 
@@ -11,13 +11,12 @@
 #
 # Input: 'MOEdata_clean.Rdata' from the 'MOErawdata' Quantlet.
 #
-# Ouput:  MOEdata_interp.csv     - data in table form
-#         MOEdata_interp.Rdata   - data in Rdata form
+# Ouput:  MOEdata_interp_csv/<variable>.csv     - data in table form
+#         MOEdata_interp.Rdata                  - data in Rdata form
 #   
 #
 # TODO:   - Graph for solar generation and demand ( that enables to see data on
 #           a daily basis).
-#         - Handle leading and trailing NA's --> Just cutting off?
 #
 ###############################################################################
 
@@ -320,11 +319,22 @@ df.solar           = cbind(df.solar[, 1], solar.temp)
 rownames(df.solar) = c()
 colnames(df.solar) = ColumnNamesSolar
 
+# Save dataframes as '.Rdata' file for easy read-in in R.
 save(df.pun, df.solar, df.solar.AT, df.wind, df.wind.AT, df.dm,
      file="MOEinterpolation/MOEdata_interp.Rdata"
 )
 
+# Save dataframes as '.csv' files for use with other software.
+df.list     = list(df.pun, df.solar, df.solar.AT, 
+               df.wind, df.wind.AT, df.dm)
 
+df.names   = c("df_pun.csv", "df_solar.csv", "df_solar_AT.csv",
+                 "df_wind.csv", "df_wind_AT.csv", "df_dm.csv")
+
+lapply(1:length(df.list), 
+       function(i) write.csv((df.list[i]), 
+                             file = paste0("MOEinterpolation/MOEdata_interp_csv/", 
+                                           df.names[i])))
 
 ###############################################################################
 ####    6. CLEAN UP ENVIRONMENT    ############################################

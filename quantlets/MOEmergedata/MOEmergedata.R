@@ -134,7 +134,7 @@ df.wind[,-1]    = df.wind[,-1] + df.wind.AT[,-1]
 
 # Bind dataframes.
 df = cbind(df.pun, df.dm, df.solar, df.wind)
-df = df[ -c(3,5,7) ]
+df = df[ -c(3,5,7) ]  # Remove duplicate TIME columns
 
 # Save dataframe as '.Rdata' file for easy read-in in R.
 save(df, file="MOEmergedata/MOEdata_merge.Rdata")

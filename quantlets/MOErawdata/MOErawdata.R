@@ -9,7 +9,7 @@
 #
 # Input:  Data '.csv' files from the 'input' subdirectory.
 #
-# Ouput:  MOEdata_clean_<variable_name>.csv     - data in table form
+# Ouput:  MOEdata_clean_csv/<variable>.csv      - data in table form
 #         MOEdata_clean.Rdata                   - data in Rdata form
 #
 ###############################################################################

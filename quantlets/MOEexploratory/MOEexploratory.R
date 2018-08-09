@@ -148,6 +148,5 @@ dev.off()
 ####    4. CLEAN UP ENVIRONMENT    ############################################
 ###############################################################################
 
-# Remove everything except for "df" from environment.
-rm(list=ls()[! ls() %in% c("df")])
+rm(list=ls()[! ls() %in% c("df", "plot_exp", "plot_corr")])
 
