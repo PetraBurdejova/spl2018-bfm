@@ -129,12 +129,12 @@ plot_na = ggplot(df.na.raw) +
 
 
 # Save explorative plot as .tex file
-tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 6, height = 2.5)
+tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 8, height = 3)
 plot(plot_na)
 dev.off()
 
 # Save explorative plot as .pdf file
-pdf("MOEplotNAs/MOEplot_na.pdf", width = 6, height = 2.5)
+pdf("MOEplotNAs/MOEplot_na.pdf", width = 8, height = 3)
 plot(plot_na)
 dev.off()
 
