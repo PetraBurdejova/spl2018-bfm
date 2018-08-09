@@ -2,15 +2,14 @@
 ####    MOEexploratory.R    ###################################################    
 ###############################################################################     
 #
-# Loads data set from 'MOEmergedata'. 
-# Creates exploratory plots of the variables.
+# Creates exploratory plots of energy market variables.
 #
 # Input:  '.Rdata' file from the 'MOEmergedata' Quantlet.
 #
-# Ouput:  MOEplot_expl.tex       - plot in .tex format
-#         MOEplot_expl.pdf       - plot in .pdf format
-#         MOEplot_corr.tex       - plot in .tex format
-#         MOEplot_corr.pdf       - plot in .pdf format
+# Output:  MOEplot_expl.tex       - plot in .tex format
+#          MOEplot_expl.pdf       - plot in .pdf format
+#          MOEplot_corr.tex       - plot in .tex format
+#          MOEplot_corr.pdf       - plot in .pdf format
 #
 ###############################################################################
 

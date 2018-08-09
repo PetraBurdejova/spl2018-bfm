@@ -1,8 +1,55 @@
-library(ggplot2)
-library(lubridate)
 
-load("MOEmergedata/energy_market.Rdata")
-load("MOErawdata/energy_market_raw.Rdata")
+###############################################################################     
+####    MOEplotNAs.R    #######################################################     
+###############################################################################     
+#
+# Creates exploratory plots of energy market variables.
+#
+# Input:  '.Rdata' file from the 'MOErawdata' Quantlet.
+#
+# Output:  MOEplot_na.tex       - plot in .tex format
+#          MOEplot_na.pdf       - plot in .pdf format
+#
+###############################################################################
+
+# Clear all variables.
+rm(list = ls(all = TRUE))
+graphics.off()
+
+# Install and load libraries.
+libraries = c("ggplot2", "tikzDevice")
+lapply(libraries, function(x) if (!(x %in% installed.packages())) {
+    install.packages(x)
+})
+lapply(libraries, library, quietly = TRUE, character.only = TRUE)
+
+
+
+###############################################################################
+####    0.  SET WORKING DIRECTORY    ##########################################
+###############################################################################
+####    ATTENTION: Working directory is assumed to be the root of the MOE 
+####    repository, not the MOErawdata Quantlet subdirectory!!!
+
+
+# If needed, set working directory accordingly:
+#setwd("path/to/MOE_repository")
+
+
+
+###############################################################################
+####    1.  LOAD ENERGY MARKET DATA    ########################################
+###############################################################################
+
+
+load("MOErawdata/MOEdata_clean.Rdata")
+
+
+
+###############################################################################
+####    2.  DEFINE FUNCTIONS   ################################################
+###############################################################################
+
 
 DiagMissingValues <- function(df, dlevel = 0) {
   # Checks for NA values in dataframe and prints information.
@@ -49,58 +96,59 @@ DiagMissingValues <- function(df, dlevel = 0) {
   return(tp)
 }
 
-# Choose time frame to analyze 
-time.FRAME <- function(x) {
-  # Chooses Time frame for all variables
-  #
-  # Args:
-  #   x: Imported dataframe
-  #
-  # Returns:
-  #   y: Dataframe with right time frame
-  start.d <- ymd_hm("2015-01-01 00:00")
-  stop.d <- ymd_hm("2017-12-31 23:00")
-  ind.start <- which(x$TIME == start.d)
-  ind.stop <- which(x$TIME == stop.d)
-  ind <- (ind.start: ind.stop)
-  y <- x[ind, ]
-}
 
-#df.dm       <- time.FRAME(df.dm)
-#df.pun      <- time.FRAME(df.pun)
-#df.solar    <- time.FRAME(df.solar)
-#df.wind     <- time.FRAME(df.wind)
-#df.solar.AT <- time.FRAME(df.solar.AT)
-#df.wind.AT  <- time.FRAME(df.wind.AT)
 
-df.na.clean <- data.frame(DiagMissingValues(df), "CLEAN")
-names(df.na.clean) <- c("TIME", "SOURCE")
+###############################################################################
+####    3.  CREATE NA PLOT   ##################################################
+###############################################################################
 
-df.na.dm <- data.frame(DiagMissingValues(df.dm), "DEM")
-names(df.na.dm) <- c("TIME", "SOURCE")
-df.na.solar <- data.frame(DiagMissingValues(df.solar), "SOLAR")
-names(df.na.solar) <- c("TIME", "SOURCE")
-df.na.wind <- data.frame(DiagMissingValues(df.wind), "WIND")
-names(df.na.wind) <- c("TIME", "SOURCE")
 
-df.na.raw <- rbind(df.na.dm,df.na.solar,df.na.wind)
+df.na.dm            = data.frame(DiagMissingValues(df.dm), "DEMAND")
+names(df.na.dm)     = c("TIME", "SOURCE")
 
-ggplot(df.na.raw) +
-  geom_histogram(aes(x=TIME, col=SOURCE, fill=SOURCE),
-                 alpha = 0.8, binwidth = 24*3600) +
-  labs(x = "Date", y = "NAs per day") +
-  theme_bw()
+df.na.solar         = data.frame(DiagMissingValues(df.solar), "SOLAR")
+names(df.na.solar)  = c("TIME", "SOURCE")
 
-ggsave("MOEplotNAs/na_raw_v2.pdf", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = 7.5 , height = 3,  
-       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
+df.na.wind          = data.frame(DiagMissingValues(df.wind), "WIND")
+names(df.na.wind)   = c("TIME", "SOURCE")
 
-ggplot(df.na.clean) +
-  geom_histogram(aes(x=TIME, col=SOURCE, fill=SOURCE),
-                 alpha = 0.8, binwidth=1) +
-  labs(x = "Date", y = "is NA?") +
-  theme_bw()
+df.na.raw           = rbind(df.na.dm,df.na.solar,df.na.wind)
 
-ggsave("MOEplotNAs/na_clean.pdf", plot = last_plot(), device = "pdf", 
-       path =  NULL, scale = 1.5, width = 7.5 , height = 1,  
-       units = c("in", "cm", "mm"), dpi = 800, limitsize = TRUE)
+
+plot_na = ggplot(df.na.raw) +
+    geom_histogram(aes(x=TIME, col=SOURCE, fill=SOURCE),
+                   alpha = 0.8, binwidth = 24*3600) +
+    labs(x = "Date", y = "NAs per day") +
+    ggtitle(label = "Missing Values in the Dataset")
+
+###############################################################################
+####    4.  SAVE PLOTS AS TEX FILE      #######################################
+###############################################################################
+
+
+# Save explorative plot as .tex file
+tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 6, height = 8)
+plot(plot_na)
+dev.off()
+
+# Save explorative plot as .pdf file
+pdf("MOEplotNAs/MOEplot_na.pdf")
+plot(plot_na)
+dev.off()
+
+
+
+###############################################################################
+####    5. CLEAN UP ENVIRONMENT    ############################################
+###############################################################################
+
+
+rm(list=ls()[! ls() %in% c("df.pun",
+                           "df.solar",
+                           "df.solar.AT",
+                           "df.wind", 
+                           "df.wind.AT",
+                           "df.dm",
+                           "plot_na"
+                           )])
+
