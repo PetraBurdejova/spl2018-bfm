@@ -258,13 +258,15 @@ for (quarter in quarters.day) {
 ####    INTERPOLATE DEMAND BY DAILY AND WEEKLY TREND    #######################
 
 # Build vector of days.
-dm.day.list = list()
 day.week = c(1,2,3,4,5,6,7)
 
+#Define function that returns Weekday in format(0,1,2,3,4,5,6)
 WeekDay = function(Date){
   as.POSIXlt(Date)$wday
 }
 
+#define list to store split up xts files
+dm.day.list = list()
 
 for (Day in day.week){
 # This double loop splits up the orginal xts into xts files for every quarter 
