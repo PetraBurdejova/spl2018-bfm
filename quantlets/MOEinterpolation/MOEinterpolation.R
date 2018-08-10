@@ -194,10 +194,9 @@ for (TSO in names(df.solar[-1])){
 
 
 # Only applies for up to 4 consecutive NA's.
-xts.solar = na.approx(xts.solar,na.rm=TRUE, maxgap=4)
-xts.dm = na.approx(xts.dm ,na.rm=TRUE, maxgap=4)
+xts.solar = na.approx(xts.solar,na.rm=FALSE, maxgap=4)
+xts.dm = na.approx(xts.dm ,na.rm=FALSE, maxgap=4)
 
-  
 ###############################################################################
 ####    4c. TREND INTERPOLATION    ############################################
 ###############################################################################
