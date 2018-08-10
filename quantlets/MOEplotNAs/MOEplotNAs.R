@@ -3,7 +3,8 @@
 ####    MOEplotNAs.R    #######################################################     
 ###############################################################################     
 #
-# Creates exploratory plots of energy market variables.
+# Creates exploratory plots of the NA-value structure in the energy 
+# market variables.
 #
 # Input:  '.Rdata' file from the 'MOErawdata' Quantlet.
 #

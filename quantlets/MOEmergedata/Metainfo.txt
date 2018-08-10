@@ -16,6 +16,6 @@ Submitted : Fri, June 29 2018 by Manuel Pfeuffer
 
 Datafile : '../MOErawdata/MOEdata_clean.Rdata'
 
-Input  : MOEdata_interp.Rdata
+Input  : .Rdata file from the 'MOEinterpolation' Quantlet
 
-Output : MOEdata_merge.Rdata
+Output :  MOEdata_merge.Rdata

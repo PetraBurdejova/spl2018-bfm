@@ -1,6 +1,6 @@
 Name of Quantlet: MOEexploratory
  
-Published in: Statistical Programming Languages SS2018
+Published in: SPL2018 - The Merit Order Effect in the German Power Market
   
 Description: 'Creates exploratory plots from the 'MOEmergedata' data.'
  
@@ -8,7 +8,7 @@ Keywords: explorative plots, data visualization, graphics, ggplot2
  
 Author: Bruno Puri, Manuel Pfeuffer, Felix Germaine
 
-Submitted: Fri, August 10 2018 by Manuel Pfeuffer
+Submitted: Fri, June 29 2018 by Manuel Pfeuffer
 
 Input: .Rdata file from the 'MOEmergedata' Quantlet
 

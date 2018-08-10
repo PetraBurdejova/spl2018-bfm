@@ -8,7 +8,7 @@ dataframes are saved as .csv and .Rdata files.'
 
 Keywords : data, cleaning, price, demand, time, series
 
-Author : Bruni Puri, Manuel Pfeuffer
+Author : Bruno Puri, Manuel Pfeuffer
 
 Submitted : Fri, June 29 2018 by Manuel Pfeuffer
 
