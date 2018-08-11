@@ -58,9 +58,19 @@ YMDDummy = function(FullDat.xts, del.Y = 1, del.M = 1, del.D = 1){
   
   Length = length(FullDat.xts[,1])
   
-  Year = function(x){
-      #Gives the year for a specific date
-      format(index(x), "%Y")
+  ReturnYear = function(x){
+    #Gives the year for a specific date
+    format(index(x), "%Y")
+  }
+  
+  ReturnMonth = function(x){
+    #Gives the Month for a specific date
+    format(index(x), "%m")
+  }
+  
+  ReturnDay = function(x){
+    #Gives the year for a specific date
+    as.POSIXlt(index(x))$wday  
   }
   
 
@@ -72,7 +82,7 @@ YMDDummy = function(FullDat.xts, del.Y = 1, del.M = 1, del.D = 1){
   colnames(Year.Dummy.matrix)   = Year.Vector
 
   for (i in 1:length(Year.Vector)) {
-      Year.Dummy.matrix[,i] = Year(FullDat.xts) == Year.Vector[i]
+      Year.Dummy.matrix[,i] = ReturnYear(FullDat.xts) == Year.Vector[i]
   }
 
 
@@ -85,7 +95,7 @@ YMDDummy = function(FullDat.xts, del.Y = 1, del.M = 1, del.D = 1){
   colnames(Month.Dummy.matrix) = Month
 
   for (i in 1:length(Month)) {
-    Month.Dummy.matrix[,i] <- format(index(FullDat.xts), "%m")== Month[i]
+    Month.Dummy.matrix[,i] = ReturnMonth(FullDat.xts) == Month[i]
   }
 
 
@@ -103,7 +113,7 @@ YMDDummy = function(FullDat.xts, del.Y = 1, del.M = 1, del.D = 1){
   
   Day.Dummy.matrix           = matrix(,nrow = Length, ncol=n+1)
   colnames(Day.Dummy.matrix) = days.of.the.week
-  Weekdays                   = as.POSIXlt(index(FullDat.xts))$wday  
+  Weekdays                   = ReturnDay(FullDat.xts)
   # vector of the week day of each day 
   # ( in numbers : 0=Sunday, 1=Monday...6=Saturday)
 

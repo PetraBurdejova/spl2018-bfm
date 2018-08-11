@@ -1,16 +1,18 @@
 
-Name of Quantlet : MOErawdata
+Name of Quantlet : MOEtimmedummies
 
-Published in : Statistical Programming Languages SS2018
+Published in : SPL2018 - The Merit Order Effect in the German Power Market
 
-Description : Saves a cleaned version of raw energy market data.
+Description : 'Creates time dummies for years, month and days for use in the regression.'
 
-Keywords : data, clean
+Keywords : dummy, variable, xts, year, month, day, week, matrix
 
-Author : Bruni Puri
+Author : Felix Germaine
+
+Submitted: Fri, June 29 2018 by Felix Germaine
 
 Datafile : 
 
-Input : 
+Input : ———
 
-Output :
+Output : Time.Dummy.matrix.xts

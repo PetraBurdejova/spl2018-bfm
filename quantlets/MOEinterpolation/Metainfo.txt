@@ -1,17 +1,18 @@
 Name of Quantlet: MOEinterpolation
  
-Published in: Statistical Programming Languages SS2018
+Published in: SPL2018 - The Merit Order Effect in the German Power Market
   
-Description: Interpolates values where there are NA's in the input.
+Description: 'Interpolates NA values in the data.‘
  
 Keywords: Missing values, NA, interpolation, Wind, Solar, Demand
  
-Author: Bruno Puri, Manuel Pfeuffer, Felix Germaine
+Author: Felix Germaine, Manuel Pfeuffer, Bruno Puri
 
 Submitted:  Fri, June 29 2018 by Felix Germaine
 
-Input: Dataframes with NA's 
+Input:   'MOEdata_clean.Rdata' from the 'MOErawdata' Quantlet.
 
-Output:  Dataframes without NA's 
 
+Output:  MOEdata_interp_csv/<variable>.csv  - data in table form
+         MOEdata_interp.Rdata               - data in Rdata form
 

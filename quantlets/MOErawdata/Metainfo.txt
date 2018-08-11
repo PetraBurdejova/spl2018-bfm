@@ -1,14 +1,14 @@
 
 Name of Quantlet : MOErawdata
 
-Published in : 'SPL2018 - The Merit Order Effect in the German Power Market'
+Published in : SPL2018 - The Merit Order Effect in the German Power Market
 
 Description : 'Reads, formats and cleans the raw data sets. Resulting
 dataframes are saved as .csv and .Rdata files.'
 
-Keywords : data, price, demand, time, series
+Keywords : data, cleaning, price, demand, time, series
 
-Author : Bruni Puri, Manuel Pfeuffer
+Author : Bruno Puri, Manuel Pfeuffer
 
 Submitted : Fri, June 29 2018 by Manuel Pfeuffer
 
