@@ -50,7 +50,7 @@ digraph qlets {
            outputorder = edgesfirst]
     
     # add note statements
-    node [shape = box, fontsize = 11]
+    node [shape = box]
     A [pos = '-3,0!', label = ' MOErawdata ']
     B [pos = '-1,0!', label = ' MOEinterpolation ']
     C [pos = '1,0!', label = ' MOEmergedata ']
@@ -59,7 +59,7 @@ digraph qlets {
     P1 [pos = '-3,1!', label = ' MOEplotNAs ']
     P2 [pos = '1,1!', label = ' MOEexploratory ']
 
-    node [shape = ellipse, fontsiez = 11]
+    node [shape = ellipse]
     O [pos = '5,0!', label = 'Regression\nOutput']
     O1 [pos = '-3,2!', label = ' MOEplot_na ']
     O2 [pos = '0,2!', label = ' MOEplot_expl ']
