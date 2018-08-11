@@ -134,8 +134,11 @@ for (Column in 1:4) {
 Table1 = data.frame(Results.ADF, Results.PP)
 colnames(Table1) = c("A. Dickey Fuller", "Philipps-perron")
 rownames(Table1) = c("El. Price","El. Demand", "Solar Gen.", "Wind Gen.")
-TABLE1 = xtable(Table1)
-print.xtable(TABLE1, type="latex", file="MOEregression/ADFandPPTEST.tex")
+TABLE1 = xtable(Table1, 
+                caption = "p-values of unit root tests (with time trend and constant) \\\\ $H_0$: The series has a unit root",
+                align=c("l", "c", "c" ))
+print.xtable(TABLE1, type="latex", file="MOEregression/ADFandPPTEST.tex",
+             sanitize.text.function=function(x){x})
 
 
 ###############################################################################
@@ -167,8 +170,12 @@ BPTEST.OLS = bptest(OLS)
 Table2 = data.frame(DWTEST.OLS$p.value,BPTEST.OLS$p.value)
 colnames(Table2) = c("Durbin-Watson", "Breusch-Pagan")
 row.names(Table2) = "p-value"
-TABLE2 = xtable(Table2)
-print.xtable(TABLE2, type="latex", file="MOEregression/OLS_DWandBPTEST.tex")
+TABLE2 = xtable(Table2,
+                caption = "Tests for auto-correlation and heteroscedasticity \\\\ $H^{DW}_0$: The error terms are not auto correlated \\\\$H^{BP}_0$: The error terms are homoscedastic")
+
+print.xtable(TABLE2, type="latex", 
+             file="MOEregression/OLS_DWandBPTEST.tex",
+             sanitize.text.function=function(x){x})
 
 
 # Generate jpeg file with PACF and ACF of OLS
@@ -189,7 +196,7 @@ PWReg = prais.winsten(PUN ~ .,ts.mydata,iter = 50,rho = 0, tol = 1e-08)
 
 # Generate a jpeg for ACF and PACF of PW regression
 jpeg('MOEregression/PACF_PraisWinsten.jpg')
-acf2(PWReg[[1]]$residuals, main="Prais-Winsten residuals.tex")
+acf2(PWReg[[1]]$residuals, main="Prais-Winsten residuals")
 dev.off()
 
 # Arrange results into LaTeX table
@@ -207,7 +214,7 @@ rownames(Table3) = c("Demand", "Solar Gen.", "Wind Gen.",
                      "August", "September", "October", "November",
                      "December", "Monday", "Tuesday", "Wednesday",
                      "Thursday","Friday", "Saturday", "Intercept",
-                     "\rho  (AR1)")
+                     "rho  (AR1)")
 
 TABLE3 = xtable(Table3,
                 caption = "Prais-Winsten regression results",
