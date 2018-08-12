@@ -171,12 +171,12 @@ plot(plot_corr)
 dev.off()
 
 # Save solar trend plot as .tex file
-tikz(file = "MOEexploratory/MOEtrend_solar.tex", width = 7, height = 3)
+tikz(file = "MOEexploratory/MOEtrend_solar.tex", width = 6, height = 3)
 plot(trend_solar)
 dev.off()
 
 # Save demand trend plot as .tex file
-tikz(file = "MOEexploratory/MOEtrend_demand.tex", width = 7, height = 3)
+tikz(file = "MOEexploratory/MOEtrend_demand.tex", width = 6, height = 3)
 plot(trend_demand)
 dev.off()
 

@@ -152,7 +152,7 @@ plot_na = ggplot(df.na.raw, aes(x = TIME)) +
 
 
 # Save explorative plot as .tex file
-tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 8, height = 4)
+tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 6, height = 3)
 plot(plot_na)
 dev.off()
 
