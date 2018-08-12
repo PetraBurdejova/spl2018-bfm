@@ -14,8 +14,6 @@ See also : 'MOErawdata‘, 'MOEinterpolation’
 
 Submitted : Sun, August 12 2018 by Manuel Pfeuffer
 
-Datafile : '../MOErawdata/MOEdata_clean.Rdata'
-
 Input  : .Rdata file from the 'MOEinterpolation' Quantlet
 
 Output :  MOEdata_merge.Rdata
