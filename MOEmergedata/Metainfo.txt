@@ -12,7 +12,7 @@ Author : Bruno Puri, Manuel Pfeuffer
 
 See also : 'MOErawdata‘, 'MOEinterpolation’
 
-Submitted : Fri, June 29 2018 by Manuel Pfeuffer
+Submitted : Sun, August 12 2018 by Manuel Pfeuffer
 
 Datafile : '../MOErawdata/MOEdata_clean.Rdata'
 
