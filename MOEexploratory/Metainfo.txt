@@ -4,7 +4,8 @@ Published in: SPL2018 - The Merit Order Effect in the German Power Market
   
 Description: 'Creates exploratory plots from the MOEmergedata and MOErawdata data.'
  
-Keywords: explorative plots, data visualization, graphics, ggplot2
+Keywords: 'explorative plots, data visualization, plot, scatter plot,
+statistics, correlation, trend, pattern, seasonal'
  
 Author: Bruno Puri, Manuel Pfeuffer, Felix Germaine
 
@@ -14,14 +15,10 @@ Input: .Rdata file from the MOEmergedata Quantlet
        .Rdata file from the MOErawdata Quantlet
 
 Output: MOEplot_expl.tex
-        MOEplot_expl.pdf       
         MOEplot_expl.png       
         MOEplot_corr.tex       
-        MOEplot_corr.pdf       
         MOEplot_corr.png       
         MOEtrend_solar.tex     
-        MOEtrend_solar.pdf     
         MOEtrend_solar.png     
         MOEtrend_demand.tex    
-        MOEtrend_demand.pdf    
         MOEtrend_demand.png    

@@ -2,9 +2,11 @@ Name of Quantlet: MOEqletflow
  
 Published in: SPL2018 - The Merit Order Effect in the German Power Market
   
-Description: 'Creates a Quantlet dependicy chart for this project.'
+Description: 'Creates a Quantlet dependence chart for this project. Shows the
+workflow for using the MOE Quantlets. Quantlets are depicted as boxes, ouput as
+ellipses.'
  
-Keywords: graphical representation, flow, diagram
+Keywords: graphical representation, flow, diagram, plot
 
 Author: Manuel Pfeuffer, Bruno Puri, Felix Germaine
 

@@ -7,16 +7,12 @@
 # Input:  '.Rdata' file from the 'MOEmergedata' and 'MOErawdata' Quantlet.
 #
 # Output:  MOEplot_expl.tex       
-#          MOEplot_expl.pdf       
 #          MOEplot_expl.png       
 #          MOEplot_corr.tex       
-#          MOEplot_corr.pdf       
 #          MOEplot_corr.png       
 #          MOEtrend_solar.tex     
-#          MOEtrend_solar.pdf     
 #          MOEtrend_solar.png     
 #          MOEtrend_demand.tex    
-#          MOEtrend_demand.pdf    
 #          MOEtrend_demand.png    
 #
 ###############################################################################
@@ -184,43 +180,23 @@ tikz(file = "MOEexploratory/MOEtrend_demand.tex", width = 7, height = 3)
 plot(trend_demand)
 dev.off()
 
-# Save explorative plot as .pdf file
-pdf("MOEexploratory/MOEplot_expl.pdf")
-plot(plot_exp)
-dev.off()
-
-# Save correlation plot as .pdf file
-pdf("MOEexploratory/MOEplot_corr.pdf")
-plot(plot_corr)
-dev.off()
-
-# Save solar_trend plot as .pdf file
-pdf("MOEexploratory/MOEtrend_solar.pdf", width = 7, height = 3)
-plot(trend_solar)
-dev.off()
-
-# Save demand trend plot as .pdf file
-pdf("MOEexploratory/MOEtrend_demand.pdf", width = 7, height = 3)
-plot(trend_demand)
-dev.off()
-
 # Save explorative plot as .png file
-png("MOEexploratory/MOEplot_expl.pdf")
+png("MOEexploratory/MOEplot_expl.png", width = 512, height = 740)
 plot(plot_exp)
 dev.off()
 
 # Save correlation plot as .png file
-png("MOEexploratory/MOEplot_corr.pdf")
+png("MOEexploratory/MOEplot_corr.png", width = 512, height = 740)
 plot(plot_corr)
 dev.off()
 
 # Save solar_trend plot as .png file
-png("MOEexploratory/MOEtrend_solar.pdf", width = 7, height = 3)
+png("MOEexploratory/MOEtrend_solar.png", width = 512, height = 220)
 plot(trend_solar)
 dev.off()
 
 # Save demand trend plot as .png file
-png("MOEexploratory/MOEtrend_demand.pdf", width = 7, height = 3)
+png("MOEexploratory/MOEtrend_demand.png", width = 512, height = 220)
 plot(trend_demand)
 dev.off()
 
