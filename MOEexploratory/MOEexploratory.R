@@ -4,12 +4,16 @@
 #
 # Creates exploratory plots of energy market variables.
 #
-# Input:  '.Rdata' file from the 'MOEmergedata' Quantlet.
+# Input:  '.Rdata' file from the 'MOEmergedata' and 'MOErawdata' Quantlet.
 #
 # Output:  MOEplot_expl.tex       - plot in .tex format
 #          MOEplot_expl.pdf       - plot in .pdf format
 #          MOEplot_corr.tex       - plot in .tex format
 #          MOEplot_corr.pdf       - plot in .pdf format
+#          MOEtrend_solar.tex     - plot in .tex format
+#          MOEtrend_solar.pdf     - plot in .pdf format
+#          MOEtrend_demand.tex    - plot in .tex format
+#          MOEtrend_demand.pdf    - plot in .pdf format
 #
 ###############################################################################
 
@@ -41,7 +45,8 @@ lapply(libraries, library, quietly = TRUE, character.only = TRUE)
 ####    1.  LOAD DATA    ######################################################
 ###############################################################################
 
-# Grab data from 'MOEmergedata' Quantlet
+# Grab data from 'MOEmergedata' and 'MOErawdata' Quantlet
+load("MOErawdata/MOEdata_clean.Rdata")
 load("MOEmergedata/MOEdata_merge.Rdata")
 
 # Change variable names for better representation
@@ -120,6 +125,38 @@ plot_corr = plot_grid(plot_pr_rn, plot_pr_de, align = "v", nrow = 2,
 
 
 ###############################################################################
+####    2.3 SOLAR TREND    ####################################################
+
+trend_solar = ggplot(data=df.solar, aes(x = TIME, y = FzHertz)) +
+    geom_point(size = 0.5) +
+    labs(x = "", y = "Production in MWh") +
+    ggtitle(label = "Example of Daily Pattern in Solar Energy Generation") +
+    scale_x_datetime(limits = c(as.POSIXct('2016-07-11 23:30:00'),
+                                as.POSIXct('2016-07-13 00:30:00')),
+                     labels = date_format("%H:%M"),
+                     breaks = date_breaks("3 hour"),
+                     expand = c(0,0)) +
+    scale_y_continuous(label = comma) +
+    theme_bw()
+
+
+###############################################################################
+####    2.4  DEMAND TREND    ##################################################
+
+trend_demand = ggplot(data=df.dm, aes(x = TIME, y = DEM)) +
+    geom_point(size = 0.5) +
+    labs(x = "", y = "Demand in MWh") +
+    ggtitle(label = "Example of Weekly Pattern in Energy Demand") +
+    scale_x_datetime(limits = c(as.POSIXct('2016-07-11 00:00:00'),
+                                as.POSIXct('2016-08-01 23:45:00')),
+                     labels = date_format("%A"),
+                     breaks = date_breaks("7 day"),
+                     expand = c(0,0)) +
+    scale_y_continuous(label = comma) +
+    theme_bw()
+
+
+###############################################################################
 ####    3.  SAVE PLOTS AS TEX FILE      #######################################
 ###############################################################################
 
@@ -133,6 +170,16 @@ tikz(file = "MOEexploratory/MOEplot_corr.tex", width = 6, height = 8)
 plot(plot_corr)
 dev.off()
 
+# Save solar trend plot as .tex file
+tikz(file = "MOEexploratory/MOEtrend_solar.tex", width = 7, height = 3)
+plot(trend_solar)
+dev.off()
+
+# Save demand trend plot as .tex file
+tikz(file = "MOEexploratory/MOEtrend_demand.tex", width = 7, height = 3)
+plot(trend_demand)
+dev.off()
+
 # Save explorative plot as .pdf file
 pdf("MOEexploratory/MOEplot_expl.pdf")
 plot(plot_exp)
@@ -143,9 +190,27 @@ pdf("MOEexploratory/MOEplot_corr.pdf")
 plot(plot_corr)
 dev.off()
 
+# Save solar_trend plot as .pdf file
+pdf("MOEexploratory/MOEtrend_solar.pdf", width = 7, height = 3)
+plot(trend_solar)
+dev.off()
+
+# Save demand trend plot as .pdf file
+pdf("MOEexploratory/MOEtrend_demand.pdf", width = 7, height = 3)
+plot(trend_demand)
+dev.off()
+
+
+
+
 ###############################################################################
 ####    4. CLEAN UP ENVIRONMENT    ############################################
 ###############################################################################
 
-rm(list=ls()[! ls() %in% c("df", "plot_exp", "plot_corr")])
+rm(list=ls()[! ls() %in% c("df", 
+                           "plot_exp", 
+                           "plot_corr", 
+                           "trend_solar", 
+                           "trend_demand"
+                           )])
 
