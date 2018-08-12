@@ -10,9 +10,3 @@ Keywords : dummy, variable, xts, year, month, day, week, matrix
 Author : Felix Germaine
 
 Submitted: Fri, June 29 2018 by Felix Germaine
-
-Datafile : 
-
-Input : ———
-
-Output : Time.Dummy.matrix.xts
