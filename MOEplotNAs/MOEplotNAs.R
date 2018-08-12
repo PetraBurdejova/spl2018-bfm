@@ -174,8 +174,7 @@ rm(list=ls()[! ls() %in% c("df.pun",
                            "df.wind", 
                            "df.wind.AT",
                            "df.dm",
-                           "plot_na",
-                           "df.na.raw",
+                           "DiagMissingValues",
                            "plot_na"
                            )])
 
