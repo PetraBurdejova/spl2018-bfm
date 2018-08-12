@@ -1,0 +1,14 @@
+Name of Quantlet : MOEqletflow
+
+Published in : SPL2018 - The Merit Order Effect in the German Power Market
+
+Description : 'Creates flowchart of MOE quantlet structure.'
+
+Keywords : data, visualization, flow, structure
+
+Author : Manuel Pfeuffer
+
+Submitted : Fri, June 29 2018 by Manuel Pfeuffer
+
+Output:  MOEchart_qlet.tex    - flowchart in .tex format
+         MOEchart_qlet.pdf    - flowchart in .pdf format
