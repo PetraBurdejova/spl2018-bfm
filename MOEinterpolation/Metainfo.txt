@@ -2,17 +2,15 @@ Name of Quantlet: MOEinterpolation
  
 Published in: SPL2018 - The Merit Order Effect in the German Power Market
   
-Description: 'Interpolates NA values in the data.‘
+Description: 'Interpolates NA values in the energy market data based on weekly and daily patterns.‘
  
 Keywords: Missing values, NA, interpolation, Wind, Solar, Demand
  
 Author: Felix Germaine, Manuel Pfeuffer, Bruno Puri
 
-Submitted:  Fri, June 29 2018 by Felix Germaine
+Submitted:  Sun, August 12 2018 by Felix Germaine
 
 Input:   'MOEdata_clean.Rdata' from the 'MOErawdata' Quantlet.
 
-
 Output:  MOEdata_interp_csv/<variable>.csv  - data in table form
          MOEdata_interp.Rdata               - data in Rdata form
-
