@@ -9,7 +9,6 @@
 # Input:  '.Rdata' file from the 'MOErawdata' Quantlet.
 #
 # Output:  MOEplot_na.tex       - plot in .tex format
-#          MOEplot_na.pdf       - plot in .pdf format
 #          MOEplot_na.png       - plot in .png format
 #
 ###############################################################################
@@ -157,13 +156,8 @@ tikz(file = "MOEplotNAs/MOEplot_na.tex", width = 8, height = 4)
 plot(plot_na)
 dev.off()
 
-# Save explorative plot as .pdf file
-pdf("MOEplotNAs/MOEplot_na.pdf", width = 8, height = 4)
-plot(plot_na)
-dev.off()
-
 # Save explorative plot as .png file
-png("MOEplotNAs/MOEplot_na.png", width = 8, height = 4)
+png("MOEplotNAs/MOEplot_na.png", width = 512, height = 256)
 plot(plot_na)
 dev.off()
 
