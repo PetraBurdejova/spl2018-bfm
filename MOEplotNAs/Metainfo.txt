@@ -2,7 +2,8 @@ Name of Quantlet: MOEplotNAs
  
 Published in: SPL2018 - The Merit Order Effect in the German Power Market
   
-Description: ‚Creates exploratory plots of the NA-value structure in the energy market variables.’
+Description: 'Creates exploratory plots of the NA-value structure in the energy
+market variables.'
  
 Keywords: NA, explorative plots, data visualization, graphics, ggplot2, not available
  

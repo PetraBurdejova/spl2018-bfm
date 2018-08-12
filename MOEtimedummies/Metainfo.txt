@@ -1,5 +1,4 @@
-
-Name of Quantlet : MOEtimmedummies
+Name of Quantlet : MOEtimedummies
 
 Published in : SPL2018 - The Merit Order Effect in the German Power Market
 

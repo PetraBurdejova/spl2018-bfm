@@ -2,7 +2,7 @@ Name of Quantlet: MOEexploratory
  
 Published in: SPL2018 - The Merit Order Effect in the German Power Market
   
-Description: 'Creates exploratory plots from the 'MOEmergedata' and 'MOErawdata' data.'
+Description: 'Creates exploratory plots from the MOEmergedata and MOErawdata data.'
  
 Keywords: explorative plots, data visualization, graphics, ggplot2
  
@@ -10,8 +10,8 @@ Author: Bruno Puri, Manuel Pfeuffer, Felix Germaine
 
 Submitted: Sun, August 12 2018 by Manuel Pfeuffer
 
-Input: .Rdata file from the 'MOEmergedata' Quantlet
-       .Rdata file from the 'MOErawdata' Quantlet
+Input: .Rdata file from the MOEmergedata Quantlet
+       .Rdata file from the MOErawdata Quantlet
 
 Output: MOEplot_expl.tex
         MOEplot_expl.pdf
