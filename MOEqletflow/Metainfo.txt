@@ -4,8 +4,8 @@ Published in: SPL2018 - The Merit Order Effect in the German Power Market
   
 Description: 'Creates a Quantlet dependicy chart for this project.'
  
-Keywords: diagramm, graphics, ggplot2
- 
+Keywords: graphical representation, flow, diagram
+
 Author: Manuel Pfeuffer, Bruno Puri, Felix Germaine
 
 Submitted: Sun, August 12 2018 by Manuel Pfeuffer

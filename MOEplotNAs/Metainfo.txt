@@ -15,3 +15,4 @@ Input: .Rdata' file from the 'MOErawdata' Quantlet.
 
 Output: MOEplot_na.tex - plot in .tex format
         MOEplot_na.pdf - plot in .pdf format
+        MOEplot_na.png - plot in .png format

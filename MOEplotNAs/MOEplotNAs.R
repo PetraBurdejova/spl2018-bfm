@@ -10,6 +10,7 @@
 #
 # Output:  MOEplot_na.tex       - plot in .tex format
 #          MOEplot_na.pdf       - plot in .pdf format
+#          MOEplot_na.png       - plot in .png format
 #
 ###############################################################################
 
@@ -158,6 +159,11 @@ dev.off()
 
 # Save explorative plot as .pdf file
 pdf("MOEplotNAs/MOEplot_na.pdf", width = 8, height = 4)
+plot(plot_na)
+dev.off()
+
+# Save explorative plot as .png file
+png("MOEplotNAs/MOEplot_na.png", width = 8, height = 4)
 plot(plot_na)
 dev.off()
 
